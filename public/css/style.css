@@ -3875,6 +3875,7 @@ a:focus {
 }
 
 .course-one__image {
+	width: 100%;
 	position: relative;
 	-webkit-transition: all 500ms ease;
 	transition: all 500ms ease;
@@ -3885,6 +3886,7 @@ a:focus {
 .course-one__single:hover .course-one__image {
 	-webkit-transform: translateY(76px);
 	transform: translateY(76px);
+
 }
 
 .course-one__image-inner {

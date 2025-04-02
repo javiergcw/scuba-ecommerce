@@ -2,11 +2,11 @@ import React from 'react'
 
 const FunFact = () => {
     return (
-        <section className="funfact-one funfact-one__home-one">
+        <section className="funfact-one funfact-one__home-one position-relative" >
             <div className="container">
                 <div className="funfact-one__title">Fun facts</div>
                 <div className="inner-container">
-                    <div className="row">
+                    <div className="row g-0">
                         <div className="col-lg-3 col-md-6">
                             <div className="funfact-one__single">
                                 <div className="funfact-one__count counter">
