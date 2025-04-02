@@ -27,10 +27,10 @@ const Navbar = () => {
                         <a className="main-nav-one__infos-email" href="mailto:needhelp@example.com"><i className="fa fa-envelope"></i>needhelp@example.com</a>
                     </div>
                     <div className="inner-container">
-                        <div className="logo-box">
-                            <a href="index.html">
-
-                            </a>
+                        <div className="logo-box flex justify-center items-center">
+                        <a href="index.html" className="flex justify-center">
+                           {/*  <img src="assets/images/logo-1-1.png" alt="" width="143"/> */}
+                        </a>
                             <a href="#" className="side-menu__toggler"><i className="fa fa-bars"></i></a>
                         </div>
                         <div className="main-nav__main-navigation">
