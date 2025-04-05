@@ -23,4 +23,13 @@ export const CONTACT_INFO = {
         FLICKR: "https://www.flickr.com/photos/148572699@N03/",
         WHATSAPP: "https://api.whatsapp.com/send/?phone=573165341834&text=Hello%2C+¿Podrías+ayudarme%3F+&type=phone_number&app_absent=0",
     }
-}; 
+};
+
+export const ROUTES = {
+    HOME: '/',
+    ABOUT: '/about-us',
+    COURSES: '/courses',
+    CONTACT: '/contact',
+    LOGIN: '/login',
+    LOCATION: '/location',
+} as const; 
