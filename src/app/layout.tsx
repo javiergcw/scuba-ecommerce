@@ -27,6 +27,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
+        {/* Bootstrap Icons CSS */}
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+        
         {/* Aquí enlazas los CSS del template */}
         <link rel="stylesheet" href="/css/bootstrap.min.css" />
         <link rel="stylesheet" href="/css/fontawesome-all.min.css" />

@@ -34,8 +34,8 @@ const Navbar = () => {
             <nav className="main-nav-one stricky">
                 <div className="container">
                     <div className="main-nav-one__infos">
-                        <a className="main-nav-one__infos-phone" href="tel:666-888-0000"><i className="fa fa-phone-alt"></i>666 888 0000</a>
-                        <a className="main-nav-one__infos-email" href="mailto:needhelp@example.com"><i className="fa fa-envelope"></i>needhelp@example.com</a>
+                        <a className="main-nav-one__infos-phone" href={`tel:${CONTACT_INFO.PHONE}`}><i className="fa fa-phone-alt"></i>{CONTACT_INFO.PHONE}</a>
+                        <a className="main-nav-one__infos-email" href={`mailto:${CONTACT_INFO.EMAIL}`}><i className="fa fa-envelope"></i>{CONTACT_INFO.EMAIL}</a>
                     </div>
                     <div className="inner-container">
                         <div className="logo-box flex justify-center items-center">

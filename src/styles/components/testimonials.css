@@ -1,0 +1,93 @@
+.testimonials-one__carousel-container {
+    position: relative;
+}
+
+.testimonials-one__carousel-btn__wrapper {
+    position: absolute;
+    width: 100%;
+    top: 50%;
+    left: 0;
+    transform: translateY(-50%);
+    z-index: 10;
+    pointer-events: none;
+}
+
+.testimonials-one__carousel-btn-left,
+.testimonials-one__carousel-btn-right {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    background-color: #fff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #1c1c27;
+    font-size: 20px;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    pointer-events: auto;
+    cursor: pointer;
+}
+
+.testimonials-one__carousel-btn-left {
+    left: -60px;
+}
+
+.testimonials-one__carousel-btn-right {
+    right: -60px;
+}
+
+.testimonials-one__carousel-btn-left:hover,
+.testimonials-one__carousel-btn-right:hover {
+    background-color: #2a5aa9;
+    color: #fff;
+    text-decoration: none;
+}
+
+@media (max-width: 1199px) {
+    .testimonials-one__carousel-btn-left {
+        left: -20px;
+    }
+    
+    .testimonials-one__carousel-btn-right {
+        right: -20px;
+    }
+}
+
+.testimonials-one__qoute::before {
+    content: '';
+    background-image: var(--quote-before);
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-repeat: no-repeat;
+    background-position: center center;
+    -webkit-transition: all 500ms ease;
+    transition: all 500ms ease;
+}
+
+.testimonials-one__qoute::after {
+    content: '';
+    background-image: var(--quote-after);
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-repeat: no-repeat;
+    background-position: center center;
+    opacity: 0;
+    -webkit-transition: all 500ms ease;
+    transition: all 500ms ease;
+}
+
+.testimonials-one__single:hover .testimonials-one__qoute::after {
+    opacity: 1;
+}
+
+.testimonials-one__single:hover .testimonials-one__qoute::before {
+    opacity: 0;
+} 

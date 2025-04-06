@@ -13,18 +13,18 @@ const SliderOne = () => {
     const slides = [
         {
             image: '/assets/images/background/slide-bg-1-1.jpg',
-            title: 'a new discovery awaits',
-            subtitle: 'Discover Scuba Diving in New York'
+            title: 'un nuevo descubrimiento te espera',
+            subtitle: 'Descubre el Buceo en Santa Marta'
         },
         {
             image: '/assets/images/background/slide-bg-1-2.jpg',
-            title: 'TAKE YOUR DIVE TO THE NEXT LEVEL',
-            subtitle: 'Discover Scuba Diving in New York'
+            title: 'LLEVA TU BUCEO AL SIGUIENTE NIVEL',
+            subtitle: 'Descubre el Buceo en Santa Marta'
         },
         {
             image: '/assets/images/background/slide-bg-1-1.jpg',
-            title: 'a new discovery awaits',
-            subtitle: 'Discover Scuba Diving in New York'
+            title: 'un nuevo descubrimiento te espera',
+            subtitle: 'Descubre el Buceo en Santa Marta'
         }
     ]
 
@@ -67,7 +67,7 @@ const SliderOne = () => {
                                 <div className="slider-one__content text-center">
                                     <p className="anim-elm">{slide.subtitle}</p>
                                     <h3 className="anim-elm">{slide.title}</h3>
-                                    <a href="courses.html" className="thm-btn anim-elm">View all courses</a>
+                                    <a href="courses.html" className="thm-btn anim-elm">Ver todos los cursos</a>
                                 </div>
                             </div>
                         </SwiperSlide>
@@ -98,10 +98,10 @@ const SliderOne = () => {
                         alt="Ribbon decoration"
                         className="cta-two__moc"
                     />
-                    <h3>WE PROVIDE AN EXCELLENT SERVICE WITH SAFETY AND <br />
-                        AN OUTSTANDING <span>DIVING EDUCATION</span></h3>
+                    <h3>PROPORCIONAMOS UN SERVICIO EXCELENTE CON SEGURIDAD Y <br />
+                        UNA <span>EDUCACIÓN DE BUCEO</span> EXCEPCIONAL</h3>
                     <div className="cta-two__btn-block">
-                        <a href="contact.html" className="thm-btn cta-two__btn">Start with us now</a>
+                        <a href="contact.html" className="thm-btn cta-two__btn">Comienza con nosotros ahora</a>
                     </div>
                 </div>
             </section>

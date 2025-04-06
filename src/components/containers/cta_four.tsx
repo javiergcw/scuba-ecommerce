@@ -12,7 +12,7 @@ export const CtaFour = () => {
                                 <div className="cta-four__image-content">
                                     <i className="scubo-icon-scuba-diving"></i>
                                     <p>36</p>
-                                    <h3>years of <br /> experience</h3>
+                                    <h3>años de <br /> experiencia</h3>
                                 </div>
                             </div>
                         </div>
@@ -20,11 +20,11 @@ export const CtaFour = () => {
                             <div className="cta-four__content">
                                 <div className="block-title text-left">
                                     <img src="assets/images/shapes/sec-line-1.png" alt="" />
-                                    <p className="text-uppercase">About scubo center</p>
-                                    <h3 className="text-uppercase">Setting the highest <br /> standards for diver <br /> training</h3>
+                                    <p className="text-uppercase">Sobre el centro Scubo</p>
+                                    <h3 className="text-uppercase">Estableciendo los más altos <br /> estándares para la formación <br /> de buzos</h3>
                                 </div>
-                                <p>There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form, by injected humour, or randomised words which don't look even slightly believable. If you are going to use a passage of Lorem Ipsum, you need to be sure there isn't anything.</p>
-                                <a href="about.html" className="thm-btn cta-four__btn">Discover more</a>
+                                <p>Hay muchas variaciones de pasajes de Lorem Ipsum disponibles, pero la mayoría ha sufrido alteraciones de alguna forma, por humor inyectado o palabras aleatorias que no parecen ni siquiera ligeramente creíbles. Si vas a usar un pasaje de Lorem Ipsum, debes asegurarte de que no haya nada.</p>
+                                <a href="about.html" className="thm-btn cta-four__btn">Descubre más</a>
                             </div>
                         </div>
                     </div>

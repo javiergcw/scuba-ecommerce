@@ -1746,8 +1746,7 @@ a:focus {
 	-webkit-box-pack: center;
 	justify-content: center;
 	text-align: center;
-	padding-top: 41px;
-	padding-bottom: 41px;
+	padding: 30px 25px;
 	-webkit-transform: translateY(0);
 	transform: translateY(0);
 	-webkit-transition: all 500ms ease;
@@ -2789,18 +2788,14 @@ a:focus {
 }
 
 .cta-three__feature-box {
-	padding-top: 43px;
-	padding-bottom: 43px;
-	padding-left: 45px;
-	padding-right: 45px;
-	display: -webkit-box;
+	padding: 30px;
 	display: flex;
-	-webkit-box-align: center;
-	        align-items: center;
+	align-items: center;
 	margin-bottom: 30px;
 	background-color: #fff;
-	-webkit-transition: all 500ms ease;
 	transition: all 500ms ease;
+	width: 100%;
+	height: 120px;
 }
 
 .cta-three__feature-box:hover {
@@ -2862,10 +2857,13 @@ a:focus {
 	font-family: var(--thm-font);
 	text-transform: uppercase;
 	margin: 0;
-	font-size: 20px;
-	line-height: 30px;
+	font-size: 18px;
+	line-height: 1.4;
 	font-weight: 600;
 	margin-left: 20px;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
 }
 
 .cta-four {
@@ -5283,7 +5281,7 @@ a:focus {
 .testimonials-one__qoute::after,
 .testimonials-one__qoute::before {
 	content: '';
-	background-image: url(../images/shapes/qoute-1-1.png);
+	background-image: url(/assets/images/shapes/qoute-1-1.png);
 	position: absolute;
 	top: 0;
 	left: 0;
@@ -5297,7 +5295,7 @@ a:focus {
 
 .testimonials-one__qoute::after {
 	opacity: 0;
-	background-image: url(../images/shapes/qoute-1-2.png);
+	background-image: url(/assets/images/shapes/qoute-1-2.png);
 }
 
 .testimonials-one__single:hover .testimonials-one__qoute::after {
