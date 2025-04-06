@@ -22,7 +22,7 @@ const SliderOne = () => {
             subtitle: 'Descubre el Buceo en Santa Marta'
         },
         {
-            image: '/assets/images/background/slide-bg-1-1.jpg',
+            image: '/assets/images/background/slide-bg-1-3.jpg',
             title: 'un nuevo descubrimiento te espera',
             subtitle: 'Descubre el Buceo en Santa Marta'
         }
