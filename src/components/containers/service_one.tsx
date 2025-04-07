@@ -7,12 +7,12 @@ const ServiceOne = () => {
       <img src="assets/images/shapes/fish-service-1.png" alt="" className="site-footer__fish-1" />
       <img src="assets/images/shapes/fish-service-2.png" alt="" className="site-footer__fish-3" />
       <img src="assets/images/shapes/tree-service-1.png" className="site-footer__tree-2" alt="" />
-      <div className="service-one__floated-text">services</div>
+      <div className="service-one__floated-text">Servicios</div>
       <div className="container">
         <div className="block-title text-center">
           <img src="assets/images/shapes/sec-line-1.png" alt="" />
-          <p className="text-uppercase">our services</p>
-          <h3 className="text-uppercase">What we offer</h3>
+          <p className="text-uppercase">nuestros servicios</p>
+          <h3 className="text-uppercase">Lo que ofrecemos</h3>
         </div>
         <div className="row">
           <div className="col-xl-3 col-md-6 col-sm-12">

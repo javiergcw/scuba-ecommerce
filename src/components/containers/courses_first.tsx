@@ -6,49 +6,49 @@ import 'swiper/css'
 import 'swiper/css/navigation'
 import '../../styles/carousel.css'
 
-// Mock data para los cursos
+// Datos de los cursos
 const coursesData = [
     {
         id: 1,
-        category: "advanced",
+        category: "avanzado",
         image: "assets/images/courses/course-1-1.jpg",
-        title: "Scuba diving",
-        description: "There are many variatin of passages of lorem ipsum available, but the majority have."
+        title: "Buceo",
+        description: "Hay muchas variaciones de pasajes disponibles, pero la mayoría han sufrido alteraciones."
     },
     {
         id: 2,
-        category: "beginner",
+        category: "principiante",
         image: "assets/images/courses/course-1-2.jpg",
-        title: "Extended range",
-        description: "There are many variatin of passages of lorem ipsum available, but the majority have."
+        title: "Rango extendido",
+        description: "Hay muchas variaciones de pasajes disponibles, pero la mayoría han sufrido alteraciones."
     },
     {
         id: 3,
-        category: "Professional",
+        category: "Profesional",
         image: "assets/images/courses/course-1-3.jpg",
-        title: "Free diving",
-        description: "There are many variatin of passages of lorem ipsum available, but the majority have."
+        title: "Buceo libre",
+        description: "Hay muchas variaciones de pasajes disponibles, pero la mayoría han sufrido alteraciones."
     },
     {
         id: 4,
-        category: "advanced",
+        category: "avanzado",
         image: "assets/images/courses/course-1-4.jpg",
         title: "Rebreather",
-        description: "There are many variatin of passages of lorem ipsum available, but the majority have."
+        description: "Hay muchas variaciones de pasajes disponibles, pero la mayoría han sufrido alteraciones."
     },
     {
         id: 5,
-        category: "advanced",
+        category: "avanzado",
         image: "assets/images/courses/course-1-5.jpg",
-        title: "Swimming",
-        description: "There are many variatin of passages of lorem ipsum available, but the majority have."
+        title: "Natación",
+        description: "Hay muchas variaciones de pasajes disponibles, pero la mayoría han sufrido alteraciones."
     },
     {
         id: 6,
-        category: "Professional",
+        category: "Profesional",
         image: "assets/images/courses/course-1-6.jpg",
-        title: "Snorkeling",
-        description: "There are many variatin of passages of lorem ipsum available, but the majority have."
+        title: "Snorkel",
+        description: "Hay muchas variaciones de pasajes disponibles, pero la mayoría han sufrido alteraciones."
     }
 ]
 
@@ -60,22 +60,22 @@ const CoursesFirst = () => {
                 <div className="container ">
                     <div className="block-title text-left">
                         <img src="assets/images/shapes/sec-line-1.png" alt="" />
-                        <p className="text-uppercase">All Courses list</p>
-                        <h3 className="text-uppercase">Checkout our <br /> Popular courses</h3>
+                        <p className="text-uppercase">Lista de todos los cursos</p>
+                        <h3 className="text-uppercase">Descubre nuestros <br /> cursos populares</h3>
                     </div>
                     <div className="text-block">
-                        <p className="m-0">There are many variations of passages of available but the majority have suffered <br />
-                            alteration in some form, by injected or randomised words which don look even <br /> slightly believable.
+                        <p className="m-0">Hay muchas variaciones de pasajes disponibles, pero la mayoría han sufrido <br />
+                            alteraciones de alguna forma, por palabras inyectadas o aleatorias que no parecen <br /> ni siquiera creíbles.
                         </p>
                     </div>
                 </div>
             </section>
 
             <div className="course-one course-one__carousel-wrapper">
-                {/* footer fishes */}
+                {/* peces del pie de página */}
                 <img src="assets/images/shapes/fish-1-1.png" alt="" className="site-footer__fish-1" />
 
-                {/* footer trees */}
+                {/* árboles del pie de página */}
                 <img src="assets/images/shapes/tree-1-1.png" className="site-footer__tree-1" alt="" />
                 <div className="container">
                     <Swiper
@@ -114,25 +114,23 @@ const CoursesFirst = () => {
                                             <a href="course-details.html" className="course-one__cat">{course.category}</a>
                                             <div className="course-one__image-inner">
                                                 <img src={course.image} alt={course.title} />
-                                                <a href="course-details.html"><i className="scubo-icon-plus-symbol"></i></a>
+                                                <a href="course-details.html"><i className="fa fa-plus"></i></a>
                                             </div>
                                         </div>
                                         <div className="course-one__content hvr-sweep-to-bottom">
                                             <h3><a href="course-details.html">{course.title}</a></h3>
                                             <p>{course.description}</p>
                                         </div>
-                                        <a href="contact.html" className="course-one__book-link">Book this course</a>
-
+                                        <a href="contact.html" className="course-one__book-link">Reservar este curso</a>
                                     </div>
-
                                 </div>
                             </SwiperSlide>
                         ))}
                     </Swiper>
 
                     <div className="course-one__carousel-btn__wrapper">
-                        <a className="course-one__carousel-btn-left" href="#"><i className="fa fa-angle-left"></i></a>
-                        <a className="course-one__carousel-btn-right" href="#"><i className="fa fa-angle-right"></i></a>
+                        <a className="course-one__carousel-btn-left" href="#"><i className="fa fa-chevron-left"></i></a>
+                        <a className="course-one__carousel-btn-right" href="#"><i className="fa fa-chevron-right"></i></a>
                     </div>
                 </div>
             </div>

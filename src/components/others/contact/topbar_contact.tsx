@@ -7,10 +7,10 @@ const TopbarContact = () => {
                 <div className="page-header__bg" style={{ backgroundImage: 'url(assets/images/background/footer-bg-1-1.jpg)' }}></div>
                 <div className="container">
                     <ul className="list-unstyled thm-breadcrumb">
-                        <li><a href="index.html">Home</a></li>
-                        <li className="active"><a href="#">Contact</a></li>
+                        <li><a href="index.html">Inicio</a></li>
+                        <li className="active"><a href="#">Contacto</a></li>
                     </ul>
-                    <h2 className="page-header__title">contact us</h2>
+                    <h2 className="page-header__title">Contáctanos</h2>
                 </div>
             </section>
         </>

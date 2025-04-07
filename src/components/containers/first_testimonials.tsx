@@ -9,30 +9,30 @@ import 'swiper/css/pagination';
 const testimonialsData = [
     {
         id: 1,
-        text: "I don't know what else to say, this is something you have never seen before.",
+        text: "No sé qué más decir, esto es algo que nunca antes habías visto.",
         name: "Edwin Walsh",
-        role: "Swimmer",
+        role: "Nadador",
         image: "assets/images/resources/testi-1-1.jpg"
     },
     {
         id: 2,
-        text: "This is due to their excellent service, competitive pricing and customer support. It's throughly refresing to get new such a personal touch.",
+        text: "Esto se debe a su excelente servicio, precios competitivos y atención al cliente. Es realmente refrescante recibir un trato tan personal.",
         name: "Joel Moore",
-        role: "Swimmer",
+        role: "Nadador",
         image: "assets/images/resources/testi-1-2.jpg"
     },
     {
         id: 3,
-        text: "I don't know what else to say, this is something you have never seen before.",
+        text: "No sé qué más decir, esto es algo que nunca antes habías visto.",
         name: "Pauline Cross",
-        role: "Swimmer",
+        role: "Nadadora",
         image: "assets/images/resources/testi-1-3.jpg"
     },
     {
         id: 4,
-        text: "I was very impresed by the Scubo diving service, lorem ipsum is simply free text used by copytyping.",
+        text: "Quedé muy impresionado por el servicio de buceo Scubo, lorem ipsum es simplemente texto libre usado para copiar.",
         name: "Alex Maldonado",
-        role: "Swimmer",
+        role: "Nadador",
         image: "assets/images/resources/testi-1-4.jpg"
     }
 ];
@@ -45,8 +45,8 @@ const FirstTestimonials = () => {
                 <div className="container">
                     <div className="block-title text-center">
                         <img src="assets/images/shapes/sec-line-1.png" alt="" />
-                        <p className="text-uppercase">Testimonials</p>
-                        <h3 className="text-uppercase">What they say</h3>
+                        <p className="text-uppercase">Testimonios</p>
+                        <h3 className="text-uppercase">Lo que dicen</h3>
                     </div>
                 </div>
             </section>

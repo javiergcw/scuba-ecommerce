@@ -10,9 +10,9 @@ export const BrandOne = () => {
         { image: '/assets/images/brand/brand-1-1.png' },
         { image: '/assets/images/brand/brand-1-2.png' },
         { image: '/assets/images/brand/brand-1-3.png' },
-        { image: '/assets/images/brand/brand-1-4.png' },
-        { image: '/assets/images/brand/brand-1-5.png' },
-        { image: '/assets/images/brand/brand-1-6.png' }
+        // { image: '/assets/images/brand/brand-1-4.png' },
+        // { image: '/assets/images/brand/brand-1-5.png' },
+        // { image: '/assets/images/brand/brand-1-6.png' }
     ]
 
     return (
@@ -27,28 +27,33 @@ export const BrandOne = () => {
                 <Swiper
                     modules={[Autoplay]}
                     spaceBetween={100}
-                    slidesPerView={5}
+                    slidesPerView={brands.length < 5 ? brands.length : 5}
                     loop={true}
+                    centeredSlides={brands.length < 5}
                     autoplay={{
                         delay: 5000,
                         disableOnInteraction: false,
                     }}
                     breakpoints={{
                         0: {
-                            slidesPerView: 2,
-                            spaceBetween: 30
+                            slidesPerView: brands.length < 2 ? brands.length : 2,
+                            spaceBetween: 30,
+                            centeredSlides: brands.length < 2
                         },
                         480: {
-                            slidesPerView: 3,
-                            spaceBetween: 30
+                            slidesPerView: brands.length < 3 ? brands.length : 3,
+                            spaceBetween: 30,
+                            centeredSlides: brands.length < 3
                         },
                         991: {
-                            slidesPerView: 4,
-                            spaceBetween: 50
+                            slidesPerView: brands.length < 4 ? brands.length : 4,
+                            spaceBetween: 50,
+                            centeredSlides: brands.length < 4
                         },
                         1199: {
-                            slidesPerView: 5,
-                            spaceBetween: 100
+                            slidesPerView: brands.length < 5 ? brands.length : 5,
+                            spaceBetween: 100,
+                            centeredSlides: brands.length < 5
                         }
                     }}
                     className="brand-one__carousel"

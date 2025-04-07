@@ -1,5 +1,6 @@
 'use client'
 import React, { useState } from 'react'
+import { CONTACT_INFO } from '@/utils/constants'
 
 export const ContactOne = () => {
     const [selectedService, setSelectedService] = useState('')
@@ -18,16 +19,13 @@ export const ContactOne = () => {
                     <div className="row">
                         <div className="col-xl-4">
                             <div className="contact-one__content">
-                                <h3>Get in Touch <br /> With Us</h3>
-                                <p>Aliq is notm hendr erit a augue insu image pellen tes que id erat quis sollicitud. Lorem
-                                    ipsum is
-                                    simply free text dolor sit amet, consectetur adipiscing ullam blandit hendrerit faucibus
-                                    suspendisse.</p>
+                                <h3>Ponte en Contacto <br /> Con Nosotros</h3>
+                                <p>Aliq no es simplemente un texto de relleno. Lorem ipsum es simplemente un texto libre que se utiliza para rellenar espacios en el diseño, permitiendo que el contenido real se destaque. Consectetur adipiscing elit, blandit hendrerit faucibus suspendisse.</p>
                                 <div className="footer-widget__social contact-one__social">
-                                    <a href="#"><i className="fab fa-twitter"></i></a>
-                                    <a href="#"><i className="fab fa-facebook-square"></i></a>
-                                    <a href="#"><i className="fab fa-pinterest-p"></i></a>
-                                    <a href="#"><i className="fab fa-instagram"></i></a>
+                                    <a href={CONTACT_INFO.SOCIAL_MEDIA.TRIPADVISOR} target="_blank" rel="noopener noreferrer"><i className="fab fa-tripadvisor"></i></a>
+                                    <a href={CONTACT_INFO.SOCIAL_MEDIA.FACEBOOK} target="_blank" rel="noopener noreferrer"><i className="fab fa-facebook-square"></i></a>
+                                    <a href={CONTACT_INFO.SOCIAL_MEDIA.FLICKR} target="_blank" rel="noopener noreferrer"><i className="fab fa-flickr"></i></a>
+                                    <a href={CONTACT_INFO.SOCIAL_MEDIA.INSTAGRAM} target="_blank" rel="noopener noreferrer"><i className="fab fa-instagram"></i></a>
                                 </div>
                             </div>
                         </div>
@@ -35,13 +33,13 @@ export const ContactOne = () => {
                             <form action="assets/inc/sendemail.php" className="contact-one__form contact-form-validated">
                                 <div className="row">
                                     <div className="col-md-6">
-                                        <input type="text" placeholder="Full Name" name="name"/>
+                                        <input type="text" placeholder="Nombre Completo" name="name"/>
                                     </div>
                                     <div className="col-md-6">
-                                        <input type="text" placeholder="Email Address" name="email"/>
+                                        <input type="text" placeholder="Correo Electrónico" name="email"/>
                                     </div>
                                     <div className="col-md-6">
-                                        <input type="text" placeholder="Phone number" name="phone"/>
+                                        <input type="text" placeholder="Número de Teléfono" name="phone"/>
                                     </div>
                                     <div className="col-md-6">
                                         <select 
@@ -63,19 +61,19 @@ export const ContactOne = () => {
                                                 marginBottom: '20px'
                                             }}
                                         >
-                                            <option value="">Discussion For</option>
-                                            <option value="About Course">Query For Courses</option>
-                                            <option value="About Pricing">Query For Pricing</option>
+                                            <option value="">Motivo de la Consulta</option>
+                                            <option value="About Course">Consulta sobre Cursos</option>
+                                            <option value="About Pricing">Consulta sobre Precios</option>
                                         </select>
                                     </div>
                                     <div className="col-md-12">
-                                        <input type="text" placeholder="Subject" name="subject"/>
+                                        <input type="text" placeholder="Asunto" name="subject"/>
                                     </div>
                                     <div className="col-md-12">
-                                        <textarea name="message" placeholder="Messages"/>
+                                        <textarea name="message" placeholder="Mensaje"/>
                                     </div>
                                     <div className="col-md-12">
-                                        <button type="submit" className="thm-btn contact-one__btn">Send message</button>
+                                        <button type="submit" className="thm-btn contact-one__btn">Enviar mensaje</button>
                                     </div>
                                 </div>
                             </form>

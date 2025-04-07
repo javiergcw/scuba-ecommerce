@@ -4,7 +4,7 @@ const FunFact = () => {
     return (
         <section className="funfact-one funfact-one__home-one position-relative" >
             <div className="container">
-                <div className="funfact-one__title">Fun facts</div>
+                <div className="funfact-one__title">Datos curiosos</div>
                 <div className="inner-container">
                     <div className="row g-0">
                         <div className="col-lg-3 col-md-6">
@@ -13,7 +13,7 @@ const FunFact = () => {
                                     3070
                                 </div>
                                 <div className="funfact-one__content">
-                                    <h3>trained <br /> Swimmers</h3>
+                                    <h3>nadadores <br /> entrenados</h3>
                                 </div>
                             </div>
                         </div>
@@ -23,8 +23,8 @@ const FunFact = () => {
                                     8620
                                 </div>
                                 <div className="funfact-one__content">
-                                    <h3>satisfied <br />
-                                        customers</h3>
+                                    <h3>clientes <br />
+                                        satisfechos</h3>
                                 </div>
                             </div>
                         </div>
@@ -34,7 +34,7 @@ const FunFact = () => {
                                     7700
                                 </div>
                                 <div className="funfact-one__content">
-                                    <h3>Professional <br /> trainers</h3>
+                                    <h3>entrenadores <br /> profesionales</h3>
                                 </div>
                             </div>
                         </div>
@@ -44,7 +44,7 @@ const FunFact = () => {
                                     3610
                                 </div>
                                 <div className="funfact-one__content">
-                                    <h3>trained <br /> diver</h3>
+                                    <h3>buzos <br /> entrenados</h3>
                                 </div>
                             </div>
                         </div>
