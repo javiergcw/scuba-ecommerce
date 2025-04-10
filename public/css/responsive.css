@@ -24,11 +24,11 @@
         justify-content: space-between;
     }
 
-    .main-nav-one .logo-box .side-menu__toggler {
-        display: block;
-        font-size: 18px;
-        color: var(--thm-black);
-    }
+        .main-nav-one .logo-box .side-menu__toggler {
+            display: block;
+            font-size: 18px;
+            color: var(--thm-black);
+        }
 
     .main-nav-one .inner-container {
         max-width: 100%;
@@ -98,7 +98,7 @@
     }
 
     .about-one__content .block-title h3 {
-        font-size: 60px;
+        font-size: 50px;
     }
 
     .cta-two .container {
@@ -132,7 +132,7 @@
     }
 
     .cta-three__content::after {
-        left: 96px;
+        left: 50px;
     }
 
     .cta-three__feature-box h3 br {
@@ -278,6 +278,7 @@
     .funfact-one .inner-container {
         padding-bottom: 81.5px;
         padding-left: 155px;
+       
     }
 
     .cta-three__moc,
@@ -306,7 +307,6 @@
         top: 0;
         left: 100%;
         height: 100%;
-        background-color: var(--thm-primary);
     }
 
     .cta-three__content::after {
@@ -397,7 +397,7 @@
         top: 0;
         left: 100%;
         height: 100%;
-        background-color: var(--thm-black);
+      
     }
 
     .funfact-one .inner-container::before {
@@ -434,6 +434,8 @@
     .slider-one__content p {
         font-size: 16px;
     }
+
+    
     .slider-two .slider-one__content h3 {
         font-size: 85px;
         line-height: 1em;

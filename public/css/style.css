@@ -120,6 +120,12 @@ a:focus {
 	font-family: var(--thm-font-two);
 	color: var(--thm-black);
 }
+@media(max-width: 1280px) {
+	.block-title h3 {
+		font-size: 50px;
+
+	}
+}
 
 .thm-btn {
 	display: inline-block;
@@ -863,7 +869,7 @@ a:focus {
 	-webkit-box-align: center;
 	align-items: center;
 	color: #838a93;
-	font-size: 20px;
+	font-size: 15px;
 	-webkit-transition: all 500ms ease;
 	transition: all 500ms ease;
 }
@@ -941,6 +947,29 @@ a:focus {
 .main-nav-one .logo-box .side-menu__toggler {
 	display: none;
 }
+
+@media (max-width: 767px) {
+	.main-nav-one .logo-box {
+	  display: flex;
+	  justify-content: center;
+	  align-items: center;
+	  width: 100%;
+	  padding: 15px 0;
+	  margin-top: 20px;
+	  max-width: 230px;
+	  right: 25px;
+	}
+  
+	.main-nav-one .logo-box .side-menu__toggler {
+	  display: block;
+	  right: 15px;
+	  top: 50%;
+	  transform: translateY(-50%);
+	  font-size: 18px;
+	  color: var(--thm-black);
+	  z-index: 20;
+	}
+  }
 
 .main-nav-one .main-nav__main-navigation ul {
 	margin: 0;
@@ -1478,6 +1507,29 @@ a:focus {
  # Main Footer 
  --------------------------------------------------------------*/
 
+
+ .footer-powered-by {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 20px;
+	opacity: 0.6;
+	color: #ffffff; /* o el color de texto que uses en el footer */
+	padding: 12px 0; 
+  }
+  
+  .footer-powered-by a {
+	display: inline-flex;
+	align-items: center;
+	margin: 5px;
+  }
+  
+  .footer-makers-logo {
+	height: 20px;
+	margin-top: 1px;
+	opacity: 0.6;
+  }
+
 .site-footer-one {
 	background-color: #063a7a;
 	position: relative;
@@ -1801,6 +1853,7 @@ a:focus {
 	animation-fill-mode: both;
 	-webkit-backface-visibility: visible !important;
 	backface-visibility: visible !important;
+	
 }
 
 .slider-one__content p {
@@ -1823,6 +1876,14 @@ a:focus {
 	font-weight: 800;
 	margin-bottom: 60px;
 	margin-top: 15px;
+}
+
+@media(max-width: 1280px) {
+	.slider-one__content h3 {
+	
+		font-size: 50px;
+		line-height: 60px;
+	}
 }
 
 /* animating on active */
@@ -2164,6 +2225,14 @@ a:focus {
 	border: none;
 	width: 100%;
 	height: 540px;
+	position: relative;
+	z-index: 1;
+}
+
+/* estos son esenciales para que el mapa se expanda correctamente */
+.leaflet-container {
+	height: 100% !important;
+	width: 100% !important;
 }
 
 /*-------------------------------------------------------------- 
@@ -2512,7 +2581,7 @@ a:focus {
 	content: '';
 	width: 9px;
 	height: 57px;
-	background-image: url(../images/shapes/line-2.png);
+	background-image: url(/assets/images/shapes/line-2.png);
 	background-repeat: no-repeat;
 	background-position: center;
 	position: absolute;
@@ -2566,7 +2635,7 @@ a:focus {
 	width: 100%;
 	height: 32px;
 	display: block;
-	background-image: url(../images/shapes/wave-1.png);
+	background-image: url(/assets/images/shapes/wave-1.png);
 	background-position: center center;
 	position: absolute;
 	bottom: 0;
@@ -2668,6 +2737,14 @@ a:focus {
 	z-index: 11;
 }
 
+@media(max-width: 1280px) {
+	.cta-three__content::after  {
+		
+		left: 60px;
+
+	}
+}
+
 .cta-three__moc {
 	position: absolute;
 	bottom: 0;
@@ -2717,10 +2794,13 @@ a:focus {
 	-webkit-transform: rotate(-90deg) translateX(calc(-100% + 96px));
 	transform: rotate(-90deg) translateX(calc(-100% + 96px));
 }
-
 @media(max-width: 1280px) {
-	.cta-three__title {
-		left: 111px;
+	.cta-three__title{
+		width: 783px;
+		height: 61px;
+		top: 34px;
+		left: 76px;
+
 	}
 }
 
@@ -4314,7 +4394,7 @@ a:focus {
 	content: '';
 	width: 9px;
 	height: 57px;
-	background-image: url(../images/shapes/line-2.png);
+	background-image: url(/assets/images/shapes/line-2.png);
 	background-repeat: no-repeat;
 	background-position: center;
 	position: absolute;
@@ -4851,6 +4931,30 @@ a:focus {
 .brand-one__home-one .brand-one__carousel {
 	border-top: 0;
 }
+
+
+.brand-one__carousel .item {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100px;
+}
+
+.brand-one__carousel .item img {
+    max-height: 120px;
+    max-width: 100%;
+    object-fit: contain;
+    transition: transform 0.3s ease;
+}
+
+
+.brand-one__carousel .item img:hover {
+    transform: scale(1.05);
+}
+
+
+
+
 
 /*-------------------------------------------------------------- 
  # Team 
@@ -5482,9 +5586,14 @@ a:focus {
 
 @media(max-width: 1280px) {
 	.funfact-one__title {
-		left: 55px;
+		width: 583px;
+		height: 80px;
+		top: 16px;
+		left: 96px;
+
 	}
 }
+
 
 .funfact-one .inner-container {
 	background-color: var(--thm-primary);
@@ -5522,7 +5631,7 @@ a:focus {
 
 @media(max-width: 1280px) {
 	.funfact-one .inner-container::before {
-		left: 40px
+		left: 80px
 	}
 }
 
@@ -5548,7 +5657,7 @@ a:focus {
 	content: '';
 	width: 9px;
 	height: 57px;
-	background-image: url(../images/shapes/line-2.png);
+	background-image: url(/assets/images/shapes/line-2.png);
 	background-repeat: no-repeat;
 	background-position: center;
 	position: absolute;
