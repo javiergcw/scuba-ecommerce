@@ -4909,7 +4909,7 @@ a:focus {
 .brand-one__home-one {
 	background-color: var(--thm-base);
 	position: relative;
-	padding-top: 25px;
+	
 }
 
 .brand-one__home-one::before {

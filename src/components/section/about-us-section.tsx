@@ -19,7 +19,7 @@ export const AboutUsSection = () => {
             <div className="col-lg-4 wow fadeInUp" data-wow-duration="1500ms" data-wow-delay="000ms">
                 <div className="feature-two__single">
                     <div className="feature-two__image">
-                        <img src="assets/images/resources/feature-2-1.jpg" alt=""/>
+                        <img src="/assets/images/background/banner6.jpeg" alt=""/>
                     </div>
                     <div className="feature-two__content">
                         <h3><a href="courses.html">Que ofrecemos</a></h3>
@@ -30,7 +30,7 @@ export const AboutUsSection = () => {
             <div className="col-lg-4 wow fadeInUp" data-wow-duration="1500ms" data-wow-delay="100ms">
                 <div className="feature-two__single">
                     <div className="feature-two__image">
-                        <img src="assets/images/resources/feature-2-2.jpg" alt=""/>
+                        <img src="/assets/images/background/banner5.jpeg" alt=""/>
                     </div>
                     <div className="feature-two__content">
                         <h3><a href="pricing.html">Nuestros beneficios</a></h3>
@@ -41,7 +41,7 @@ export const AboutUsSection = () => {
             <div className="col-lg-4 wow fadeInUp" data-wow-duration="1500ms" data-wow-delay="200ms">
                 <div className="feature-two__single">
                     <div className="feature-two__image">
-                        <img src="assets/images/resources/feature-2-3.jpg" alt=""/>
+                        <img src="/assets/images/background/banner7.jpg" alt=""/>
                     </div>
                     <div className="feature-two__content">
                         <h3><a href="contact.html">Soporte 24/7 </a></h3>

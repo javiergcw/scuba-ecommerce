@@ -32,7 +32,7 @@ export const AboutUsStwo = () => {
           </div>
           <div className="col-lg-6">
               <div className="about-two__image wow fadeInRight" data-wow-duration="1500ms">
-                  <img src="assets/images/resources/about-2-1.jpg" alt=""/>
+                  <img src="/assets/images/background/banner9.jpg" alt=""/>
               </div>
           </div>
       </div>

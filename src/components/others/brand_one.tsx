@@ -16,8 +16,8 @@ export const BrandOne = () => {
         style={{
           backgroundImage: "url(/assets/images/shapes/wave-1.png)",
           backgroundPosition: "center center",
-          filter:
-            "brightness(0) saturate(100%) invert(45%) sepia(98%) saturate(1234%) hue-rotate(199deg) brightness(97%) contrast(101%)",
+          // filter:
+          //   "brightness(0) saturate(100%) invert(45%) sepia(98%) saturate(1234%) hue-rotate(199deg) brightness(97%) contrast(101%)",
           animation: "bgSlide 20s linear infinite",
         }}
       />

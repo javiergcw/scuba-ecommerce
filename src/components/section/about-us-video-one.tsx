@@ -6,7 +6,7 @@ export const AboutUsVideoOne = () => {
       <section className="video-one">
         <div
           className="video-one__bg"
-          style={{ backgroundImage: "url(assets/images/background/video-bg-2-1.jpg)" }}
+          style={{ backgroundImage: "url(/assets/images/background/banner10.jpg)" }}
         ></div>
 
         <div className="container text-center">
