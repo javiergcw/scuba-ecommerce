@@ -1,18 +1,12 @@
 "use client";
 import React from "react";
-import { Swiper, SwiperSlide } from "swiper/react";
-import { Autoplay } from "swiper/modules";
-import "swiper/css";
 import "@/styles/components/brand-one.css";
 
 export const BrandOne = () => {
   const brands = [
     { image: "/assets/images/brand/brand-1-1.png" },
     { image: "/assets/images/brand/brand-1-2.png" },
-    { image: "/assets/images/brand/brand-1-3.png" },
-    // { image: '/assets/images/brand/brand-1-4.png' },
-    // { image: '/assets/images/brand/brand-1-5.png' },
-    // { image: '/assets/images/brand/brand-1-6.png' }
+    { image: "/assets/images/brand/brand-1-3.png" }
   ];
 
   return (
@@ -28,48 +22,13 @@ export const BrandOne = () => {
         }}
       />
       <div className="container">
-        <Swiper
-          modules={[Autoplay]}
-          spaceBetween={100}
-          slidesPerView={brands.length < 5 ? brands.length : 5}
-          loop={true}
-          centeredSlides={brands.length < 5}
-          autoplay={{
-            delay: 5000,
-            disableOnInteraction: false,
-          }}
-          breakpoints={{
-            0: {
-              slidesPerView: brands.length < 2 ? brands.length : 2,
-              spaceBetween: 30,
-              centeredSlides: brands.length < 2,
-            },
-            480: {
-              slidesPerView: brands.length < 3 ? brands.length : 3,
-              spaceBetween: 30,
-              centeredSlides: brands.length < 3,
-            },
-            991: {
-              slidesPerView: brands.length < 4 ? brands.length : 4,
-              spaceBetween: 50,
-              centeredSlides: brands.length < 4,
-            },
-            1199: {
-              slidesPerView: brands.length < 5 ? brands.length : 5,
-              spaceBetween: 100,
-              centeredSlides: brands.length < 5,
-            },
-          }}
-          className="brand-one__carousel"
-        >
+        <div className="brand-one__grid">
           {brands.map((brand, index) => (
-            <SwiperSlide key={index} className="item">
-              <div className="brand-one__image-wrapper">
-                <img src={brand.image} alt={`Brand ${index + 1}`} />
-              </div>
-            </SwiperSlide>
+            <div key={index} className="brand-one__image-wrapper">
+              <img src={brand.image} alt={`Brand ${index + 1}`} />
+            </div>
           ))}
-        </Swiper>
+        </div>
       </div>
     </section>
   );
