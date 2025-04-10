@@ -10,9 +10,9 @@ import { BrandOne } from "@/components/others/brand_one";
 
 export default function Home() {
   return (
-    <main className="min-h-screen">
-      <SliderOne />
-      <div className="w-full max-w-[100vw] overflow-x-hidden">
+    <div className="w-full max-w-[100vw] overflow-x-hidden">
+      <div className="w-full">
+        <SliderOne />
         <ServiceOne />
         <FunFact />
         <CoursesFirst />
@@ -22,6 +22,6 @@ export default function Home() {
         <CtaFour />
         <BrandOne />
       </div>
-    </main>
+    </div>
   );
 }
