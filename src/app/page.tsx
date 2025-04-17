@@ -16,11 +16,12 @@ export default function Home() {
         <ServiceOne />
         <FunFact />
         <CoursesFirst />
+        <BrandOne />
         <HowToDive />
         <FirstTestimonials />
         <CtaThree />
         <CtaFour />
-        <BrandOne />
+      
       </div>
     </div>
   );

@@ -5,8 +5,7 @@
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
-    "start": "next start",
-    "lint": "next lint"
+    "start": "next start"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
@@ -16,6 +15,7 @@
     "jquery": "^3.7.1",
     "leaflet": "^1.9.4",
     "lucide-react": "^0.486.0",
+    "monolite-saas": "github:javiergcw/monolite-saas",
     "next": "15.2.4",
     "owl.carousel": "^2.3.4",
     "react": "^19.0.0",
@@ -24,14 +24,11 @@
     "swiper": "^11.2.6"
   },
   "devDependencies": {
-    "@eslint/eslintrc": "^3",
     "@tailwindcss/postcss": "^4",
     "@types/leaflet": "^1.9.17",
     "@types/node": "^20",
     "@types/react": "^19.0.12",
     "@types/react-dom": "^19",
-    "eslint": "^9",
-    "eslint-config-next": "15.2.4",
     "tailwindcss": "^4",
     "typescript": "^5"
   }

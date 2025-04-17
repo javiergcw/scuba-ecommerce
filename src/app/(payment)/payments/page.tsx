@@ -1,6 +1,6 @@
 import React from 'react'
 
-export const PaymentPage = () => {
+export default function PaymentPage() {
   return (
     <div>PaymentPage</div>
   )
