@@ -1,3 +1,4 @@
+'use client'
 import BodyDetailCourse from '@/components/others/course/body_detail_course';
 import { HeaderDetailCourse } from '@/components/others/course/header_detail_course';
 import React, { useEffect, useState } from 'react';
