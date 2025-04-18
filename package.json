@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
-    "start": "next start"
+    "start": "next start -p 9020"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
@@ -34,7 +34,7 @@
     "typescript": "^5"
   },
   "monolite": {
-    "baseURL": "https://api.autoxpert.com.co",
+    "baseURL": "https://api.accutoxpert.com.co",
     "licenseKey": "AAAAAAAAAAAAAAAAEvvVEw0tkqsnwG7vWSS3AK6dwnEZZzbyVT4DXo0bUw=="
   }
 }
