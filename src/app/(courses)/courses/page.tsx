@@ -1,53 +1,61 @@
+"use client";
 import { BodyCourse } from '@/components/others/course/body_course'
 import { HeaderCourse } from '@/components/others/course/header_course'
-import React from 'react'
-
-const coursesData = [
-    {
-        id: 1,
-        level: "advanced",
-        image: "assets/images/courses/course-1-1.jpg",
-        title: "Scuba diving",
-        description: "There are many variatin of passages of lorem ipsum available, but the majority have."
-    },
-    {
-        id: 2,
-        level: "beginner",
-        image: "assets/images/courses/course-1-2.jpg",
-        title: "Extended range",
-        description: "There are many variatin of passages of lorem ipsum available, but the majority have."
-    },
-    {
-        id: 3,
-        level: "Professional",
-        image: "assets/images/courses/course-1-3.jpg",
-        title: "Free diving",
-        description: "There are many variatin of passages of lorem ipsum available, but the majority have."
-    },
-    {
-        id: 4,
-        level: "advanced",
-        image: "assets/images/courses/course-1-4.jpg",
-        title: "Rebreather",
-        description: "There are many variatin of passages of lorem ipsum available, but the majority have."
-    },
-    {
-        id: 5,
-        level: "advanced",
-        image: "assets/images/courses/course-1-5.jpg",
-        title: "Swimming",
-        description: "There are many variatin of passages of lorem ipsum available, but the majority have."
-    },
-    {
-        id: 6,
-        level: "Professional",
-        image: "assets/images/courses/course-1-6.jpg",
-        title: "Snorkeling",
-        description: "There are many variatin of passages of lorem ipsum available, but the majority have."
-    }
-];
+import React, { useEffect, useState } from 'react'
+import { services, Product } from 'monolite-saas';
+import Link from 'next/link';
+import { Box, Grid, Skeleton, Stack, CircularProgress } from '@mui/material';
 
 const CoursesPage = () => {
+    const [products, setProducts] = useState<Product[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+
+    const fetchProducts = async () => {
+        try {
+            setLoading(true);
+            const productsData = await services.products.getProducts();
+            setProducts(productsData);
+            setError(null);
+        } catch (err) {
+            setError('Error al cargar los productos');
+            console.error('Error:', err);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchProducts();
+    }, []);
+
+    if (loading) {
+        return (
+            <Box sx={{ 
+                width: '100%',
+                height: '100vh',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center'
+            }}>
+                <CircularProgress size={60} />
+            </Box>
+        );
+    }
+
+    if (error) {
+        return <div>Error: {error}</div>;
+    }
+
+    const coursesData = products.map(product => ({
+        id: product.id,
+        level: product.category_name || "N/A",
+        image: product.image_url,
+        title: product.name,
+        description: product.description || 'Descripción no disponible',
+        link: `/courses/${product.id}`
+    }));
+
     return (
         <>
             <HeaderCourse />

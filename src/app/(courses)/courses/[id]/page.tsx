@@ -1,8 +1,10 @@
+'use client'
 import BodyDetailCourse from '@/components/others/course/body_detail_course';
 import { HeaderDetailCourse } from '@/components/others/course/header_detail_course';
 import React, { useEffect, useState } from 'react';
 import { services, Product } from 'monolite-saas';
 import { useParams } from 'next/navigation';
+import { Box, CircularProgress } from '@mui/material';
 
 const CourseDetailPage = () => {
     const { id } = useParams();
@@ -31,7 +33,17 @@ const CourseDetailPage = () => {
     }, [id]);
 
     if (loading) {
-        return <div>Cargando curso...</div>;
+        return (
+            <Box sx={{ 
+                width: '100%',
+                height: '100vh',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center'
+            }}>
+                <CircularProgress size={60} />
+            </Box>
+        );
     }
 
     if (error || !course) {
@@ -45,8 +57,9 @@ const CourseDetailPage = () => {
         courseDuration: 4, // Este valor debería venir del producto
         title: course.name,
         description: course.description || 'Descripción no disponible',
-        tips:/*  course.tips || */ 'Información adicional no disponible',
-        additionalInfo: /* course.additional_info || */ 'Información adicional no disponible'
+        tips: course.description || 'Información adicional no disponible',
+        additionalInfo: course.description || 'Información adicional no disponible',
+        features: course.features || {}
     };
 
     return (

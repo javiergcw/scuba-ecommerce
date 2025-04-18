@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, Navigation } from "swiper/modules";
 import "swiper/css";
@@ -8,61 +8,32 @@ import "../../styles/carousel.css";
 import { usePathname } from "next/navigation";
 import { ROUTES } from "@/utils/constants";
 import Link from "next/link";
+import { services, Product } from 'monolite-saas';
 
-// Datos de los cursos
-const coursesData = [
-  {
-    id: 1,
-    category: "avanzado",
-    image: "assets/images/courses/course-1-1.jpg",
-    title: "Buceo",
-    description:
-      "Hay muchas variaciones de pasajes disponibles, pero la mayoría han sufrido alteraciones.",
-  },
-  {
-    id: 2,
-    category: "principiante",
-    image: "assets/images/courses/course-1-2.jpg",
-    title: "Rango extendido",
-    description:
-      "Hay muchas variaciones de pasajes disponibles, pero la mayoría han sufrido alteraciones.",
-  },
-  {
-    id: 3,
-    category: "Profesional",
-    image: "assets/images/courses/course-1-3.jpg",
-    title: "Buceo libre",
-    description:
-      "Hay muchas variaciones de pasajes disponibles, pero la mayoría han sufrido alteraciones.",
-  },
-  {
-    id: 4,
-    category: "avanzado",
-    image: "assets/images/courses/course-1-4.jpg",
-    title: "Rebreather",
-    description:
-      "Hay muchas variaciones de pasajes disponibles, pero la mayoría han sufrido alteraciones.",
-  },
-  {
-    id: 5,
-    category: "avanzado",
-    image: "assets/images/courses/course-1-5.jpg",
-    title: "Natación",
-    description:
-      "Hay muchas variaciones de pasajes disponibles, pero la mayoría han sufrido alteraciones.",
-  },
-  {
-    id: 6,
-    category: "Profesional",
-    image: "assets/images/courses/course-1-6.jpg",
-    title: "Snorkel",
-    description:
-      "Hay muchas variaciones de pasajes disponibles, pero la mayoría han sufrido alteraciones.",
-  },
-];
 
 const CoursesFirst = () => {
   const pathname = usePathname();
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchProducts = async () => {
+    try {
+      setLoading(true);
+      const productsData = await services.products.getProducts();
+      setProducts(productsData);
+      setError(null);
+    } catch (err) {
+      setError('Error al cargar los productos');
+      console.error('Error:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchProducts();
+  }, []);
 
   const isActive = (path: string) => {
     if (path === ROUTES.HOME) {
@@ -70,6 +41,21 @@ const CoursesFirst = () => {
     }
     return pathname.startsWith(path) ? "text-blue-500 font-bold" : "";
   };
+
+  if (loading) {
+    return (
+      <div className="course-one__loading">
+        <div className="flex items-center justify-center h-[400px]">
+          <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-blue-500"></div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return <div>Error: {error}</div>;
+  }
+
   return (
     <>
       <section className="course-one__title">
@@ -82,17 +68,16 @@ const CoursesFirst = () => {
         <div className="container ">
           <div className="block-title text-left">
             <img src="assets/images/shapes/sec-line-1.png" alt="" />
-            <p className="text-uppercase">Lista de todos los cursos</p>
+            <p className="text-uppercase">Lista de todos los productos</p>
             <h3 className="text-uppercase">
-              Descubre nuestros <br /> cursos populares
+              Nuestros <br /> productos populares
             </h3>
           </div>
           <div className="text-block">
             <p className="m-0">
-              Hay muchas variaciones de pasajes disponibles, pero la mayoría han
-              sufrido <br />
-              alteraciones de alguna forma, por palabras inyectadas o aleatorias
-              que no parecen <br /> ni siquiera creíbles.
+              Descubre nuestra selección de productos de calidad. <br />
+              Encuentra todo lo que necesitas para tus aventuras submarinas. <br />
+              ¡Tu próxima experiencia comienza aquí!
             </p>
           </div>
         </div>
@@ -141,38 +126,60 @@ const CoursesFirst = () => {
               },
             }}
           >
-            {coursesData.map((course) => (
-              <SwiperSlide key={course.id}>
+            {products.map((product) => (
+              <SwiperSlide key={product.id}>
                 <div className="course-one__wrappers">
                   <div className="course-one__single">
                     <div className="course-one__image">
-                      <a href="course-details.html" className="course-one__cat">
-                        {course.category}
+                      <a href={`/courses/${product.id}`} className="course-one__cat">
+                        {product.category_name}
                       </a>
                       <div className="course-one__image-inner">
-                        <img src={course.image} alt={course.title} />
-                        <a href="course-details.html">
+                        {product.image_url ? (
+                          <img
+                            src={product.image_url}
+                            alt={product.name}
+                            style={{
+                              width: '370px',
+                              height: '333px',
+                              objectFit: 'cover'
+                            }}
+                          />
+                        ) : (
+                          <div 
+                            style={{
+                              width: '370px',
+                              height: '333px',
+                              backgroundColor: '#f0f0f0',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center'
+                            }}
+                          >
+                            <span>Imagen no disponible</span>
+                          </div>
+                        )}
+                        <a href={`/courses/${product.id}`}>
                           <i className="fa fa-plus"></i>
                         </a>
                       </div>
                     </div>
                     <div className="course-one__content hvr-sweep-to-bottom">
                       <h3>
-                        <a href="course-details.html">{course.title}</a>
+                        <Link href={`/courses/${product.id}`}>
+                          {product.name}
+                        </Link>
                       </h3>
-                      <p>{course.description}</p>
+                      <p>{product.description || 'Descripción no disponible'}</p>
                     </div>
 
                     <Link
-                      href={ROUTES.COURSES}
-                      legacyBehavior
-                      className={`transition-colors duration-200 hover:text-blue-500 ${isActive(
+                      href={`/courses/${product.id}`}
+                      className={`course-one__book-link transition-colors duration-200 hover:text-blue-500 ${isActive(
                         ROUTES.COURSES
                       )}`}
                     >
-                      <a href="contact.html" className="course-one__book-link">
-                        Reservar este curso
-                      </a>
+                      Ver detalles
                     </Link>
                   </div>
                 </div>

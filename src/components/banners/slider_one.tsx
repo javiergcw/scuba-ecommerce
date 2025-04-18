@@ -1,7 +1,6 @@
 "use client";
 
-import React from "react";
-
+import React, { useState, useEffect } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, Navigation, Pagination } from "swiper/modules";
 import "swiper/css";
@@ -11,27 +10,21 @@ import "@/styles/components/slider-one.css";
 import { usePathname } from "next/navigation";
 import { ROUTES } from "@/utils/constants";
 import Link from "next/link";
+import { Banner } from 'monolite-saas';
 
-const SliderOne = () => {
-  const slides = [
-    {
-      image: "/assets/images/background/banner8.jpg",
-      title: "un nuevo descubrimiento te espera",
-      subtitle: "Descubre el Buceo en Santa Marta",
-    },
-    {
-      image: "/assets/images/background/banner6.jpg",
-      title: "LLEVA TU BUCEO AL SIGUIENTE NIVEL",
-      subtitle: "Descubre el Buceo en Santa Marta",
-    },
-    {
-      image: "assets/images/background/banner11.jpeg",
-      title: "SUMÉRGETE EN LA AVENTURA Y DESCUBRE LA MAGIA",
-      subtitle: "Descubre el Buceo en Santa Marta",
-    },
-  ];
+interface SliderOneProps {
+  banners: Banner[];
+}
 
+const SliderOne: React.FC<SliderOneProps> = ({ banners }) => {
   const pathname = usePathname();
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    if (banners.length > 0) {
+      setIsLoading(false);
+    }
+  }, [banners]);
 
   const isActive = (path: string) => {
     if (path === ROUTES.HOME) {
@@ -39,6 +32,18 @@ const SliderOne = () => {
     }
     return pathname.startsWith(path) ? "text-blue-500 font-bold" : "";
   };
+
+  if (isLoading) {
+    return (
+      <div className="slider-one__wrapper">
+        <div className="slider-one__loading">
+          <div className="flex items-center justify-center h-[85vh]">
+            <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-blue-500"></div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <>
@@ -64,29 +69,29 @@ const SliderOne = () => {
           loop={true}
           className="slider-one"
         >
-          {slides.map((slide, index) => (
-            <SwiperSlide key={index} className="slider-one__slide">
+          {banners.map((banner) => (
+            <SwiperSlide key={banner.id} className="slider-one__slide">
               <div
                 className="slider-one__bg"
                 style={{
-                  backgroundImage: `url(${slide.image})`,
+                  backgroundImage: `url(${banner.web_banner_url})`,
                   backgroundSize: "cover",
                   backgroundPosition: "center",
                 }}
               />
               <div className="container">
                 <div className="slider-one__content text-center">
-                  <p className="anim-elm">{slide.subtitle}</p>
-                  <h3 className="anim-elm">{slide.title}</h3>
+                  <p className="anim-elm">{banner.subtitle}</p>
+                  <h3 className="anim-elm">{banner.title}</h3>
 
                   <Link
-                    href={ROUTES.COURSES}
+                    href={banner.redirect_url}
                     legacyBehavior
                     className={`transition-colors duration-200 hover:text-blue-500 ${isActive(
-                      ROUTES.COURSES
+                      banner.redirect_url
                     )}`}
                   >
-                    <a href="courses.html" className="thm-btn anim-elm">
+                    <a href={banner.redirect_url} className="thm-btn anim-elm">
                       Ver todos los cursos
                     </a>
                   </Link>

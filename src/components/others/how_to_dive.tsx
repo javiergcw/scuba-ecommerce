@@ -4,8 +4,14 @@ import React from "react";
 import { usePathname } from "next/navigation";
 import { ROUTES } from "@/utils/constants";
 import Link from "next/link";
+import { Banner } from 'monolite-saas';
 
-const HowToDive = () => {
+interface HowToDiveProps {
+  banners: Banner[];
+  videoUrl?: string;
+}
+
+const HowToDive: React.FC<HowToDiveProps> = ({ banners, }) => {
   const pathname = usePathname();
 
   const isActive = (path: string) => {
@@ -14,6 +20,10 @@ const HowToDive = () => {
     }
     return pathname.startsWith(path) ? "text-blue-500 font-bold" : "";
   };
+
+  const secondaryZoneBanner = banners.find(
+    (banner) => banner.zone_code === "secondary-zone" && banner.active
+  );
 
   return (
     <section
@@ -30,9 +40,9 @@ const HowToDive = () => {
           className="video-two__box wow fadeInRight"
           data-wow-duration="1500ms"
         >
-          <img src="assets/images/resources/video-1-1.jpg" alt="" />
+          <img src={secondaryZoneBanner?.web_banner_url || ""} alt="" />
           <a
-            href="https://www.youtube.com/watch?v=7rQe_Q4FkaY"
+            href={secondaryZoneBanner?.redirect_url || ""}
             className="video-popup"
           >
             <i className="bi bi-play-circle-fill"></i>
@@ -47,10 +57,7 @@ const HowToDive = () => {
                 <h3 className="text-uppercase">¿Cómo bucear?</h3>
               </div>
               <p>
-                Hay muchas variaciones de pasajes de Lorem Ipsum disponibles,
-                pero la mayoría han sufrido alteraciones de alguna forma, ya sea
-                por humor inyectado o palabras aleatorias que no parecen ni
-                siquiera creíbles.
+                ¿Sueñas con explorar el fascinante mundo submarino? En nuestra escuela de buceo te ofrecemos la oportunidad de convertirte en un buceador certificado. Nuestros instructores profesionales te guiarán paso a paso, desde los conceptos básicos hasta las técnicas avanzadas. Descubre la belleza de los arrecifes de coral, la vida marina y las increíbles formaciones submarinas. ¡No esperes más para comenzar tu aventura bajo el agua!
               </p>
               <Link
                 href={ROUTES.CONTACT}
