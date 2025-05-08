@@ -10,11 +10,14 @@
   "dependencies": {
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
+    "@lottiefiles/dotlottie-react": "^0.13.5",
     "@mui/material": "^7.0.2",
     "@types/jquery": "^3.5.32",
     "bootstrap-icons": "^1.11.3",
     "jquery": "^3.7.1",
     "leaflet": "^1.9.4",
+    "lottie-react": "^2.4.1",
+    "lottie-web": "^5.12.2",
     "lucide-react": "^0.486.0",
     "monolite-saas": "github:javiergcw/monolite-saas",
     "next": "15.2.4",
@@ -22,6 +25,7 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-leaflet": "^5.0.0",
+    "react-lottie": "^1.2.10",
     "swiper": "^11.2.6"
   },
   "devDependencies": {

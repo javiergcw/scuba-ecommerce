@@ -11,6 +11,7 @@ import { usePathname } from "next/navigation";
 import { ROUTES } from "@/utils/constants";
 import Link from "next/link";
 import { Banner } from 'monolite-saas';
+import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 
 interface SliderOneProps {
   banners: Banner[];
@@ -33,12 +34,35 @@ const SliderOne: React.FC<SliderOneProps> = ({ banners }) => {
     return pathname.startsWith(path) ? "text-blue-500 font-bold" : "";
   };
 
+
+
+ 
+
   if (isLoading) {
+    const defaultOptions = {
+      loop: true,
+      autoplay: true,
+      Animation,
+      rendererSettings: {
+        preserveAspectRatio: 'xMidYMid slice',
+      },
+    };
+
     return (
       <div className="slider-one__wrapper">
         <div className="slider-one__loading">
           <div className="flex items-center justify-center h-[85vh]">
-            <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-blue-500"></div>
+          <DotLottieReact
+            src="/Animation - 1746715748714.json" // Ruta al archivo .lottie dentro de /public
+            autoplay
+            loop
+            style={{
+              width: 150,
+              height: 150,
+              display: 'block',
+              backgroundColor: 'transparent',
+            }}
+          />
           </div>
         </div>
       </div>

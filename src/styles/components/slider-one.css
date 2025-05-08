@@ -137,7 +137,5 @@
 }
 
 .slider-one__loading {
-  position: relative;
-  width: 100%;
-  background-color: #f8f9fa;
-} 
+    background-color: #1a1a1a; /* fondo oscuro para pruebas */
+  }

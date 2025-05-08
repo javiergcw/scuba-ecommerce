@@ -9,6 +9,8 @@ import { usePathname } from "next/navigation";
 import { ROUTES } from "@/utils/constants";
 import Link from "next/link";
 import { services, Product } from 'monolite-saas';
+import { DotLottieReact } from '@lottiefiles/dotlottie-react';
+
 
 
 const CoursesFirst = () => {
@@ -42,15 +44,19 @@ const CoursesFirst = () => {
     return pathname.startsWith(path) ? "text-blue-500 font-bold" : "";
   };
 
+
   if (loading) {
     return (
-      <div className="course-one__loading">
-        <div className="flex items-center justify-center h-[400px]">
-          <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-blue-500"></div>
-        </div>
+      <div>
+        <DotLottieReact
+          src="/path/to/animation.lottie" // asegúrate que el archivo exista en /public
+          loop
+          autoplay
+        />
       </div>
     );
   }
+
 
   if (error) {
     return <div>Error: {error}</div>;
@@ -146,7 +152,7 @@ const CoursesFirst = () => {
                             }}
                           />
                         ) : (
-                          <div 
+                          <div
                             style={{
                               width: '370px',
                               height: '333px',
