@@ -221,6 +221,12 @@
         margin-top: 30px;
     }
 
+    @media (max-width: 625px) {
+    .cta-one h3 {
+    margin-top: 15px;
+    }
+}
+
     .cta-one__title {
         width: 349px;
     }
@@ -250,7 +256,7 @@
     }
 
     .about-two__content {
-        padding-top: 120px;
+        padding-top: 70px;
         padding-bottom: 120px;
     }
 
@@ -453,7 +459,6 @@
     .cta-one .inner-container {
         padding-left: 15px;
         padding-right: 15px;
-        text-align: center;
     }
 
     .cta-one__phone {
@@ -565,9 +570,12 @@
         -webkit-box-direction: normal;
                 flex-direction: column;
     }
+
     .video-two__box img {
-        max-width: 100%;
-    }
+    max-width: 80%;
+}
+
+
     .about-three__image-content {
         right: -10px;
     }
@@ -677,10 +685,7 @@
         max-width: 100%;
     }
 
-    .course-details__infos-single+.course-details__infos-single {
-        padding-top: 30px;
-        margin-top: 30px;
-    }
+
 
     .course-details__infos-single+.course-details__infos-single::before {
         top: 0;

@@ -73,7 +73,7 @@ export const ContactOne = () => {
                                         <textarea name="message" placeholder="Mensaje"/>
                                     </div>
                                     <div className="col-md-12">
-                                        <button type="submit" className="thm-btn contact-one__btn">Enviar mensaje</button>
+                                        <button  style={{  width: '100%'}} type="submit" className="thm-btn contact-one__btn">Enviar mensaje</button>
                                     </div>
                                 </div>
                             </form>

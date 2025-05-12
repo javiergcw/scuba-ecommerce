@@ -45,14 +45,24 @@ const CoursesFirst = () => {
   };
 
 
+
   if (loading) {
     return (
-      <div>
-        <DotLottieReact
-          src="/path/to/animation.lottie" // asegúrate que el archivo exista en /public
-          loop
-          autoplay
-        />
+      <div className="slider-one__wrapper">
+        <div className="slider-one__loading">
+          <div className="flex flex-col items-center justify-center h-[85vh] space-y-4">
+            <img
+              src="/assets/images/Animation - 1746715748714.gif"
+              alt="Cargando..."
+              style={{
+                width: 200,
+                height: 200,
+                display: 'block',
+              }}
+            />
+            <p className="text-gray-600 text-lg font-medium">Cargando...</p>
+          </div>
+        </div>
       </div>
     );
   }

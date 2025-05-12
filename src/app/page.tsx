@@ -2,7 +2,6 @@
 
 import SliderOne from "@/components/banners/slider_one";
 import CoursesFirst from "@/components/containers/courses_first";
-import { CtaFour } from "@/components/containers/cta_four";
 import CtaThree from "@/components/containers/cta_three";
 import FirstTestimonials from "@/components/containers/first_testimonials";
 import ServiceOne from "@/components/containers/service_one";

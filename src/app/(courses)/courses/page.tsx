@@ -3,8 +3,7 @@ import { BodyCourse } from '@/components/others/course/body_course'
 import { HeaderCourse } from '@/components/others/course/header_course'
 import React, { useEffect, useState } from 'react'
 import { services, Product } from 'monolite-saas';
-import Link from 'next/link';
-import { Box, Grid, Skeleton, Stack, CircularProgress } from '@mui/material';
+import { Box, CircularProgress } from '@mui/material';
 
 const CoursesPage = () => {
     const [products, setProducts] = useState<Product[]>([]);
@@ -29,17 +28,25 @@ const CoursesPage = () => {
         fetchProducts();
     }, []);
 
+
     if (loading) {
         return (
-            <Box sx={{ 
-                width: '100%',
-                height: '100vh',
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center'
-            }}>
-                <CircularProgress size={60} />
-            </Box>
+            <div className="slider-one__wrapper">
+                <div className="slider-one__loading">
+                    <div className="flex flex-col items-center justify-center h-[85vh] space-y-4">
+                        <img
+                            src="/assets/images/Animation - 1746715748714.gif"
+                            alt="Cargando..."
+                            style={{
+                                width: 200,
+                                height: 200,
+                                display: 'block',
+                            }}
+                        />
+                        <p className="text-gray-600 text-lg font-medium">Cargando...</p>
+                    </div>
+                </div>
+            </div>
         );
     }
 
