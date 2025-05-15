@@ -38,7 +38,7 @@
     "typescript": "^5"
   },
   "monolite": {
-    "baseURL": "https://api.accutoxpert.com.co",
-    "licenseKey": "AAAAAAAAAAAAAAAAEvvVEw0tkqsnwG7vWSS3AK6dwnEZZzbyVT4DXo0bUw=="
+    "baseURL": "https://gateway.makerstech.co",
+    "licenseKey": "AAAAAAAAAAAAAAAAEvvVEw0tkvEhkG7hUirrMZTWQJeKzW4cskKUFv/agA=="
   }
 }
