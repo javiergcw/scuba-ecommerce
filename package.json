@@ -11,7 +11,10 @@
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
     "@lottiefiles/dotlottie-react": "^0.13.5",
+    "@mui/icons-material": "^7.1.0",
     "@mui/material": "^7.0.2",
+    "@react-pdf-viewer/core": "^3.12.0",
+    "@react-pdf-viewer/default-layout": "^3.12.0",
     "@types/jquery": "^3.5.32",
     "bootstrap-icons": "^1.11.3",
     "jquery": "^3.7.1",
@@ -22,10 +25,12 @@
     "monolite-saas": "github:javiergcw/monolite-saas",
     "next": "15.2.4",
     "owl.carousel": "^2.3.4",
+    "pdfjs-dist": "^3.11.174",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-leaflet": "^5.0.0",
     "react-lottie": "^1.2.10",
+    "react-pdf": "^9.2.1",
     "swiper": "^11.2.6"
   },
   "devDependencies": {

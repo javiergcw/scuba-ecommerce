@@ -78,7 +78,7 @@ const BodyDetailCourse = ({
                         <h3>{title}</h3>
                         <p>{description}</p>
                         <h4>Características del Curso</h4>
-                        <ul style={{ listStyleType: 'decimal', paddingLeft: '20px' }}>
+                        <ul style={{ listStyleType: 'decimal', paddingLeft: '30px' }}>
                             {features && Object.entries(features).map(([key, value]) => (
                                 <li key={key} style={{ marginBottom: '10px' }}>{value}</li>
                             ))}

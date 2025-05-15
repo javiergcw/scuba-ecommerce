@@ -4,17 +4,31 @@ import { Facebook, Instagram, Twitter, Share2 } from "lucide-react";
 import { CONTACT_INFO, ROUTES } from "@/utils/constants";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 
 const Navbar = () => {
-  const pathname = usePathname();
+  const rawPath = usePathname();
+  const [pathname, setPathname] = useState("");
 
-  const isActive = (path: string) => {
-    if (path === ROUTES.HOME) {
-      return pathname === path ? "text-blue-500 font-bold" : "";
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setPathname(rawPath);
     }
-    return pathname.startsWith(path) ? "text-blue-500 font-bold" : "";
+  }, [rawPath]);  
+  
+  const isActive = (path: string) => {
+    const current = pathname?.replace(/\/+$/, "") || "";
+    const target = path.replace(/\/+$/, "");
+  
+    if (target === "") {
+      return current === "" ? "!text-blue-500 " : "text-gray-500";
+    }
+  
+    return current === target || current.startsWith(target + "/")
+      ? "!text-blue-500 "
+      : "text-gray-500";
   };
-
+  
   return (
     <nav>
       <div className="topbar-one">

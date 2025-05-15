@@ -19,7 +19,7 @@ const Footer = () => {
         className="site-footer__fish-1"
         width={100}
         height={100}
-        style={{ height: "auto" }} 
+        style={{ height: "auto" }}
       />
       <Image
         src="/assets/images/shapes/fish-f-2.png"
@@ -27,7 +27,7 @@ const Footer = () => {
         className="site-footer__fish-2"
         width={100}
         height={100}
-        style={{ height: "auto" }} 
+        style={{ height: "auto" }}
       />
       <Image
         src="/assets/images/shapes/fish-f-3.png"
@@ -35,7 +35,7 @@ const Footer = () => {
         className="site-footer__fish-3"
         width={100}
         height={100}
-        style={{ height: "auto" }} 
+        style={{ height: "auto" }}
       />
 
       <Image
@@ -44,7 +44,7 @@ const Footer = () => {
         alt=""
         width={100}
         height={100}
-        style={{ height: "auto" }} 
+        style={{ height: "auto" }}
       />
       <Image
         src="/assets/images/shapes/tree-f-2.png"
@@ -52,7 +52,7 @@ const Footer = () => {
         alt=""
         width={100}
         height={100}
-        style={{ height: "auto" }} 
+        style={{ height: "auto" }}
       />
 
       <div className="site-footer-one__upper">
@@ -79,13 +79,10 @@ const Footer = () => {
                 <h3 className="footer-widget__title">Compañía</h3>
                 <ul className="footer-widget__links-list list-unstyled">
                   <li>
-                    <a href="#">Sobre Nosotros</a>
+                    <a href="/about-us">Sobre Nosotros</a>
                   </li>
                   <li>
-                    <a href="#">Nuestra Historia</a>
-                  </li>
-                  <li>
-                    <a href="#">Contacto</a>
+                    <a href="/contact">Contacto</a>
                   </li>
                 </ul>
               </div>
@@ -95,13 +92,10 @@ const Footer = () => {
                 <h3 className="footer-widget__title">Explora</h3>
                 <ul className="footer-widget__links-list list-unstyled">
                   <li>
-                    <a href="#">Cursos Populares</a>
+                    <a href="/courses">Cursos Populares</a>
                   </li>
                   <li>
-                    <a href="#">Cómo Funciona</a>
-                  </li>
-                  <li>
-                    <a href="#">Centro de Ayuda</a>
+                    <a href="/contact">Centro de Ayuda</a>
                   </li>
                 </ul>
               </div>
@@ -111,10 +105,13 @@ const Footer = () => {
                 <h3 className="footer-widget__title">Enlaces</h3>
                 <ul className="footer-widget__links-list list-unstyled">
                   <li>
-                    <a href="#">Política de Privacidad</a>
+                    <a href="/padi-document">Documento Padi</a>
                   </li>
                   <li>
-                    <a href="#">Términos y Condiciones</a>
+                    <a href="/privacy-policy">Política de Privacidad</a>
+                  </li>
+                  <li>
+                    <a href="/terms-conditions">Términos y Condiciones</a>
                   </li>
                 </ul>
               </div>
