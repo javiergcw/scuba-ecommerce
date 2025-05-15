@@ -1,27 +1,31 @@
-# syntax=docker/dockerfile:1
 FROM node:18-alpine AS builder
 
+# Establece el directorio de trabajo
 WORKDIR /app
 
-# Argumentos que recibirán valores del package.json (u otros)
-ARG MONOLITE_BASE_URL
-ARG MONOLITE_LICENSE_KEY
+# Instala git y ssh para permitir dependencias vía Git
+RUN apk add --no-cache git openssh
 
-# Variables de entorno dentro del contenedor
-ENV NEXT_PUBLIC_MONOLITE_BASE_URL=$MONOLITE_BASE_URL
-ENV NEXT_PUBLIC_MONOLITE_LICENSE_KEY=$MONOLITE_LICENSE_KEY
-ENV PORT=9020
-
-# Copiar package.json y package-lock.json
+# Copia los archivos de definición de dependencias
 COPY package*.json ./
 
+# Instala las dependencias del proyecto
 RUN npm install --legacy-peer-deps
 
+# Copia todo el código fuente al contenedor
 COPY . .
 
+# Elimina posibles builds anteriores
 RUN rm -rf .next
+
+# Construye la aplicación Next.js para producción
 RUN npm run build
 
+# Define el puerto predeterminado que escuchará Next.js
+ENV PORT=9020
+
+# Expone el puerto para enlazar con el host
 EXPOSE 9020
 
+# Comando de inicio de la aplicación
 CMD ["npm", "start"]
