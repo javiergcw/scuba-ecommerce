@@ -1,5 +1,3 @@
-
-
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
@@ -7,6 +5,7 @@ import Navbar from "@/components/navbar/navbar";
 import Footer from "@/components/footer/footer";
 import Script from "next/script";
 import FloatingWhatsAppButton from "@/components/FloatingWhatsAppButton";
+import "@/lib/monolite-config";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",

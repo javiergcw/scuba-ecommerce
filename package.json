@@ -22,7 +22,7 @@
     "lottie-react": "^2.4.1",
     "lottie-web": "^5.12.2",
     "lucide-react": "^0.486.0",
-    "monolite-saas": "github:javiergcw/monolite-saas",
+    "monolite-saas": "github:javiergcw/monolite-saas#makers",
     "next": "15.2.4",
     "owl.carousel": "^2.3.4",
     "pdfjs-dist": "^3.11.174",
