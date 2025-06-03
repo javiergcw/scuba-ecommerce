@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, Navigation } from "swiper/modules";
 import "swiper/css";
@@ -8,16 +8,21 @@ import "../../styles/carousel.css";
 import { usePathname } from "next/navigation";
 import { ROUTES } from "@/utils/constants";
 import Link from "next/link";
-import { services, Product } from 'monolite-saas';
-import { DotLottieReact } from '@lottiefiles/dotlottie-react';
-
-
+import { services, Product } from "monolite-saas";
+import { IconButton } from "@mui/material";
+import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
+import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 
 const CoursesFirst = () => {
   const pathname = usePathname();
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isSwiperReady, setIsSwiperReady] = useState(false);
+
+  const swiperRef = useRef<any>(null);
+  const prevRef = useRef<HTMLButtonElement | null>(null);
+  const nextRef = useRef<HTMLButtonElement | null>(null);
 
   const fetchProducts = async () => {
     try {
@@ -26,8 +31,7 @@ const CoursesFirst = () => {
       setProducts(productsData);
       setError(null);
     } catch (err) {
-      setError('Error al cargar los productos');
-      console.error('Error:', err);
+      setError("Error al cargar los productos");
     } finally {
       setLoading(false);
     }
@@ -37,14 +41,27 @@ const CoursesFirst = () => {
     fetchProducts();
   }, []);
 
+  useEffect(() => {
+    if (
+      isSwiperReady &&
+      swiperRef.current &&
+      prevRef.current &&
+      nextRef.current
+    ) {
+      swiperRef.current.params.navigation.prevEl = prevRef.current;
+      swiperRef.current.params.navigation.nextEl = nextRef.current;
+      swiperRef.current.navigation.destroy();
+      swiperRef.current.navigation.init();
+      swiperRef.current.navigation.update();
+    }
+  }, [isSwiperReady]);
+
   const isActive = (path: string) => {
     if (path === ROUTES.HOME) {
       return pathname === path ? "text-blue-500 font-bold" : "";
     }
     return pathname.startsWith(path) ? "text-blue-500 font-bold" : "";
   };
-
-
 
   if (loading) {
     return (
@@ -54,11 +71,7 @@ const CoursesFirst = () => {
             <img
               src="/assets/images/Animation - 1746715748714.gif"
               alt="Cargando..."
-              style={{
-                width: 200,
-                height: 200,
-                display: 'block',
-              }}
+              style={{ width: 200, height: 200 }}
             />
             <p className="text-gray-600 text-lg font-medium">Cargando...</p>
           </div>
@@ -67,10 +80,7 @@ const CoursesFirst = () => {
     );
   }
 
-
-  if (error) {
-    return <div>Error: {error}</div>;
-  }
+  if (error) return <div>Error: {error}</div>;
 
   return (
     <>
@@ -81,7 +91,7 @@ const CoursesFirst = () => {
             backgroundImage: "url(assets/images/shapes/water-wave-bg.png)",
           }}
         ></div>
-        <div className="container ">
+        <div className="container">
           <div className="block-title text-left">
             <img src="assets/images/shapes/sec-line-1.png" alt="" />
             <p className="text-uppercase">Lista de todos los productos</p>
@@ -92,124 +102,156 @@ const CoursesFirst = () => {
           <div className="text-block">
             <p className="m-0">
               Descubre nuestra selección de productos de calidad. <br />
-              Encuentra todo lo que necesitas para tus aventuras submarinas. <br />
+              Encuentra todo lo que necesitas para tus aventuras submarinas.{" "}
+              <br />
               ¡Tu próxima experiencia comienza aquí!
             </p>
           </div>
         </div>
       </section>
 
-      <div className="course-one course-one__carousel-wrapper">
-        {/* peces del pie de página */}
+      <div className="course-one course-one__carousel-wrapper relative">
         <img
           src="assets/images/shapes/fish-1-1.png"
           alt=""
           className="site-footer__fish-1"
         />
-
-        {/* árboles del pie de página */}
         <img
           src="assets/images/shapes/tree-1-1.png"
           className="site-footer__tree-1"
           alt=""
         />
-        <div className="container">
+        <div className="container relative">
           <Swiper
             modules={[Autoplay, Navigation]}
+            onSwiper={(swiper) => {
+              swiperRef.current = swiper;
+              setIsSwiperReady(true);
+            }}
             spaceBetween={30}
             slidesPerView={3}
             loop={true}
-            autoplay={{
-              delay: 5000,
-              disableOnInteraction: false,
-            }}
+            autoplay={{ delay: 5000, disableOnInteraction: false }}
             navigation={{
-              prevEl: ".course-one__carousel-btn-left",
-              nextEl: ".course-one__carousel-btn-right",
+              prevEl: prevRef.current,
+              nextEl: nextRef.current,
             }}
             breakpoints={{
-              0: {
-                slidesPerView: 1,
-              },
-              767: {
-                slidesPerView: 2,
-              },
-              991: {
-                slidesPerView: 2,
-              },
-              1199: {
-                slidesPerView: 3,
-              },
+              0: { slidesPerView: 1 },
+              767: { slidesPerView: 2 },
+              991: { slidesPerView: 2 },
+              1199: { slidesPerView: 3 },
             }}
           >
             {products.map((product) => (
               <SwiperSlide key={product.id}>
-                <div className="course-one__wrappers">
-                  <div className="course-one__single">
-                    <div className="course-one__image">
-                      <a href={`/courses/${product.id}`} className="course-one__cat">
-                        {product.category_name}
-                      </a>
-                      <div className="course-one__image-inner">
-                        {product.image_url ? (
-                          <img
-                            src={product.image_url}
-                            alt={product.name}
-                            style={{
-                              width: '370px',
-                              height: '333px',
-                              objectFit: 'cover'
-                            }}
-                          />
-                        ) : (
-                          <div
-                            style={{
-                              width: '370px',
-                              height: '333px',
-                              backgroundColor: '#f0f0f0',
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'center'
-                            }}
-                          >
-                            <span>Imagen no disponible</span>
-                          </div>
-                        )}
-                        <a href={`/courses/${product.id}`}>
-                          <i className="fa fa-plus"></i>
-                        </a>
-                      </div>
-                    </div>
-                    <div className="course-one__content hvr-sweep-to-bottom">
-                      <h3>
-                        <Link href={`/courses/${product.id}`}>
-                          {product.name}
-                        </Link>
-                      </h3>
-                      <p>{product.description || 'Descripción no disponible'}</p>
-                    </div>
-
+                <div
+                  className="course-one__single w-full flex flex-col justify-between"
+                  style={{ height: "100%", minHeight: 520, background: "#fff" }}
+                >
+                  <div className="course-one__image w-full">
                     <Link
                       href={`/courses/${product.id}`}
-                      className={`course-one__book-link transition-colors duration-200 hover:text-blue-500 ${isActive(
-                        ROUTES.COURSES
-                      )}`}
+                      className="course-one__cat"
                     >
-                      Ver detalles
+                      {product.category_name}
                     </Link>
+                    <div className="course-one__image-inner w-full">
+                      {product.image_url ? (
+                        <img
+                          src={product.image_url}
+                          alt={product.name}
+                          style={{
+                            width: "100%",
+                            height: "333px",
+                            objectFit: "cover",
+                            display: "block",
+                          }}
+                        />
+                      ) : (
+                        <div
+                          style={{
+                            width: "100%",
+                            height: "333px",
+                            backgroundColor: "#f0f0f0",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                          }}
+                        >
+                          <span>Imagen no disponible</span>
+                        </div>
+                      )}
+                      <Link href={`/courses/${product.id}`}>
+                        <i className="scubo-icon-plus-symbol"></i>
+                      </Link>
+                    </div>
                   </div>
+
+                  <div
+                    className="course-one__content hvr-sweep-to-bottom w-full px-4 py-3 flex-grow flex flex-col justify-between"
+                    style={{ backgroundColor: "#fff" }}
+                  >
+                    <h3 className="text-base font-bold leading-tight text-center">
+                      <Link href={`/courses/${product.id}`}>{product.name}</Link>
+                    </h3>
+                    <p className="text-sm text-gray-600 text-center mt-2">
+                      {product.description || "Descripción no disponible"}
+                    </p>
+                  </div>
+
+                  <Link
+                    href={`/courses/${product.id}`}
+                    className={`course-one__book-link block w-full text-center mt-auto py-2 transition-colors duration-200 hover:text-blue-500 ${isActive(
+                      ROUTES.COURSES
+                    )}`}
+                    style={{ borderTop: "1px solid #f0f0f0" }}
+                  >
+                    Ver detalles
+                  </Link>
                 </div>
               </SwiperSlide>
+
             ))}
           </Swiper>
 
-          <div className="course-one__carousel-btn__wrapper">
-            <a className="course-one__carousel-btn-left" href="#">
-              <i className="fa fa-chevron-left"></i>
-            </a>
-            <a className="course-one__carousel-btn-right" href="#">
-              <i className="fa fa-chevron-right"></i>
-            </a>
+          {/* Botones de navegación */}
+          <div className="flex justify-between items-center absolute top-1/2 left-0 right-0 px-4 z-20">
+            <IconButton
+              ref={prevRef}
+              sx={{
+                zIndex: 99,
+                width: 56,
+                height: 56,
+                bgcolor: "#3b91e1",
+                color: "white",
+                transition: "all 0.3s ease",
+                "&:hover": {
+                  bgcolor: "#ffd701",
+                  color: "#000",
+                },
+              }}
+            >
+              <ChevronLeftIcon fontSize="large" />
+            </IconButton>
+
+            <IconButton
+              ref={nextRef}
+              sx={{
+                zIndex: 10,
+                width: 56,
+                height: 56,
+                bgcolor: "#3b91e1",
+                color: "white",
+                transition: "all 0.3s ease",
+                "&:hover": {
+                  bgcolor: "#ffd701",
+                  color: "#000",
+                },
+              }}
+            >
+              <ChevronRightIcon fontSize="large" />
+            </IconButton>
           </div>
         </div>
       </div>
