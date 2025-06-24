@@ -26,7 +26,7 @@ export const BodyCourse = ({ courses }: BodyCourseProps) => {
             <div className="container">
                 {Object.entries(groupedCourses).map(([level, group]) => (
                     <div key={level} className="course-group" style={{ marginBottom: '40px' }}>
-                        <h2 style={{ marginBottom: '20px' }}>{level}</h2>
+                        <h2 style={{ marginBottom: '20px', color: '#000', fontWeight: 'bold' }}>{level}</h2>
                         <div className="row">
                             {group.map((course) => (
                                 <div key={course.id} className="col-lg-4 col-md-6">

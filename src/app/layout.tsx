@@ -5,6 +5,8 @@ import Navbar from "@/components/navbar/navbar";
 import Footer from "@/components/footer/footer";
 import Script from "next/script";
 import FloatingWhatsAppButton from "@/components/FloatingWhatsAppButton";
+import FloatingCartButton from "@/components/FloatingCartButton";
+import { CartProvider } from "@/context/CartContext";
 import "@/lib/monolite-config";
 
 const geistSans = Geist({
@@ -50,10 +52,13 @@ export default function RootLayout({
         <link rel="stylesheet" href="/css/style.css" />
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <Navbar />
-        {children}
-        <Footer />
-        <FloatingWhatsAppButton />
+        <CartProvider>
+          <Navbar />
+          {children}
+          <Footer />
+          <FloatingCartButton />
+          <FloatingWhatsAppButton />
+        </CartProvider>
         
         {/* Scripts */}
         <Script src="/js/jquery.min.js" strategy="beforeInteractive" />
