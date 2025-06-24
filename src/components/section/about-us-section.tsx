@@ -22,7 +22,7 @@ export const AboutUsSection = () => {
                         <img src="/assets/images/background/banner6.jpeg" alt=""/>
                     </div>
                     <div className="feature-two__content">
-                        <h3><a href="courses.html">Que ofrecemos</a></h3>
+                        <h3><a href="/courses">Que ofrecemos</a></h3>
                         <p>Contamos con experiencias únicas de buceo y cursos para todos los niveles, desde principiantes hasta profesionales.</p>
                     </div>
                 </div>
@@ -33,7 +33,7 @@ export const AboutUsSection = () => {
                         <img src="/assets/images/background/banner5.jpeg" alt=""/>
                     </div>
                     <div className="feature-two__content">
-                        <h3><a href="pricing.html">Nuestros beneficios</a></h3>
+                        <h3><a href="/payments">Nuestros beneficios</a></h3>
                         <p>Formación certificada, equipo de alta calidad y un equipo humano comprometido con tu seguridad y diversión.</p>
                     </div>
                 </div>
@@ -44,7 +44,7 @@ export const AboutUsSection = () => {
                         <img src="/assets/images/background/banner7.jpg" alt=""/>
                     </div>
                     <div className="feature-two__content">
-                        <h3><a href="contact.html">Soporte 24/7 </a></h3>
+                        <h3><a href="https://api.whatsapp.com/send/?phone=573165341834&text=Hola%2C+%C2%BFme+puedes+contar+m%C3%A1s+sobre+las+inmersiones+que+ofrece+Scuba%3F+%EF%BF%BD%EF%BF%BD&type=phone_number&app_absent=0" target="_blank" rel="noopener noreferrer">Soporte 24/7 </a></h3>
                         <p>Te acompañamos en cada paso del proceso, con atención personalizada antes, durante y después de tu experiencia.</p>
                     </div>
                 </div>
