@@ -2,15 +2,27 @@
 
 import React, { useState, useEffect } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Autoplay, Navigation, Pagination } from "swiper/modules";
+import { Autoplay, Pagination, Navigation } from "swiper/modules";
+import SwiperCore from "swiper";
 import "swiper/css";
-import "swiper/css/navigation";
 import "swiper/css/pagination";
+import "swiper/css/navigation";
 import "@/styles/components/slider-one.css";
 import { usePathname } from "next/navigation";
 import { ROUTES } from "@/utils/constants";
 import Link from "next/link";
 import { Banner } from 'monolite-saas';
+import {
+  Box,
+  Typography,
+  Container,
+  Button,
+  useTheme,
+  useMediaQuery,
+  Stack,
+  IconButton,
+  Grid,
+} from "@mui/material";
 
 interface SliderOneProps {
   banners: Banner[];
@@ -19,6 +31,9 @@ interface SliderOneProps {
 const SliderOne: React.FC<SliderOneProps> = ({ banners }) => {
   const pathname = usePathname();
   const [isLoading, setIsLoading] = useState(true);
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const [swiperInstance, setSwiperInstance] = useState<SwiperCore | null>(null);
 
   useEffect(() => {
     if (banners.length > 0) {
@@ -33,21 +48,17 @@ const SliderOne: React.FC<SliderOneProps> = ({ banners }) => {
     return pathname.startsWith(path) ? "text-blue-500 font-bold" : "";
   };
 
-
-
-
-
   if (isLoading) {
     return (
       <div className="slider-one__wrapper">
         <div className="slider-one__loading">
           <div className="flex flex-col items-center justify-center h-[85vh] space-y-4">
             <img
-              src="/assets/images/Animation - 1746715748714.gif"
+              src="/assets/images/Animation-diving.gif"
               alt="Cargando..."
               style={{
-                width: 200,
-                height: 200,
+                width: 150,
+                height: 120,
                 display: 'block',
               }}
             />
@@ -58,124 +69,226 @@ const SliderOne: React.FC<SliderOneProps> = ({ banners }) => {
     );
   }
 
-
   return (
     <>
-      <div className="slider-one__wrapper">
+      <Box position="relative" width="100%">
         <Swiper
-          modules={[Autoplay, Navigation, Pagination]}
-          spaceBetween={0}
+          modules={[Autoplay, Pagination, Navigation]}
           slidesPerView={1}
-          navigation={{
-            nextEl: ".slider-one__nav-next",
-            prevEl: ".slider-one__nav-prev",
-          }}
+          loop
+          onSwiper={setSwiperInstance}
+          autoplay={{ delay: 7000, disableOnInteraction: false }}
           pagination={{
-            el: ".slider-one__pagination",
+            el: ".custom-swiper-pagination",
             clickable: true,
-            bulletClass: "swiper-pagination-bullet",
-            bulletActiveClass: "swiper-pagination-bullet-active",
+            bulletClass: "custom-bullet",
+            bulletActiveClass: "custom-bullet-active"
           }}
-          autoplay={{
-            delay: 7000,
-            disableOnInteraction: false,
+          navigation={{
+            nextEl: ".custom-swiper-next",
+            prevEl: ".custom-swiper-prev",
           }}
-          loop={true}
-          className="slider-one"
         >
           {banners.map((banner) => (
-            <SwiperSlide key={banner.id} className="slider-one__slide">
-              <div
-                className="slider-one__bg"
-                style={{
+            <SwiperSlide key={banner.id}>
+              <Box
+                sx={{
                   backgroundImage: `url(${banner.web_banner_url})`,
                   backgroundSize: "cover",
                   backgroundPosition: "center",
+                  height: isMobile ? "60vh" : "90vh",
+                  display: "flex",
+                  alignItems: "center",
                 }}
-              />
-              <div className="container">
-                <div className="slider-one__content text-center">
-                  <p className="anim-elm">{banner.subtitle}</p>
-                  <h3 className="anim-elm">{banner.title}</h3>
-
-                  <Link
-                    href={banner.redirect_url}
-                    legacyBehavior
-                    className={`transition-colors duration-200 hover:text-blue-500 ${isActive(
-                      banner.redirect_url
-                    )}`}
+              >
+                <Container>
+                  <Box
+                    textAlign="center"
+                    sx={{ width: { xs: "90%", md: "100%" }, mx: "auto" }}
                   >
-                    <a href={banner.redirect_url} className="thm-btn anim-elm">
-                      Ver todos los cursos
-                    </a>
-                  </Link>
-                </div>
-              </div>
+                    <Typography
+                      variant={isMobile ? "subtitle1" : "h6"}
+                      color="white"
+                      mb={2}
+                      sx={{
+                        fontFamily: '"Barlow Condensed", sans-serif',
+                        fontWeight: 600,
+                        textShadow: "1px 1px 2px rgba(0,0,0,0.4)",
+                        mt: { xs: 2, md: 0 }, // Margen superior extra solo en mobile
+                      }}
+                    >
+                      {banner.subtitle}
+                    </Typography>
+
+                    <Typography
+                      variant={isMobile ? "h4" : "h3"}
+                      color="white"
+                      fontWeight={800}
+                      sx={{
+                        fontFamily: '"Barlow Condensed", sans-serif',
+                        textShadow: "2px 2px 4px rgba(0,0,0,0.5)",
+                        mb: { xs: 4, md: 3 } 
+                      }}
+                    >
+                      {banner.title}
+                    </Typography>
+
+                    <Link href={banner.redirect_url} passHref>
+                      <Button
+                        variant="contained"
+                        sx={{
+                          backgroundColor: "#FFD700",
+                          color: "black",
+                          px: 6,
+                          py: 2.5,
+                          fontWeight: 700,
+                          fontSize: "1rem",
+                          textAlign: "center",
+                          whiteSpace: "normal",
+                          lineHeight: 1.2,
+                          borderRadius: 0,
+                          fontFamily: '"Barlow Condensed", sans-serif',
+                        }}
+                        className={isActive(banner.redirect_url)}
+                      >
+                        Ver todos los cursos
+                      </Button>
+                    </Link>
+                  </Box>
+                </Container>
+              </Box>
             </SwiperSlide>
+
           ))}
         </Swiper>
-        <div
-          className="slider-one__nav"
-          style={{ right: "20px", left: "auto" }}
+
+        <Stack
+          direction="column"
+          spacing={1.5}
+          position="absolute"
+          top="50%"
+          left={20}
+          zIndex={10}
+          sx={{
+            transform: 'translateY(-50%)',
+            '& .MuiIconButton-root': {
+              width: 36,
+              height: 36,
+              borderRadius: 2,
+              backgroundColor: '#2F74B4',
+              opacity: 0.4,
+              '&:hover': {
+                backgroundColor: '#235a8d',
+                opacity: 1,
+              },
+            }
+          }}
         >
-          <a href="#" className="slider-one__nav-prev">
-            <i className="fa fa-angle-up"></i>
-          </a>
-          <a href="#" className="slider-one__nav-next">
-            <i className="fa fa-angle-down"></i>
-          </a>
-        </div>
-        <div
-          className="slider-one__pagination swiper-pagination-vertical"
-          style={{ left: "20px", right: "auto" }}
-        ></div>
-      </div>
-      <section className="cta-two">
-        <div
-          className="cta-two__bg"
-          style={{
-            backgroundImage: "url(/assets/images/background/footer-bg-1-1.jpg)",
+          <IconButton onClick={() => swiperInstance?.slidePrev()} />
+          <IconButton onClick={() => swiperInstance?.slideToLoop(1)} />
+          <IconButton onClick={() => swiperInstance?.slideNext()} />
+        </Stack>
+
+        <Box className="custom-swiper-pagination" sx={{ display: 'none' }}></Box>
+
+        <Box
+          component="img"
+          src="/assets/images/shapes/slide-ribbon-1-1.png"
+          alt="Ribbon decoration"
+          sx={{
+            position: "absolute",
+            top: isMobile ? "60vh" : "90vh",
+            left: isMobile ? 40 : 120,
+            transform: "translateY(-50%) rotate(0deg)",
+            maxWidth: isMobile ? 100 : 120,
+            zIndex: 15,
+            animation: "spin 10s linear infinite"
           }}
         />
-        <div
-          className="cta-two__wave"
-          style={{
+
+        <style jsx global>{`
+          @keyframes spin {
+            0% { transform: translateY(-50%) rotate(0deg); }
+            100% { transform: translateY(-50%) rotate(360deg); }
+          }
+        `}</style>
+      </Box>
+
+      <Box
+        sx={{
+          backgroundColor: "#063a7f",
+          backgroundImage:
+            "linear-gradient(rgba(6, 58, 127, 0.9), rgba(6, 58, 127, 0.9)), url(/assets/images/background/footer-bg-1-1.jpg)",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          py: 12,
+          position: "relative",
+        }}
+      >
+        <Box
+          sx={{
             backgroundImage: "url(/assets/images/shapes/wave-1.png)",
             backgroundPosition: "center center",
+            width: "100%",
+            height: 32,
             position: "absolute",
             bottom: 0,
             left: 0,
-            width: "100%",
-            height: "32px",
-            zIndex: 11,
+            zIndex: 1,
             animation: "bgSlide 20s linear infinite",
           }}
         />
-        <div className="container">
-          <img
-            src="/assets/images/shapes/slide-ribbon-1-1.png"
-            alt="Ribbon decoration"
-            className="cta-two__moc"
-          />
-          <h3>
-            PROPORCIONAMOS UN SERVICIO EXCELENTE CON SEGURIDAD Y <br />
-            UNA <span>EDUCACIÓN DE BUCEO</span> EXCEPCIONAL
-          </h3>
-          <div className="cta-two__btn-block">
-            <Link
-              href={ROUTES.CONTACT}
-              legacyBehavior
-              className={`transition-colors duration-200 hover:text-blue-500 ${isActive(
-                ROUTES.CONTACT
-              )}`}
-            >
-              <a href="contact.html" className="thm-btn cta-two__btn">
-                Comienza con nosotros ahora
-              </a>
-            </Link>
-          </div>
-        </div>
-      </section>
+        <Container sx={{ position: "relative", zIndex: 2 }}>
+          <Grid
+            container
+            spacing={4}
+            alignItems="center"
+            justifyContent="center"
+            sx={{
+              flexDirection: { xs: "column", lg: "row" },
+              textAlign: { xs: "center", lg: "right" },
+            }}
+          >
+            <Grid item xs={12} lg={8} display="flex" justifyContent="center">
+              <Typography
+                variant="h5"
+                color="white"
+                fontWeight={800}
+                sx={{
+                  fontFamily: '"Barlow Condensed", sans-serif',
+                  lineHeight: 1.3,
+                }}
+              >
+                PROPORCIONAMOS UN SERVICIO EXCELENTE CON SEGURIDAD Y<br />
+                UNA <Box component="span" sx={{ color: "#FFD700" }}>EDUCACIÓN DE BUCEO</Box> EXCEPCIONAL
+              </Typography>
+            </Grid>
+            <Grid item xs={12} lg={4} display="flex" justifyContent="center">
+              <Link href={ROUTES.CONTACT} legacyBehavior passHref>
+                <Button
+                  variant="contained"
+                  sx={{
+                    backgroundColor: "#FFD700",
+                    color: "black",
+                    px: 6,
+                    py: 2.5,
+                    fontWeight: 700,
+                    fontSize: "1rem",
+                    textAlign: 'center',
+                    whiteSpace: 'normal',
+                    lineHeight: 1.2,
+                    borderRadius: 0,
+                    fontFamily: '"Barlow Condensed", sans-serif',
+                  }}
+                >
+                  COMIENZA CON NOSOTROS AHORA
+                </Button>
+              </Link>
+            </Grid>
+          </Grid>
+
+        </Container>
+      </Box>
     </>
   );
 };

@@ -308,7 +308,6 @@
 
     .cta-three__title::before {
         content: '';
-        width: 10000px;
         position: absolute;
         top: 0;
         left: 100%;
@@ -776,6 +775,7 @@
         padding-left: 25px;
         padding-right: 30px;
     }
+    
     .slider-two .slider-one__content h3 {
         font-size: 55px;
     }

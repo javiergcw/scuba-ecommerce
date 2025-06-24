@@ -11,6 +11,7 @@ import { BrandOne } from "@/components/others/brand_one";
 import { services } from 'monolite-saas';
 import { useEffect, useState } from 'react';
 import { Banner } from 'monolite-saas';
+import BrandBubbleSection from "@/components/others/course/BrandBubbleSection";
 
 
 export default function Home() {
@@ -47,7 +48,8 @@ export default function Home() {
         <ServiceOne />
         <FunFact />
         <CoursesFirst />
-        <BrandOne />
+        <BrandBubbleSection />
+        {/* <BrandOne /> */}
         <HowToDive banners={banners} />
         <FirstTestimonials />
         <CtaThree />

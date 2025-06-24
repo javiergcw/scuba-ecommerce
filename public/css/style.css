@@ -1755,7 +1755,7 @@ a:focus {
   position: absolute;
   bottom: 0;
   left: 5%;
-  z-index: 10;
+  z-index: 9;
   -webkit-perspective: 500px;
   perspective: 500px;
   -webkit-animation: footerTree 5s ease-in infinite;
@@ -1776,8 +1776,8 @@ a:focus {
 .site-footer__fish-1 {
   position: absolute;
   left: 7%;
-  bottom: 49%;
-  z-index: 10;
+  bottom: 30%;
+  z-index: 9;
   -webkit-perspective: 100px;
   perspective: 100px;
   -webkit-animation: footerFish 5s linear infinite;
@@ -2166,8 +2166,15 @@ a:focus {
 .page-header {
   background-color: #063a7a;
   position: relative;
-  padding-top: 110px;
+  padding-top: 100px;
 }
+
+@media (max-width: 625px) {
+ .page-header{
+   padding-top: 40px;
+  }
+}
+
 
 .page-header__bg {
   position: absolute;
@@ -4051,6 +4058,13 @@ a:focus {
   counter-reset: courseNumber;
 }
 
+@media (max-width: 625px) {
+ .course-one {
+  padding-top: 30px;
+  }
+}
+
+
 .course-one__single {
   position: relative;
   margin-bottom: 30px;
@@ -4059,7 +4073,6 @@ a:focus {
   transition: all 500ms ease;
   -webkit-transform: translateY(0);
   transform: translateY(0);
-  counter-increment: courseNumber;
 }
 
 .course-one__single:hover {
@@ -4223,20 +4236,29 @@ a:focus {
   padding-bottom: 55px;
 }
 
+.course-group {
+  counter-reset: courseNumber;
+}
+
+.course-one__content {
+  counter-increment: courseNumber;
+  position: relative;
+}
+
+
 .course-one__content::after {
   font-family: var(--thm-font);
   font-size: 200px;
   line-height: 1em;
   color: #051b35;
   opacity: 0.06;
-  content: counters(courseNumber, ".", decimal-leading-zero);
+  content: counter(courseNumber, decimal-leading-zero);
   position: absolute;
   bottom: -20px;
-  left: -10px;
+  left: 10px;
   -webkit-transition: all 500ms ease;
   transition: all 500ms ease;
 }
-
 .course-one__single:hover .course-one__content::after {
   color: #fff;
   opacity: 0.06;
@@ -5810,7 +5832,7 @@ a:focus {
 }
 
 .testimonials-one__carousel-wrapper__home-one {
-  padding-bottom: 150px;
+  padding-bottom: 80px;
 }
 
 @media (max-width: 625px) {
