@@ -1,5 +1,9 @@
-import React from 'react'
+"use client";
+
+import React, { useState } from 'react'
 import { ProductFeatures } from 'monolite-saas';
+import { useCart } from '@/context/CartContext';
+import { Snackbar, Alert } from '@mui/material';
 
 interface CourseDetailProps {
     image: string;
@@ -11,6 +15,7 @@ interface CourseDetailProps {
     tips: string;
     additionalInfo: string;
     features?: ProductFeatures;
+    courseId?: string; // ID único del curso
 }
 
 const BodyDetailCourse = ({
@@ -22,8 +27,31 @@ const BodyDetailCourse = ({
     description,
     tips,
     additionalInfo,
-    features
+    features,
+    courseId
 }: CourseDetailProps) => {
+    const { addToCart } = useCart();
+    const [showSuccess, setShowSuccess] = useState(false);
+
+    const handleAddToCart = () => {
+        const courseItem = {
+            id: courseId || `course-${Date.now()}`, // Generar ID si no se proporciona
+            name: title,
+            price: price,
+            quantity: 1,
+            image: image,
+            courseDuration: courseDuration,
+            numberOfDives: numberOfDives
+        };
+
+        addToCart(courseItem);
+        setShowSuccess(true);
+    };
+
+    const handleCloseSuccess = () => {
+        setShowSuccess(false);
+    };
+
     return (
         <div>
             <section className="course-details">
@@ -84,10 +112,43 @@ const BodyDetailCourse = ({
                             ))}
                         </ul>
 
-                        <a href="/contact" className="thm-btn course-details__btn">Contact for more details</a>
+                        <div style={{ display: 'flex', gap: '15px', marginTop: '20px', flexWrap: 'wrap' }}>
+                            <button 
+                                className="thm-btn course-details__btn"
+                                onClick={handleAddToCart}
+                                style={{ 
+                                    backgroundColor: '#1976d2',
+                                    color: 'white',
+                                    border: 'none',
+                                    cursor: 'pointer'
+                                }}
+                            >
+                                🛒 Añadir al Carrito
+                            </button>
+                            
+                            <a href="/contact" className="thm-btn course-details__btn">
+                                Contact for more details
+                            </a>
+                        </div>
                     </div>
                 </div>
             </section>
+
+            {/* Snackbar de confirmación */}
+            <Snackbar
+                open={showSuccess}
+                autoHideDuration={3000}
+                onClose={handleCloseSuccess}
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+            >
+                <Alert 
+                    onClose={handleCloseSuccess} 
+                    severity="success" 
+                    sx={{ width: '100%' }}
+                >
+                    ¡Curso agregado al carrito exitosamente!
+                </Alert>
+            </Snackbar>
         </div>
     )
 }
