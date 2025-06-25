@@ -105,7 +105,7 @@ const BodyDetailCourse = ({
                         <br/>
                         <h3>{title}</h3>
                         <p>{description}</p>
-                        <h4>Características del Curso</h4>
+                       {/*  <h4>Características del Curso</h4> */}
                         <ul style={{ listStyleType: 'decimal', paddingLeft: '30px' }}>
                             {features && Object.entries(features).map(([key, value]) => (
                                 <li key={key} style={{ marginBottom: '10px' }}>{value}</li>
@@ -123,7 +123,7 @@ const BodyDetailCourse = ({
                                     cursor: 'pointer'
                                 }}
                             >
-                                🛒 Añadir al Carrito
+                                Añadir al Carrito
                             </button>
                             
                             <a href="/contact" className="thm-btn course-details__btn">
