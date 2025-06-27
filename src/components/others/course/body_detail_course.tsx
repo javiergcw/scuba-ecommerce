@@ -3,6 +3,7 @@
 import React, { useState } from 'react'
 import { ProductFeatures } from 'monolite-saas';
 import { useCart } from '@/context/CartContext';
+import { useRouter } from 'next/navigation';
 import { Snackbar, Alert } from '@mui/material';
 
 interface CourseDetailProps {
@@ -31,6 +32,7 @@ const BodyDetailCourse = ({
     courseId
 }: CourseDetailProps) => {
     const { addToCart } = useCart();
+    const router = useRouter();
     const [showSuccess, setShowSuccess] = useState(false);
 
     const handleAddToCart = () => {
@@ -46,6 +48,11 @@ const BodyDetailCourse = ({
 
         addToCart(courseItem);
         setShowSuccess(true);
+        
+        // Redirigir a checkout después de un breve delay para mostrar el mensaje
+        setTimeout(() => {
+            router.push('/checkout');
+        }, 1000);
     };
 
     const handleCloseSuccess = () => {
@@ -123,11 +130,11 @@ const BodyDetailCourse = ({
                                     cursor: 'pointer'
                                 }}
                             >
-                                Añadir al Carrito
+                                Comprar Curso
                             </button>
                             
                             <a href="/contact" className="thm-btn course-details__btn">
-                                Contact for more details
+                                Contactar para más detalles
                             </a>
                         </div>
                     </div>
@@ -146,7 +153,7 @@ const BodyDetailCourse = ({
                     severity="success" 
                     sx={{ width: '100%' }}
                 >
-                    ¡Curso agregado al carrito exitosamente!
+                    ¡Curso agregado al carrito! Redirigiendo al checkout...
                 </Alert>
             </Snackbar>
         </div>
