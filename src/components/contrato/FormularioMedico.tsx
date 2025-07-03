@@ -2,7 +2,12 @@
 import React, { useRef } from "react";
 import SignatureCanvas from 'react-signature-canvas';
 
-const FormularioMedico: React.FC = () => {
+interface Props {
+  formData: any;
+  setFormData: (data: any) => void;
+}
+
+const FormularioMedico: React.FC<Props> = ({ formData, setFormData }) => {
   const preguntas = [
     "He tenido problemas con mis pulmones/respiración, corazón o sangre o he sido diagnosticado con el COVID-19. Si la respuesta es SI, ir al cuadro A (abajo).",
     "Tengo más de 45 años. Si la respuesta es SI, ir al cuadro B (abajo)",
@@ -20,6 +25,14 @@ const FormularioMedico: React.FC = () => {
   const sigPadreCanvas = useRef<any>(null);
   const now = new Date();
   const fechaHora = now.toLocaleDateString('es-ES') + ' ' + now.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData({
+      ...formData,
+      [name]: value,
+    });
+  };
 
   return (
     <div className="p-8 bg-white shadow-md rounded-lg">
@@ -48,10 +61,22 @@ const FormularioMedico: React.FC = () => {
               <tr key={idx} className={idx % 2 === 0 ? 'bg-white' : 'bg-gray-100'}>
                 <td className="px-4 py-2 align-top">{idx + 1}. {pregunta}</td>
                 <td className="w-20 text-center px-4 py-2">
-                  <input type="radio" name={`preguntaMedica${idx}`} value="si" />
+                  <input 
+                    type="radio" 
+                    name={`preguntaMedica${idx}`} 
+                    value="si" 
+                    checked={formData[`preguntaMedica${idx}`] === 'si'}
+                    onChange={handleChange}
+                  />
                 </td>
                 <td className="w-20 text-center px-4 py-2">
-                  <input type="radio" name={`preguntaMedica${idx}`} value="no" />
+                  <input 
+                    type="radio" 
+                    name={`preguntaMedica${idx}`} 
+                    value="no" 
+                    checked={formData[`preguntaMedica${idx}`] === 'no'}
+                    onChange={handleChange}
+                  />
                 </td>
               </tr>
             ))}
@@ -147,10 +172,22 @@ const FormularioMedico: React.FC = () => {
                 <tr key={idx} className={idx % 2 === 0 ? 'bg-white' : 'bg-gray-100'}>
                   <td className="px-4 py-2 align-top">{pregunta}</td>
                   <td className="w-20 text-center px-4 py-2">
-                    <input type="radio" name={`cuadroA${idx}`} value="si" />
+                    <input 
+                      type="radio" 
+                      name={`cuadroA${idx}`} 
+                      value="si" 
+                      checked={formData[`cuadroA${idx}`] === 'si'}
+                      onChange={handleChange}
+                    />
                   </td>
                   <td className="w-20 text-center px-4 py-2">
-                    <input type="radio" name={`cuadroA${idx}`} value="no" />
+                    <input 
+                      type="radio" 
+                      name={`cuadroA${idx}`} 
+                      value="no" 
+                      checked={formData[`cuadroA${idx}`] === 'no'}
+                      onChange={handleChange}
+                    />
                   </td>
                 </tr>
               ))}
@@ -178,10 +215,22 @@ const FormularioMedico: React.FC = () => {
                 <tr key={idx} className={idx % 2 === 0 ? 'bg-white' : 'bg-gray-100'}>
                   <td className="px-4 py-2 align-top">{pregunta}</td>
                   <td className="w-20 text-center px-4 py-2">
-                    <input type="radio" name={`cuadroB${idx}`} value="si" />
+                    <input 
+                      type="radio" 
+                      name={`cuadroB${idx}`} 
+                      value="si" 
+                      checked={formData[`cuadroB${idx}`] === 'si'}
+                      onChange={handleChange}
+                    />
                   </td>
                   <td className="w-20 text-center px-4 py-2">
-                    <input type="radio" name={`cuadroB${idx}`} value="no" />
+                    <input 
+                      type="radio" 
+                      name={`cuadroB${idx}`} 
+                      value="no" 
+                      checked={formData[`cuadroB${idx}`] === 'no'}
+                      onChange={handleChange}
+                    />
                   </td>
                 </tr>
               ))}
@@ -209,10 +258,22 @@ const FormularioMedico: React.FC = () => {
                 <tr key={idx} className={idx % 2 === 0 ? 'bg-white' : 'bg-gray-100'}>
                   <td className="px-4 py-2 align-top">{pregunta}</td>
                   <td className="w-20 text-center px-4 py-2">
-                    <input type="radio" name={`cuadroC${idx}`} value="si" />
+                    <input 
+                      type="radio" 
+                      name={`cuadroC${idx}`} 
+                      value="si" 
+                      checked={formData[`cuadroC${idx}`] === 'si'}
+                      onChange={handleChange}
+                    />
                   </td>
                   <td className="w-20 text-center px-4 py-2">
-                    <input type="radio" name={`cuadroC${idx}`} value="no" />
+                    <input 
+                      type="radio" 
+                      name={`cuadroC${idx}`} 
+                      value="no" 
+                      checked={formData[`cuadroC${idx}`] === 'no'}
+                      onChange={handleChange}
+                    />
                   </td>
                 </tr>
               ))}
@@ -241,10 +302,22 @@ const FormularioMedico: React.FC = () => {
                 <tr key={idx} className={idx % 2 === 0 ? 'bg-white' : 'bg-gray-100'}>
                   <td className="px-4 py-2 align-top">{pregunta}</td>
                   <td className="w-20 text-center px-4 py-2">
-                    <input type="radio" name={`cuadroD${idx}`} value="si" />
+                    <input 
+                      type="radio" 
+                      name={`cuadroD${idx}`} 
+                      value="si" 
+                      checked={formData[`cuadroD${idx}`] === 'si'}
+                      onChange={handleChange}
+                    />
                   </td>
                   <td className="w-20 text-center px-4 py-2">
-                    <input type="radio" name={`cuadroD${idx}`} value="no" />
+                    <input 
+                      type="radio" 
+                      name={`cuadroD${idx}`} 
+                      value="no" 
+                      checked={formData[`cuadroD${idx}`] === 'no'}
+                      onChange={handleChange}
+                    />
                   </td>
                 </tr>
               ))}
@@ -272,10 +345,22 @@ const FormularioMedico: React.FC = () => {
                 <tr key={idx} className={idx % 2 === 0 ? 'bg-white' : 'bg-gray-100'}>
                   <td className="px-4 py-2 align-top">{pregunta}</td>
                   <td className="w-20 text-center px-4 py-2">
-                    <input type="radio" name={`cuadroE${idx}`} value="si" />
+                    <input 
+                      type="radio" 
+                      name={`cuadroE${idx}`} 
+                      value="si" 
+                      checked={formData[`cuadroE${idx}`] === 'si'}
+                      onChange={handleChange}
+                    />
                   </td>
                   <td className="w-20 text-center px-4 py-2">
-                    <input type="radio" name={`cuadroE${idx}`} value="no" />
+                    <input 
+                      type="radio" 
+                      name={`cuadroE${idx}`} 
+                      value="no" 
+                      checked={formData[`cuadroE${idx}`] === 'no'}
+                      onChange={handleChange}
+                    />
                   </td>
                 </tr>
               ))}
@@ -304,10 +389,22 @@ const FormularioMedico: React.FC = () => {
                 <tr key={idx} className={idx % 2 === 0 ? 'bg-white' : 'bg-gray-100'}>
                   <td className="px-4 py-2 align-top">{pregunta}</td>
                   <td className="w-20 text-center px-4 py-2">
-                    <input type="radio" name={`cuadroF${idx}`} value="si" />
+                    <input 
+                      type="radio" 
+                      name={`cuadroF${idx}`} 
+                      value="si" 
+                      checked={formData[`cuadroF${idx}`] === 'si'}
+                      onChange={handleChange}
+                    />
                   </td>
                   <td className="w-20 text-center px-4 py-2">
-                    <input type="radio" name={`cuadroF${idx}`} value="no" />
+                    <input 
+                      type="radio" 
+                      name={`cuadroF${idx}`} 
+                      value="no" 
+                      checked={formData[`cuadroF${idx}`] === 'no'}
+                      onChange={handleChange}
+                    />
                   </td>
                 </tr>
               ))}
@@ -337,10 +434,22 @@ const FormularioMedico: React.FC = () => {
                 <tr key={idx} className={idx % 2 === 0 ? 'bg-white' : 'bg-gray-100'}>
                   <td className="px-4 py-2 align-top">{pregunta}</td>
                   <td className="w-20 text-center px-4 py-2">
-                    <input type="radio" name={`cuadroG${idx}`} value="si" />
+                    <input 
+                      type="radio" 
+                      name={`cuadroG${idx}`} 
+                      value="si" 
+                      checked={formData[`cuadroG${idx}`] === 'si'}
+                      onChange={handleChange}
+                    />
                   </td>
                   <td className="w-20 text-center px-4 py-2">
-                    <input type="radio" name={`cuadroG${idx}`} value="no" />
+                    <input 
+                      type="radio" 
+                      name={`cuadroG${idx}`} 
+                      value="no" 
+                      checked={formData[`cuadroG${idx}`] === 'no'}
+                      onChange={handleChange}
+                    />
                   </td>
                 </tr>
               ))}
