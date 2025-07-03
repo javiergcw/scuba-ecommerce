@@ -34,6 +34,7 @@ const ContactoEmergencia: React.FC<Props> = ({ formData, setFormData }) => {
                 className="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-base px-3 py-2"
                 value={formData.emergenciaNombre || ""}
                 onChange={handleChange}
+                required
               />
             </div>
             <div className="flex-1">
@@ -44,6 +45,7 @@ const ContactoEmergencia: React.FC<Props> = ({ formData, setFormData }) => {
                 className="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-base px-3 py-2"
                 value={formData.emergenciaApellido || ""}
                 onChange={handleChange}
+                required
               />
             </div>
           </div>
@@ -62,6 +64,7 @@ const ContactoEmergencia: React.FC<Props> = ({ formData, setFormData }) => {
                 className="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-base px-3 py-2"
                 value={formData.emergenciaCodigoArea || ""}
                 onChange={handleChange}
+                required
               />
             </div>
             <div className="flex-1">
@@ -72,6 +75,7 @@ const ContactoEmergencia: React.FC<Props> = ({ formData, setFormData }) => {
                 className="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-base px-3 py-2"
                 value={formData.emergenciaTelefono || ""}
                 onChange={handleChange}
+                required
               />
             </div>
           </div>
@@ -88,7 +92,36 @@ const ContactoEmergencia: React.FC<Props> = ({ formData, setFormData }) => {
             className="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-base px-3 py-2"
             value={formData.emergenciaEmail || ""}
             onChange={handleChange}
+            required
           />
+        </div>
+        {/* Fecha y Hora */}
+        <div className="mb-8">
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Fecha y Hora <span className="text-red-500">*</span>
+          </label>
+          <div className="flex gap-4">
+            <div className="flex-1">
+              <input
+                type="date"
+                name="emergenciaFecha"
+                className="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-base px-3 py-2"
+                value={formData.emergenciaFecha || ""}
+                onChange={handleChange}
+                required
+              />
+            </div>
+            <div className="flex-1">
+              <input
+                type="time"
+                name="emergenciaHora"
+                className="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-base px-3 py-2"
+                value={formData.emergenciaHora || ""}
+                onChange={handleChange}
+                required
+              />
+            </div>
+          </div>
         </div>
       </form>
     </div>

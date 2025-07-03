@@ -24,6 +24,7 @@ const Politicas: React.FC<Props> = ({ formData, setFormData }) => {
   };
 
   const sigPadreCanvas = useRef<any>(null);
+  const sigParticipanteCanvas = useRef<any>(null);
 
   return (
     <div className="p-8 bg-white shadow-md rounded-lg">
@@ -54,8 +55,7 @@ const Politicas: React.FC<Props> = ({ formData, setFormData }) => {
         </label>
       </div>
 
-      <div className="mb-8 mt-6">
-        {/* Mejor espaciado y alineación */}
+      {/* <div className="mb-8 mt-6">
         <label className="flex items-start gap-2 text-lg font-normal text-gray-700">
           <input
             type="checkbox"
@@ -68,10 +68,11 @@ const Politicas: React.FC<Props> = ({ formData, setFormData }) => {
             Estoy de acuerdo con <a href="/pdfs/Declaracion-de-comprension.pdf" target="_blank" rel="noopener noreferrer" className="text-purple-700 underline">Declaración de comprensión de Prácticas Estándares de Buceo Seguro.</a> <span className="text-red-500">*</span>
           </span>
         </label>
-      </div>
+      </div> */}
 
-      <div className="mb-8 mt-6">
-        {/* Mejor espaciado y alineación */}
+      {/* 
+       <div className="mb-8 mt-6">
+      
         <label className="flex items-start gap-2 text-lg font-normal text-gray-700">
           <input
             type="checkbox"
@@ -84,6 +85,27 @@ const Politicas: React.FC<Props> = ({ formData, setFormData }) => {
             Estoy de acuerdo con el <a href="/pdfs/Liberacion-de-responsabilidad.pdf" target="_blank" rel="noopener noreferrer" className="text-purple-700 underline">Contrato de Descargo de Responsabilidad y Asunción del Riesgo.</a> <span className="text-red-500">*</span>
           </span>
         </label>
+      </div>
+       */}
+
+      <div className="mt-12">
+        <label className="block text-base font-semibold mb-2">Firma del participante</label>
+        <SignatureCanvas
+          ref={sigParticipanteCanvas}
+          penColor="black"
+          canvasProps={{
+            width: 500,
+            height: 200,
+            className: "bg-white rounded-md border border-gray-300 shadow-sm"
+          }}
+        />
+        <button
+          type="button"
+          className="mt-2 px-4 py-1 bg-gray-200 text-gray-700 rounded hover:bg-gray-300"
+          onClick={() => sigParticipanteCanvas.current.clear()}
+        >
+          Limpiar
+        </button>
       </div>
 
       <div className="mt-12">
