@@ -9,9 +9,7 @@ import { usePathname } from "next/navigation";
 import { ROUTES } from "@/utils/constants";
 import Link from "next/link";
 import { services, Product } from "monolite-saas";
-import { IconButton } from "@mui/material";
-import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
-import ChevronRightIcon from "@mui/icons-material/ChevronRight";
+import SwiperNavigationButtons from "./SwiperNavigationButtons";
 
 const CoursesFirst = () => {
   const pathname = usePathname();
@@ -21,8 +19,6 @@ const CoursesFirst = () => {
   const [isSwiperReady, setIsSwiperReady] = useState(false);
 
   const swiperRef = useRef<any>(null);
-  const prevRef = useRef<HTMLButtonElement | null>(null);
-  const nextRef = useRef<HTMLButtonElement | null>(null);
 
   const fetchProducts = async () => {
     try {
@@ -40,21 +36,6 @@ const CoursesFirst = () => {
   useEffect(() => {
     fetchProducts();
   }, []);
-
-  useEffect(() => {
-    if (
-      isSwiperReady &&
-      swiperRef.current &&
-      prevRef.current &&
-      nextRef.current
-    ) {
-      swiperRef.current.params.navigation.prevEl = prevRef.current;
-      swiperRef.current.params.navigation.nextEl = nextRef.current;
-      swiperRef.current.navigation.destroy();
-      swiperRef.current.navigation.init();
-      swiperRef.current.navigation.update();
-    }
-  }, [isSwiperReady]);
 
   const isActive = (path: string) => {
     if (path === ROUTES.HOME) {
@@ -133,8 +114,8 @@ const CoursesFirst = () => {
             loop={true}
             autoplay={{ delay: 5000, disableOnInteraction: false }}
             navigation={{
-              prevEl: prevRef.current,
-              nextEl: nextRef.current,
+              prevEl: ".swiper-button-prev",
+              nextEl: ".swiper-button-next",
             }}
             breakpoints={{
               0: { slidesPerView: 1 },
@@ -211,48 +192,14 @@ const CoursesFirst = () => {
                   </Link>
                 </div>
               </SwiperSlide>
-
             ))}
           </Swiper>
 
-          {/* Botones de navegación */}
-          <div className="flex justify-between items-center absolute top-1/2 left-0 right-0 px-4 z-20">
-            <IconButton
-              ref={prevRef}
-              sx={{
-                zIndex: 99,
-                width: 56,
-                height: 56,
-                bgcolor: "#3b91e1",
-                color: "white",
-                transition: "all 0.3s ease",
-                "&:hover": {
-                  bgcolor: "#ffd701",
-                  color: "#000",
-                },
-              }}
-            >
-              <ChevronLeftIcon fontSize="large" />
-            </IconButton>
-
-            <IconButton
-              ref={nextRef}
-              sx={{
-                zIndex: 10,
-                width: 56,
-                height: 56,
-                bgcolor: "#3b91e1",
-                color: "white",
-                transition: "all 0.3s ease",
-                "&:hover": {
-                  bgcolor: "#ffd701",
-                  color: "#000",
-                },
-              }}
-            >
-              <ChevronRightIcon fontSize="large" />
-            </IconButton>
-          </div>
+          {/* Componente de botones de navegación */}
+          <SwiperNavigationButtons 
+            swiperRef={swiperRef}
+            isSwiperReady={isSwiperReady}
+          />
         </div>
       </div>
     </>
