@@ -21,8 +21,8 @@ import {
   useMediaQuery,
   Stack,
   IconButton,
-  Grid,
 } from "@mui/material";
+
 
 interface SliderOneProps {
   banners: Banner[];
@@ -239,17 +239,21 @@ const SliderOne: React.FC<SliderOneProps> = ({ banners }) => {
           }}
         />
         <Container sx={{ position: "relative", zIndex: 2 }}>
-          <Grid
-            container
-            spacing={4}
-            alignItems="center"
-            justifyContent="center"
+          <Box
             sx={{
+              display: "flex",
               flexDirection: { xs: "column", lg: "row" },
+              alignItems: "center",
+              justifyContent: "center",
+              gap: 4,
               textAlign: { xs: "center", lg: "right" },
             }}
           >
-            <Grid item xs={12} lg={8} display="flex" justifyContent="center">
+            <Box sx={{ 
+              display: "flex", 
+              justifyContent: "center",
+              width: { xs: "100%", lg: "66.666667%" }
+            }}>
               <Typography
                 variant="h5"
                 color="white"
@@ -262,8 +266,12 @@ const SliderOne: React.FC<SliderOneProps> = ({ banners }) => {
                 PROPORCIONAMOS UN SERVICIO EXCELENTE CON SEGURIDAD Y<br />
                 UNA <Box component="span" sx={{ color: "#FFD700" }}>EDUCACIÓN DE BUCEO</Box> EXCEPCIONAL
               </Typography>
-            </Grid>
-            <Grid item xs={12} lg={4} display="flex" justifyContent="center">
+            </Box>
+            <Box sx={{ 
+              display: "flex", 
+              justifyContent: "center",
+              width: { xs: "100%", lg: "33.333333%" }
+            }}>
               <Link href={ROUTES.CONTACT} legacyBehavior passHref>
                 <Button
                   variant="contained"
@@ -284,8 +292,8 @@ const SliderOne: React.FC<SliderOneProps> = ({ banners }) => {
                   COMIENZA CON NOSOTROS AHORA
                 </Button>
               </Link>
-            </Grid>
-          </Grid>
+            </Box>
+          </Box>
 
         </Container>
       </Box>
