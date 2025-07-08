@@ -17,6 +17,7 @@ interface CourseDetailProps {
     additionalInfo: string;
     features?: ProductFeatures;
     courseId?: string; // ID único del curso
+    subcategory_name?: string; // Subcategoría del curso
 }
 
 const BodyDetailCourse = ({
@@ -29,7 +30,8 @@ const BodyDetailCourse = ({
     tips,
     additionalInfo,
     features,
-    courseId
+    courseId,
+    subcategory_name
 }: CourseDetailProps) => {
     const { addToCart } = useCart();
     const router = useRouter();
@@ -43,7 +45,8 @@ const BodyDetailCourse = ({
             quantity: 1,
             image: image,
             courseDuration: courseDuration,
-            numberOfDives: numberOfDives
+            numberOfDives: numberOfDives,
+            subcategory_name: subcategory_name
         };
 
         addToCart(courseItem);

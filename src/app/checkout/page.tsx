@@ -193,7 +193,8 @@ export default function CheckoutPage() {
       quantity: 1,
       image: product.image_url,
       courseDuration: 4, // Valor por defecto
-      numberOfDives: 2   // Valor por defecto
+      numberOfDives: 2,   // Valor por defecto
+      subcategory_name: product.subcategory_name
     };
 
     addToCart(courseItem);

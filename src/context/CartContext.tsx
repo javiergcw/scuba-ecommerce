@@ -10,6 +10,7 @@ export interface CartItem {
   image?: string;
   courseDuration?: number;
   numberOfDives?: number;
+  subcategory_name?: string;
 }
 
 interface CartContextType {

@@ -47,7 +47,9 @@ const CourseDetailPage = () => {
         title: course.name,
         description: course.description || 'Descripción no disponible',
         tips:/*  course.tips || */ 'Información adicional no disponible',
-        additionalInfo: /* course.additional_info || */ 'Información adicional no disponible'
+        additionalInfo: /* course.additional_info || */ 'Información adicional no disponible',
+        courseId: course.id.toString(),
+        subcategory_name: course.subcategory_name
     };
 
     return (

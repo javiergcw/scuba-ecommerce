@@ -59,7 +59,9 @@ const CourseDetailPage = () => {
         description: course.description || 'Descripción no disponible',
         tips: course.description || 'Información adicional no disponible',
         additionalInfo: course.description || 'Información adicional no disponible',
-        features: course.features || {}
+        features: course.features || {},
+        courseId: course.id.toString(),
+        subcategory_name: course.subcategory_name
     };
 
     return (
