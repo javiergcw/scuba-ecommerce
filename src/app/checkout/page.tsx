@@ -21,7 +21,11 @@ import {
   Step,
   StepLabel,
   Card,
-  CardContent
+  CardContent,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions
 } from '@mui/material';
 import {
   ShoppingCart as ShoppingCartIcon,
@@ -40,6 +44,9 @@ import SwiperNavigationButtons from "@/components/containers/SwiperNavigationBut
 
 const steps = ['Resumen de Compra', 'Información Personal', 'Método de Pago'];
 
+// Variable para controlar si estamos en producción o desarrollo
+const isProduction = false; // Cambiar a true cuando esté en producción
+
 export default function CheckoutPage() {
   const { cartItems, totalPrice, clearCart, addToCart } = useCart();
   const router = useRouter();
@@ -49,6 +56,7 @@ export default function CheckoutPage() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
   const [loadingRelated, setLoadingRelated] = useState(true);
+  const [showDevPopup, setShowDevPopup] = useState(false);
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -160,6 +168,12 @@ export default function CheckoutPage() {
   };
 
   const handleNext = () => {
+    // Si no estamos en producción, mostrar popup de desarrollo
+    if (!isProduction) {
+      setShowDevPopup(true);
+      return;
+    }
+
     if (activeStep === steps.length - 1) {
       // Simular proceso de pago
       setIsProcessing(true);
@@ -208,6 +222,10 @@ export default function CheckoutPage() {
 
   const handleCloseSuccess = () => {
     setShowSuccess(false);
+  };
+
+  const handleCloseDevPopup = () => {
+    setShowDevPopup(false);
   };
 
   const isFormValid = () => {
@@ -976,6 +994,73 @@ export default function CheckoutPage() {
           ¡Producto agregado al carrito! Redirigiendo al checkout...
         </Alert>
       </Snackbar>
+
+      {/* Popup de desarrollo */}
+      <Dialog
+        open={showDevPopup}
+        onClose={handleCloseDevPopup}
+        maxWidth="sm"
+        fullWidth
+        PaperProps={{
+          sx: {
+            borderRadius: 0,
+            border: '2px solid #ffd701'
+          }
+        }}
+      >
+        <DialogTitle sx={{
+          backgroundColor: '#051b35',
+          color: '#fff',
+          textAlign: 'center',
+          fontWeight: 'bold',
+          fontSize: '1.5rem'
+        }}>
+          🚧 Sitio en Desarrollo 🚧
+        </DialogTitle>
+        <DialogContent sx={{ py: 3 }}>
+          <Box sx={{ textAlign: 'center' }}>
+            <img
+              src="/assets/images/Animation - 1746715748714.gif"
+              alt="En desarrollo"
+              style={{ width: 120, height: 120, margin: '0 auto 20px' }}
+            />
+            <Typography variant="h5" gutterBottom sx={{ color: '#051b35', fontWeight: 'bold' }}>
+              ¡Estamos trabajando en esto!
+            </Typography>
+            <Typography variant="body1" sx={{ color: 'text.secondary', mb: 2 }}>
+              Esta funcionalidad está en desarrollo y estará disponible pronto.
+            </Typography>
+            <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+              🌊 Mientras tanto, puedes explorar nuestros cursos de buceo disponibles 🌊
+            </Typography>
+          </Box>
+        </DialogContent>
+        <DialogActions sx={{
+          backgroundColor: '#f5f5f5',
+          px: 3,
+          py: 2,
+          justifyContent: 'center'
+        }}>
+          <Button
+            onClick={handleCloseDevPopup}
+            variant="contained"
+            sx={{
+              backgroundColor: '#ffd701',
+              color: '#051b35',
+              fontWeight: 'bold',
+              borderRadius: 0,
+              minWidth: '150px',
+              height: '45px',
+              '&:hover': {
+                backgroundColor: '#3b91e1',
+                color: '#fff'
+              }
+            }}
+          >
+            Entendido
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 }
