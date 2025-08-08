@@ -12,7 +12,7 @@ export class ApiService {
         baseURL: GATEWAY_URL,
         headers: {
             'Content-Type': 'application/json',
-
+            'X-license-Key': 'AAAAAAAAAAAAAAAAEvvVEw0tkvEhkG7hUirrMZTWQJeKzW4cskKUFv/agA=='
         },
     });
 

@@ -41,8 +41,14 @@ import "@/styles/carousel.css";
 import Link from "next/link";
 import { services, Product } from "monolite-saas";
 import SwiperNavigationButtons from "@/components/containers/SwiperNavigationButtons";
+import { ProductUseCase } from "@/core/use-case/product/product_use_case";
+import { OrderUseCase } from "@/core/use-case/order/order_use_case";
+import { SendInformationProductDto } from "@/core/dto/send/product/send_information_product_dto";
+import { ReceiveInformationProductDto } from "@/core/dto/receive/product/receive_information_product_dto";
+import { SendCreateOrderDto } from "@/core/dto/send/order/send_create_order_dto";
+import { ReceiveCreateOrderDto } from "@/core/dto/receive/order/receive_create_order_dto";
 
-const steps = ['Resumen de Compra', 'Información Personal', 'Método de Pago'];
+const steps = ['Resumen de Compra', 'Información Personal', 'URL de Pago'];
 
 // Variable para controlar si estamos en producción o desarrollo
 const isProduction = false; // Cambiar a true cuando esté en producción
@@ -57,6 +63,11 @@ export default function CheckoutPage() {
   const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
   const [loadingRelated, setLoadingRelated] = useState(true);
   const [showDevPopup, setShowDevPopup] = useState(false);
+  const [realTotalPrice, setRealTotalPrice] = useState<number>(0);
+  const [loadingRealPrice, setLoadingRealPrice] = useState(false);
+  const [orderResult, setOrderResult] = useState<ReceiveCreateOrderDto | null>(null);
+  const [orderError, setOrderError] = useState<string | null>(null);
+  const [orderTotalAmount, setOrderTotalAmount] = useState<number>(0);
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -65,13 +76,56 @@ export default function CheckoutPage() {
     address: '',
     city: '',
     country: 'Colombia',
-    zipCode: '',
-    paymentMethod: 'credit'
+    zipCode: ''
   });
 
   // Referencias para el Swiper
   const swiperRef = useRef<any>(null);
   const [isSwiperReady, setIsSwiperReady] = useState(false);
+
+  // Obtener precio real de los productos en el carrito
+  useEffect(() => {
+    const fetchRealPrice = async () => {
+      if (cartItems.length === 0) {
+        setRealTotalPrice(0);
+        return;
+      }
+
+      try {
+        setLoadingRealPrice(true);
+        
+        // Convertir items del carrito al formato requerido por el caso de uso
+        const productData: SendInformationProductDto = {
+          items: cartItems.map(item => ({
+            product_id: parseInt(item.id),
+            quantity: item.quantity
+          }))
+        };
+
+        console.log('🛒 Obteniendo precio real para productos:', productData);
+
+        await ProductUseCase.getProductInformation(
+          productData,
+          (data: ReceiveInformationProductDto) => {
+            console.log('✅ Precio real obtenido:', data.data.total_amount);
+            setRealTotalPrice(data.data.total_amount);
+          },
+          (error) => {
+            console.error('❌ Error al obtener precio real:', error);
+            // En caso de error, usar el precio calculado localmente
+            setRealTotalPrice(totalPrice);
+          }
+        );
+      } catch (error) {
+        console.error('❌ Error en fetchRealPrice:', error);
+        setRealTotalPrice(totalPrice);
+      } finally {
+        setLoadingRealPrice(false);
+      }
+    };
+
+    fetchRealPrice();
+  }, [cartItems, totalPrice]);
 
   // Obtener productos relacionados basados en la categoría de los productos en el carrito
   useEffect(() => {
@@ -169,25 +223,62 @@ export default function CheckoutPage() {
 
   const handleNext = () => {
     // Si no estamos en producción, mostrar popup de desarrollo
-    if (!isProduction) {
-      setShowDevPopup(true);
+    // if (!isProduction) {
+    //   setShowDevPopup(true);
+    //   return;
+    // }
+
+    if (activeStep === steps.length - 1) {
+      // Crear orden usando el caso de uso
+      handleCreateOrder();
+    } else {
+      setActiveStep(prev => prev + 1);
+    }
+  };
+
+  const handleCreateOrder = async () => {
+    if (!isFormValid()) {
       return;
     }
 
-    if (activeStep === steps.length - 1) {
-      // Simular proceso de pago
-      setIsProcessing(true);
-      setTimeout(() => {
-        setIsProcessing(false);
-        // Simular éxito o fallo aleatorio (80% éxito, 20% fallo)
-        const isSuccess = Math.random() > 0.2;
-        setPaymentResult(isSuccess ? 'success' : 'failed');
-        if (isSuccess) {
-          clearCart();
+    setIsProcessing(true);
+    setOrderError(null);
+
+    try {
+      // Preparar datos de la orden
+      const orderData: SendCreateOrderDto = {
+        customer_name: `${formData.firstName} ${formData.lastName}`,
+        customer_email: formData.email,
+        customer_phone: formData.phone,
+        items: cartItems.map(item => ({
+          product_id: parseInt(item.id),
+          quantity: item.quantity
+        })),
+        notes: `Dirección: ${formData.address}, ${formData.city}, ${formData.country} ${formData.zipCode}`
+      };
+
+      console.log('🛒 Creando orden:', orderData);
+
+              await OrderUseCase.createOrder(
+          orderData,
+          (data: ReceiveCreateOrderDto) => {
+            console.log('✅ Orden creada exitosamente:', data);
+            setOrderResult(data);
+            setOrderTotalAmount(data.data.total_amount);
+            setIsProcessing(false);
+            // Limpiar carrito solo si la orden se creó exitosamente
+            clearCart();
+          },
+        (error) => {
+          console.error('❌ Error al crear orden:', error);
+          setOrderError(error.message || 'Error al crear la orden');
+          setIsProcessing(false);
         }
-      }, 3000);
-    } else {
-      setActiveStep(prev => prev + 1);
+      );
+    } catch (error) {
+      console.error('❌ Error en handleCreateOrder:', error);
+      setOrderError('Error inesperado al crear la orden');
+      setIsProcessing(false);
     }
   };
 
@@ -238,14 +329,18 @@ export default function CheckoutPage() {
       case 0:
         return (
           <Box>
-            <Typography variant="h5" gutterBottom>
+            <Typography variant="h5" gutterBottom sx={{
+              fontSize: { xs: '1.3rem', sm: '1.5rem' },
+              fontWeight: 600,
+              color: '#051b35'
+            }}>
               Resumen de Compra
             </Typography>
             {cartItems.map((item) => (
               <Paper
                 key={item.id}
                 sx={{
-                  p: 2,
+                  p: { xs: 1.5, sm: 2 },
                   mb: 2,
                   borderRadius: 0,
                   border: '1px solid #e0e0e0',
@@ -253,27 +348,53 @@ export default function CheckoutPage() {
                   backgroundColor: '#fafafa'
                 }}
               >
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <Box sx={{ flex: 1 }}>
-                    <Typography variant="h6" sx={{ fontWeight: 600, color: '#051b35' }}>
+                <Box sx={{ 
+                  display: 'flex', 
+                  flexDirection: { xs: 'column', sm: 'row' },
+                  justifyContent: 'space-between', 
+                  alignItems: { xs: 'flex-start', sm: 'center' },
+                  gap: { xs: 1, sm: 0 }
+                }}>
+                  <Box sx={{ flex: 1, width: '100%' }}>
+                    <Typography variant="h6" sx={{ 
+                      fontWeight: 600, 
+                      color: '#051b35',
+                      fontSize: { xs: '1rem', sm: '1.1rem' },
+                      mb: 0.5
+                    }}>
                       {item.name}
                     </Typography>
-                    <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+                    <Typography variant="body2" color="text.secondary" sx={{ 
+                      mt: 0.5,
+                      fontSize: { xs: '0.8rem', sm: '0.875rem' }
+                    }}>
                       Cantidad: {item.quantity}
                     </Typography>
                     {item.courseDuration && (
-                      <Typography variant="body2" color="text.secondary">
+                      <Typography variant="body2" color="text.secondary" sx={{
+                        fontSize: { xs: '0.8rem', sm: '0.875rem' }
+                      }}>
                         Duración: {item.courseDuration} días
                       </Typography>
                     )}
                     {item.numberOfDives && (
-                      <Typography variant="body2" color="text.secondary">
+                      <Typography variant="body2" color="text.secondary" sx={{
+                        fontSize: { xs: '0.8rem', sm: '0.875rem' }
+                      }}>
                         Inmersiones: {item.numberOfDives}
                       </Typography>
                     )}
                   </Box>
-                  <Box sx={{ textAlign: 'right' }}>
-                    <Typography variant="h6" sx={{ fontWeight: 700, color: '#051b35' }}>
+                  <Box sx={{ 
+                    textAlign: { xs: 'left', sm: 'right' },
+                    mt: { xs: 1, sm: 0 },
+                    width: { xs: '100%', sm: 'auto' }
+                  }}>
+                    <Typography variant="h6" sx={{ 
+                      fontWeight: 700, 
+                      color: '#051b35',
+                      fontSize: { xs: '1.1rem', sm: '1.2rem' }
+                    }}>
                       {formatPrice(item.price * item.quantity)}
                     </Typography>
                   </Box>
@@ -281,11 +402,45 @@ export default function CheckoutPage() {
               </Paper>
             ))}
             <Divider sx={{ my: 2 }} />
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <Typography variant="h5">Total:</Typography>
-              <Typography variant="h4" color="primary" fontWeight="bold">
-                {formatPrice(totalPrice)}
+            <Box sx={{ 
+              display: 'flex', 
+              flexDirection: { xs: 'column', sm: 'row' },
+              justifyContent: 'space-between', 
+              alignItems: { xs: 'flex-start', sm: 'center' },
+              gap: { xs: 1, sm: 0 }
+            }}>
+              <Typography variant="h5" sx={{
+                fontSize: { xs: '1.3rem', sm: '1.5rem' },
+                fontWeight: 600,
+                color: '#051b35'
+              }}>
+                Total:
               </Typography>
+              <Box sx={{ 
+                textAlign: { xs: 'left', sm: 'right' },
+                width: { xs: '100%', sm: 'auto' }
+              }}>
+                {loadingRealPrice ? (
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <img
+                      src="/assets/images/Animation - 1746715748714.gif"
+                      alt="Calculando precio..."
+                      style={{ width: 20, height: 20 }}
+                    />
+                    <Typography variant="body2" color="text.secondary" sx={{
+                      fontSize: { xs: '0.875rem', sm: '1rem' }
+                    }}>
+                      Calculando...
+                    </Typography>
+                  </Box>
+                ) : (
+                  <Typography variant="h4" color="primary" fontWeight="bold" sx={{
+                    fontSize: { xs: '1.5rem', sm: '2rem' }
+                  }}>
+                    {formatPrice(realTotalPrice > 0 ? realTotalPrice : totalPrice)}
+                  </Typography>
+                )}
+              </Box>
             </Box>
           </Box>
         );
@@ -293,41 +448,83 @@ export default function CheckoutPage() {
       case 1:
         return (
           <Box>
-            <Typography variant="h5" gutterBottom>
+            <Typography variant="h5" gutterBottom sx={{
+              fontSize: { xs: '1.3rem', sm: '1.5rem' },
+              fontWeight: 600,
+              color: '#051b35'
+            }}>
               Información Personal
             </Typography>
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-              <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: { xs: 1.5, sm: 2 } }}>
+              <Box sx={{ 
+                display: 'flex', 
+                gap: { xs: 1, sm: 2 }, 
+                flexWrap: 'wrap',
+                flexDirection: { xs: 'column', sm: 'row' }
+              }}>
                 <TextField
-                  sx={{ flex: 1, minWidth: '250px' }}
+                  sx={{ 
+                    flex: { sm: 1 },
+                    minWidth: { xs: '100%', sm: '250px' },
+                    '& .MuiInputBase-root': {
+                      fontSize: { xs: '0.875rem', sm: '1rem' }
+                    }
+                  }}
                   label="Nombre"
                   value={formData.firstName}
                   onChange={(e) => handleInputChange('firstName', e.target.value)}
                   required
+                  size="small"
                 />
                 <TextField
-                  sx={{ flex: 1, minWidth: '250px' }}
+                  sx={{ 
+                    flex: { sm: 1 },
+                    minWidth: { xs: '100%', sm: '250px' },
+                    '& .MuiInputBase-root': {
+                      fontSize: { xs: '0.875rem', sm: '1rem' }
+                    }
+                  }}
                   label="Apellido"
                   value={formData.lastName}
                   onChange={(e) => handleInputChange('lastName', e.target.value)}
                   required
+                  size="small"
                 />
               </Box>
-              <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
+              <Box sx={{ 
+                display: 'flex', 
+                gap: { xs: 1, sm: 2 }, 
+                flexWrap: 'wrap',
+                flexDirection: { xs: 'column', sm: 'row' }
+              }}>
                 <TextField
-                  sx={{ flex: 1, minWidth: '250px' }}
+                  sx={{ 
+                    flex: { sm: 1 },
+                    minWidth: { xs: '100%', sm: '250px' },
+                    '& .MuiInputBase-root': {
+                      fontSize: { xs: '0.875rem', sm: '1rem' }
+                    }
+                  }}
                   label="Email"
                   type="email"
                   value={formData.email}
                   onChange={(e) => handleInputChange('email', e.target.value)}
                   required
+                  size="small"
                 />
                 <TextField
-                  sx={{ flex: 1, minWidth: '250px' }}
+                  sx={{ 
+                    flex: { sm: 1 },
+                    minWidth: { xs: '100%', sm: '250px' },
+                    '& .MuiInputBase-root': {
+                      fontSize: { xs: '0.875rem', sm: '1rem' }
+                    }
+                  }}
                   label="Teléfono"
                   value={formData.phone}
                   onChange={(e) => handleInputChange('phone', e.target.value)}
                   required
+                  size="small"
                 />
               </Box>
               <TextField
@@ -336,20 +533,45 @@ export default function CheckoutPage() {
                 value={formData.address}
                 onChange={(e) => handleInputChange('address', e.target.value)}
                 required
+                size="small"
+                sx={{
+                  '& .MuiInputBase-root': {
+                    fontSize: { xs: '0.875rem', sm: '1rem' }
+                  }
+                }}
               />
-              <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
+              <Box sx={{ 
+                display: 'flex', 
+                gap: { xs: 1, sm: 2 }, 
+                flexWrap: 'wrap',
+                flexDirection: { xs: 'column', sm: 'row' }
+              }}>
                 <TextField
-                  sx={{ flex: 1, minWidth: '250px' }}
+                  sx={{ 
+                    flex: { sm: 1 },
+                    minWidth: { xs: '100%', sm: '250px' },
+                    '& .MuiInputBase-root': {
+                      fontSize: { xs: '0.875rem', sm: '1rem' }
+                    }
+                  }}
                   label="Ciudad"
                   value={formData.city}
                   onChange={(e) => handleInputChange('city', e.target.value)}
                   required
+                  size="small"
                 />
                 <TextField
-                  sx={{ flex: 1, minWidth: '250px' }}
+                  sx={{ 
+                    flex: { sm: 1 },
+                    minWidth: { xs: '100%', sm: '250px' },
+                    '& .MuiInputBase-root': {
+                      fontSize: { xs: '0.875rem', sm: '1rem' }
+                    }
+                  }}
                   label="Código Postal"
                   value={formData.zipCode}
                   onChange={(e) => handleInputChange('zipCode', e.target.value)}
+                  size="small"
                 />
               </Box>
             </Box>
@@ -359,92 +581,155 @@ export default function CheckoutPage() {
       case 2:
         return (
           <Box>
-            <Typography variant="h5" gutterBottom>
-              Método de Pago
+            <Typography variant="h5" gutterBottom sx={{
+              fontSize: { xs: '1.3rem', sm: '1.5rem' },
+              fontWeight: 600,
+              color: '#051b35'
+            }}>
+              URL de Pago
             </Typography>
-            <FormControl component="fieldset">
-              <FormLabel component="legend">Selecciona tu método de pago</FormLabel>
-              <RadioGroup
-                value={formData.paymentMethod}
-                onChange={(e) => handleInputChange('paymentMethod', e.target.value)}
-              >
-                <FormControlLabel
-                  value="credit"
-                  control={<Radio />}
-                  label="Tarjeta de Crédito/Débito"
-                />
-                <FormControlLabel
-                  value="transfer"
-                  control={<Radio />}
-                  label="Transferencia Bancaria"
-                />
-                <FormControlLabel
-                  value="cash"
-                  control={<Radio />}
-                  label="Efectivo (Pago en el centro)"
-                />
-              </RadioGroup>
-            </FormControl>
-
-            {formData.paymentMethod === 'credit' && (
-              <Card sx={{
-                mt: 2,
-                borderRadius: 0,
-                border: '1px solid #e0e0e0',
-                boxShadow: 'none',
-                backgroundColor: '#fafafa'
+            <Typography variant="body1" sx={{ 
+              mb: 3, 
+              color: 'text.secondary',
+              fontSize: { xs: '0.9rem', sm: '1rem' },
+              lineHeight: 1.6
+            }}>
+              Al hacer clic en "Crear Orden", se generará un enlace de pago seguro que te permitirá completar tu transacción de forma segura.
+            </Typography>
+            
+            <Alert severity="info" sx={{ mb: 3 }}>
+              <Typography variant="body1" gutterBottom sx={{
+                fontSize: { xs: '0.95rem', sm: '1rem' },
+                fontWeight: 600
               }}>
-                <CardContent>
-                  <Typography variant="h6" gutterBottom sx={{ fontWeight: 600, color: '#051b35' }}>
-                    Información de la Tarjeta
-                  </Typography>
-                  <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                    <TextField
-                      fullWidth
-                      label="Número de Tarjeta"
-                      placeholder="1234 5678 9012 3456"
-                    />
-                    <Box sx={{ display: 'flex', gap: 2 }}>
-                      <TextField
-                        sx={{ flex: 1 }}
-                        label="Fecha de Vencimiento"
-                        placeholder="MM/AA"
-                      />
-                      <TextField
-                        sx={{ flex: 1 }}
-                        label="CVV"
-                        placeholder="123"
-                      />
-                    </Box>
-                    <TextField
-                      fullWidth
-                      label="Nombre en la Tarjeta"
-                    />
+                <strong>¿Cómo funciona?</strong>
+              </Typography>
+              <Typography variant="body2" sx={{
+                fontSize: { xs: '0.85rem', sm: '0.875rem' },
+                lineHeight: 1.6
+              }}>
+                • Se creará tu orden con todos los datos ingresados<br />
+                • Recibirás un enlace de pago seguro y confiable<br />
+                • Podrás pagar con tarjeta, transferencia o efectivo<br />
+                • El pago se procesará de forma segura
+              </Typography>
+            </Alert>
+
+            <Card sx={{
+              borderRadius: 0,
+              border: '1px solid #e0e0e0',
+              boxShadow: 'none',
+              backgroundColor: '#fafafa',
+              p: { xs: 1.5, sm: 2 }
+            }}>
+              <CardContent sx={{ p: { xs: 1, sm: 2 } }}>
+                <Typography variant="h6" gutterBottom sx={{ 
+                  fontWeight: 600, 
+                  color: '#051b35',
+                  fontSize: { xs: '1.1rem', sm: '1.2rem' }
+                }}>
+                  Resumen de tu Orden
+                </Typography>
+                <Box sx={{ 
+                  display: 'flex', 
+                  flexDirection: 'column',
+                  gap: 1.5
+                }}>
+                  <Box sx={{ 
+                    display: 'flex', 
+                    justifyContent: 'space-between',
+                    flexWrap: 'wrap',
+                    gap: 1
+                  }}>
+                    <Typography variant="body2" sx={{
+                      fontSize: { xs: '0.85rem', sm: '0.875rem' },
+                      fontWeight: 500
+                    }}>
+                      Productos:
+                    </Typography>
+                    <Typography variant="body2" fontWeight="bold" sx={{
+                      fontSize: { xs: '0.85rem', sm: '0.875rem' }
+                    }}>
+                      {cartItems.length} {cartItems.length === 1 ? 'curso' : 'cursos'}
+                    </Typography>
                   </Box>
-                </CardContent>
-              </Card>
-            )}
-
-            {formData.paymentMethod === 'transfer' && (
-              <Alert severity="info" sx={{ mt: 2 }}>
-                <Typography variant="body1" gutterBottom>
-                  <strong>Datos Bancarios:</strong>
-                </Typography>
-                <Typography variant="body2">
-                  Banco: Banco de Bogotá<br />
-                  Cuenta: 123-456789-01<br />
-                  Titular: Oceano Scuba S.A.S<br />
-                  Tipo: Cuenta Corriente
-                </Typography>
-              </Alert>
-            )}
-
-            {formData.paymentMethod === 'cash' && (
-              <Alert severity="info" sx={{ mt: 2 }}>
-                Puedes pagar en efectivo cuando llegues al centro de buceo.
-                Te contactaremos para coordinar los detalles.
-              </Alert>
-            )}
+                  <Box sx={{ 
+                    display: 'flex', 
+                    justifyContent: 'space-between',
+                    flexWrap: 'wrap',
+                    gap: 1
+                  }}>
+                    <Typography variant="body2" sx={{
+                      fontSize: { xs: '0.85rem', sm: '0.875rem' },
+                      fontWeight: 500
+                    }}>
+                      Cliente:
+                    </Typography>
+                    <Typography variant="body2" fontWeight="bold" sx={{
+                      fontSize: { xs: '0.85rem', sm: '0.875rem' }
+                    }}>
+                      {formData.firstName} {formData.lastName}
+                    </Typography>
+                  </Box>
+                  <Box sx={{ 
+                    display: 'flex', 
+                    justifyContent: 'space-between',
+                    flexWrap: 'wrap',
+                    gap: 1
+                  }}>
+                    <Typography variant="body2" sx={{
+                      fontSize: { xs: '0.85rem', sm: '0.875rem' },
+                      fontWeight: 500
+                    }}>
+                      Email:
+                    </Typography>
+                    <Typography variant="body2" fontWeight="bold" sx={{
+                      fontSize: { xs: '0.85rem', sm: '0.875rem' }
+                    }}>
+                      {formData.email}
+                    </Typography>
+                  </Box>
+                  <Box sx={{ 
+                    display: 'flex', 
+                    justifyContent: 'space-between',
+                    flexWrap: 'wrap',
+                    gap: 1
+                  }}>
+                    <Typography variant="body2" sx={{
+                      fontSize: { xs: '0.85rem', sm: '0.875rem' },
+                      fontWeight: 500
+                    }}>
+                      Total:
+                    </Typography>
+                    <Typography variant="body2" fontWeight="bold" color="primary" sx={{
+                      fontSize: { xs: '0.85rem', sm: '0.875rem' }
+                    }}>
+                      {formatPrice(realTotalPrice > 0 ? realTotalPrice : totalPrice)}
+                    </Typography>
+                  </Box>
+                  {orderTotalAmount > 0 && (
+                    <Box sx={{ 
+                      display: 'flex', 
+                      justifyContent: 'space-between',
+                      flexWrap: 'wrap',
+                      gap: 1
+                    }}>
+                      <Typography variant="body2" color="success.main" sx={{
+                        fontSize: { xs: '0.85rem', sm: '0.875rem' },
+                        fontWeight: 500
+                      }}>
+                        Total Confirmado:
+                      </Typography>
+                      <Typography variant="body2" fontWeight="bold" color="success.main" sx={{
+                        fontSize: { xs: '0.85rem', sm: '0.875rem' }
+                      }}>
+                        {formatPrice(orderTotalAmount)}
+                      </Typography>
+                    </Box>
+                  )}
+                </Box>
+              </CardContent>
+            </Card>
           </Box>
         );
 
@@ -465,10 +750,10 @@ export default function CheckoutPage() {
               style={{ width: 200, height: 200 }}
             />
             <Typography variant="h4" gutterBottom>
-              Procesando tu pago...
+              Generando tu link de pago...
             </Typography>
             <Typography variant="body1" color="text.secondary">
-              Por favor espera mientras procesamos tu transacción
+              Por favor espera mientras procesamos tu compra
             </Typography>
           </div>
         </Box>
@@ -477,29 +762,225 @@ export default function CheckoutPage() {
   }
 
   // Pantalla de resultado del pago
-  if (paymentResult) {
+  if (orderResult || orderError) {
     return (
-      <Box sx={{ minHeight: '100vh', backgroundColor: '#f5f5f5', py: 4 }}>
-        <Box sx={{ maxWidth: 800, mx: 'auto', px: 2 }}>
-          <div className="flex flex-col items-center justify-center h-[85vh] space-y-6">
-            {paymentResult === 'success' ? (
+      <Box sx={{ 
+        minHeight: '100vh', 
+        backgroundColor: '#f5f5f5', 
+        py: { xs: 2, md: 4 },
+        px: { xs: 1, md: 2 }
+      }}>
+        <Box sx={{ 
+          maxWidth: 900, 
+          mx: 'auto', 
+          px: { xs: 1, sm: 2, md: 3 },
+          position: 'relative',
+          zIndex: 3
+        }}>
+          <Box sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            minHeight: '85vh',
+            gap: { xs: 3, md: 4 }
+          }}>
+            {orderResult ? (
               <>
-                <CheckCircleIcon sx={{ fontSize: 120, color: '#4caf50' }} />
-                <Typography variant="h3" gutterBottom color="success.main">
-                  ¡Pago Exitoso!
+                <CheckCircleIcon sx={{ 
+                  fontSize: { xs: 80, sm: 100, md: 120 }, 
+                  color: '#4caf50' 
+                }} />
+                
+                <Typography variant="h3" gutterBottom color="success.main" sx={{
+                  fontSize: { xs: '1.5rem', sm: '2rem', md: '2.5rem' },
+                  textAlign: 'center',
+                  fontWeight: 700
+                }}>
+                  ¡Orden Creada Exitosamente!
                 </Typography>
-                <Typography variant="h5" textAlign="center" sx={{ mb: 2 }}>
+                
+                <Typography variant="h5" textAlign="center" sx={{ 
+                  mb: 2,
+                  fontSize: { xs: '1.1rem', sm: '1.3rem', md: '1.5rem' },
+                  color: '#051b35'
+                }}>
                   🐠 ¡Bienvenido al mundo submarino! 🐠
                 </Typography>
-                <Typography variant="body1" textAlign="center" color="text.secondary" sx={{ mb: 4 }}>
-                  Tu reserva ha sido confirmada exitosamente.<br />
+                
+                <Card sx={{ 
+                  p: { xs: 2, sm: 3 }, 
+                  mb: 3, 
+                  borderRadius: 0, 
+                  border: '2px solid #4caf50',
+                  backgroundColor: '#f8fff8',
+                  width: '100%',
+                  maxWidth: 600
+                }}>
+                  <Typography variant="h6" gutterBottom sx={{ 
+                    fontWeight: 'bold', 
+                    color: '#051b35',
+                    fontSize: { xs: '1.1rem', sm: '1.3rem' }
+                  }}>
+                    Detalles de tu Orden:
+                  </Typography>
+                  
+                  <Box sx={{ 
+                    display: 'flex', 
+                    flexDirection: 'column', 
+                    gap: 1,
+                    fontSize: { xs: '0.875rem', sm: '1rem' }
+                  }}>
+                    <Box sx={{ 
+                      display: 'flex', 
+                      justifyContent: 'space-between',
+                      flexWrap: 'wrap',
+                      gap: 1
+                    }}>
+                      <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
+                        ID de Orden:
+                      </Typography>
+                      <Typography variant="body2" sx={{ color: '#051b35' }}>
+                        #{orderResult.data.order_id}
+                      </Typography>
+                    </Box>
+                    
+                    <Box sx={{ 
+                      display: 'flex', 
+                      justifyContent: 'space-between',
+                      flexWrap: 'wrap',
+                      gap: 1
+                    }}>
+                      <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
+                        Código de Tracking:
+                      </Typography>
+                      <Typography variant="body2" sx={{ color: '#051b35' }}>
+                        {orderResult.data.tracking_code}
+                      </Typography>
+                    </Box>
+                    
+                    <Box sx={{ 
+                      display: 'flex', 
+                      justifyContent: 'space-between',
+                      flexWrap: 'wrap',
+                      gap: 1
+                    }}>
+                      <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
+                        Total:
+                      </Typography>
+                      <Typography variant="body2" sx={{ color: '#051b35', fontWeight: 'bold' }}>
+                        {formatPrice(orderResult.data.total_amount)}
+                      </Typography>
+                    </Box>
+                    
+                    <Box sx={{ 
+                      display: 'flex', 
+                      justifyContent: 'space-between',
+                      flexWrap: 'wrap',
+                      gap: 1
+                    }}>
+                      <Typography variant="body2" sx={{ fontWeight: 'bold', color: 'success.main' }}>
+                        Total Confirmado:
+                      </Typography>
+                      <Typography variant="body2" sx={{ color: 'success.main', fontWeight: 'bold' }}>
+                        {formatPrice(orderResult.data.total_amount)}
+                      </Typography>
+                    </Box>
+                    
+                    <Box sx={{ 
+                      display: 'flex', 
+                      justifyContent: 'space-between',
+                      flexWrap: 'wrap',
+                      gap: 1
+                    }}>
+                      <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
+                        Estado:
+                      </Typography>
+                      <Typography variant="body2" sx={{ color: '#051b35' }}>
+                        {orderResult.data.status}
+                      </Typography>
+                    </Box>
+                    
+                    <Box sx={{ 
+                      display: 'flex', 
+                      justifyContent: 'space-between',
+                      flexWrap: 'wrap',
+                      gap: 1
+                    }}>
+                      <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
+                        Estado de Pago:
+                      </Typography>
+                      <Typography variant="body2" sx={{ color: '#051b35' }}>
+                        {orderResult.data.payment_status}
+                      </Typography>
+                    </Box>
+                  </Box>
+                </Card>
+
+                {orderResult.data.payment_url && (
+                  <Box sx={{ 
+                    textAlign: 'center', 
+                    mb: 3,
+                    width: '100%',
+                    maxWidth: 600
+                  }}>
+                    <Typography variant="h6" gutterBottom sx={{ 
+                      fontWeight: 'bold', 
+                      color: '#051b35',
+                      fontSize: { xs: '1.1rem', sm: '1.3rem' }
+                    }}>
+                      🔗 Enlace de Pago:
+                    </Typography>
+                    <Button
+                      variant="contained"
+                      size="large"
+                      onClick={() => window.open(orderResult.data.payment_url, '_blank')}
+                      sx={{
+                        backgroundColor: '#ffd701',
+                        color: '#051b35',
+                        fontWeight: 'bold',
+                        borderRadius: 0,
+                        minWidth: { xs: '180px', sm: '200px' },
+                        height: { xs: '50px', sm: '55px' },
+                        fontSize: { xs: '0.9rem', sm: '1rem' },
+                        '&:hover': {
+                          backgroundColor: '#3b91e1',
+                          color: '#fff'
+                        }
+                      }}
+                    >
+                      Ir al Pago
+                    </Button>
+                  </Box>
+                )}
+
+                <Typography variant="body1" textAlign="center" color="text.secondary" sx={{ 
+                  mb: 4,
+                  fontSize: { xs: '0.9rem', sm: '1rem' },
+                  maxWidth: 600,
+                  px: { xs: 1, sm: 2 }
+                }}>
+                  Tu orden ha sido creada exitosamente.<br />
                   Recibirás un email con todos los detalles de tu curso de buceo.
                 </Typography>
-                <Box sx={{ textAlign: 'center' }}>
-                  <Typography variant="h6" gutterBottom>
+                
+                <Box sx={{ 
+                  textAlign: 'center',
+                  maxWidth: 600,
+                  px: { xs: 1, sm: 2 }
+                }}>
+                  <Typography variant="h6" gutterBottom sx={{
+                    fontSize: { xs: '1.1rem', sm: '1.3rem' },
+                    fontWeight: 'bold',
+                    color: '#051b35'
+                  }}>
                     Próximos pasos:
                   </Typography>
-                  <Typography variant="body2" color="text.secondary">
+                  <Typography variant="body2" color="text.secondary" sx={{
+                    fontSize: { xs: '0.875rem', sm: '1rem' },
+                    lineHeight: 1.6
+                  }}>
+                    • Completa el pago usando el enlace proporcionado<br />
                     • Revisa tu email para confirmar los detalles<br />
                     • Llega 15 minutos antes de tu clase<br />
                     • Trae ropa cómoda y una toalla<br />
@@ -509,32 +990,71 @@ export default function CheckoutPage() {
               </>
             ) : (
               <>
-                <CancelIcon sx={{ fontSize: 120, color: '#f44336' }} />
-                <Typography variant="h3" gutterBottom color="error.main">
-                  Pago Rechazado
+                <CancelIcon sx={{ 
+                  fontSize: { xs: 80, sm: 100, md: 120 }, 
+                  color: '#f44336' 
+                }} />
+                
+                <Typography variant="h3" gutterBottom color="error.main" sx={{
+                  fontSize: { xs: '1.5rem', sm: '2rem', md: '2.5rem' },
+                  textAlign: 'center',
+                  fontWeight: 700
+                }}>
+                  Error al Crear Orden
                 </Typography>
-                <Typography variant="h5" textAlign="center" sx={{ mb: 2 }}>
+                
+                <Typography variant="h5" textAlign="center" sx={{ 
+                  mb: 2,
+                  fontSize: { xs: '1.1rem', sm: '1.3rem', md: '1.5rem' },
+                  color: '#051b35'
+                }}>
                   🌊 No te preocupes, podemos intentarlo de nuevo 🌊
                 </Typography>
-                <Typography variant="body1" textAlign="center" color="text.secondary" sx={{ mb: 4 }}>
-                  Hubo un problema procesando tu pago.<br />
-                  Verifica los datos de tu tarjeta o intenta con otro método de pago.
+                
+                <Typography variant="body1" textAlign="center" color="text.secondary" sx={{ 
+                  mb: 4,
+                  fontSize: { xs: '0.9rem', sm: '1rem' },
+                  maxWidth: 600,
+                  px: { xs: 1, sm: 2 }
+                }}>
+                  {orderError || 'Hubo un problema creando tu orden.'}<br />
+                  Verifica los datos ingresados e intenta nuevamente.
                 </Typography>
-                <Box sx={{ textAlign: 'center' }}>
-                  <Typography variant="h6" gutterBottom>
+                
+                <Box sx={{ 
+                  textAlign: 'center',
+                  maxWidth: 600,
+                  px: { xs: 1, sm: 2 }
+                }}>
+                  <Typography variant="h6" gutterBottom sx={{
+                    fontSize: { xs: '1.1rem', sm: '1.3rem' },
+                    fontWeight: 'bold',
+                    color: '#051b35'
+                  }}>
                     Posibles causas:
                   </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    • Datos de tarjeta incorrectos<br />
-                    • Fondos insuficientes<br />
-                    • Tarjeta bloqueada<br />
-                    • Problema temporal del sistema
+                  <Typography variant="body2" color="text.secondary" sx={{
+                    fontSize: { xs: '0.875rem', sm: '1rem' },
+                    lineHeight: 1.6
+                  }}>
+                    • Datos de contacto incorrectos<br />
+                    • Productos no disponibles<br />
+                    • Problema temporal del sistema<br />
+                    • Error de conexión
                   </Typography>
                 </Box>
               </>
             )}
 
-            <Box sx={{ mt: 4, display: 'flex', gap: 2, flexWrap: 'wrap', justifyContent: 'center' }}>
+            <Box sx={{ 
+              mt: 4, 
+              display: 'flex', 
+              gap: { xs: 1, sm: 2 }, 
+              flexWrap: 'wrap', 
+              justifyContent: 'center',
+              width: '100%',
+              maxWidth: 600
+            }}>
               <Button
                 variant="contained"
                 size="large"
@@ -544,8 +1064,9 @@ export default function CheckoutPage() {
                   color: '#051b35',
                   fontWeight: 'bold',
                   borderRadius: 0,
-                  minWidth: '180px',
-                  height: '55px',
+                  minWidth: { xs: '150px', sm: '180px' },
+                  height: { xs: '50px', sm: '55px' },
+                  fontSize: { xs: '0.9rem', sm: '1rem' },
                   '&:hover': {
                     backgroundColor: '#3b91e1',
                     color: '#fff'
@@ -554,18 +1075,22 @@ export default function CheckoutPage() {
               >
                 Volver al Inicio
               </Button>
-              {paymentResult === 'failed' && (
+              {orderError && (
                 <Button
                   variant="outlined"
                   size="large"
-                  onClick={() => setPaymentResult(null)}
+                  onClick={() => {
+                    setOrderError(null);
+                    setOrderResult(null);
+                  }}
                   sx={{
                     borderColor: '#ffd701',
                     color: '#ffd701',
                     fontWeight: 'bold',
                     borderRadius: 0,
-                    minWidth: '180px',
-                    height: '55px',
+                    minWidth: { xs: '150px', sm: '180px' },
+                    height: { xs: '50px', sm: '55px' },
+                    fontSize: { xs: '0.9rem', sm: '1rem' },
                     '&:hover': {
                       borderColor: '#3b91e1',
                       color: '#3b91e1',
@@ -577,7 +1102,7 @@ export default function CheckoutPage() {
                 </Button>
               )}
             </Box>
-          </div>
+          </Box>
         </Box>
       </Box>
     );
@@ -757,17 +1282,25 @@ export default function CheckoutPage() {
         </Stepper>
 
         <Paper sx={{
-          p: 4,
+          p: { xs: 2, sm: 3, md: 4 },
           mb: 2,
           background: 'rgba(255,255,255,0.95)',
           borderRadius: 0,
           border: '1px solid #e0e0e0',
-          boxShadow: 'none'
+          boxShadow: 'none',
+          maxWidth: '100%',
+          overflow: 'hidden'
         }}>
           {renderStepContent(activeStep)}
         </Paper>
 
-        <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
+        <Box sx={{ 
+          display: 'flex', 
+          justifyContent: 'flex-end', 
+          gap: { xs: 1, sm: 2 },
+          flexDirection: { xs: 'column', sm: 'row' },
+          mt: { xs: 2, sm: 0 }
+        }}>
           <Button
             disabled={activeStep === 0}
             onClick={handleBack}
@@ -777,8 +1310,9 @@ export default function CheckoutPage() {
               color: '#051b35',
               fontWeight: 'bold',
               borderRadius: 0,
-              minWidth: '150px',
-              height: '50px',
+              minWidth: { xs: '100%', sm: '150px' },
+              height: { xs: '45px', sm: '50px' },
+              fontSize: { xs: '0.9rem', sm: '1rem' },
               '&:hover': {
                 backgroundColor: '#3b91e1',
                 color: '#fff'
@@ -800,8 +1334,9 @@ export default function CheckoutPage() {
               color: '#051b35',
               fontWeight: 'bold',
               borderRadius: 0,
-              minWidth: '150px',
-              height: '50px',
+              minWidth: { xs: '100%', sm: '150px' },
+              height: { xs: '45px', sm: '50px' },
+              fontSize: { xs: '0.9rem', sm: '1rem' },
               '&:hover': {
                 backgroundColor: '#3b91e1',
                 color: '#fff'
@@ -812,7 +1347,7 @@ export default function CheckoutPage() {
               }
             }}
           >
-            {activeStep === steps.length - 1 ? 'Procesar Pago' : 'Siguiente'}
+            {activeStep === steps.length - 1 ? 'Crear Orden' : 'Siguiente'}
           </Button>
         </Box>
 
