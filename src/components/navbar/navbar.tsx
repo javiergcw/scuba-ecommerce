@@ -62,6 +62,7 @@ const Navbar = () => {
     { label: 'Inicio', href: ROUTES.HOME },
     { label: 'Nosotros', href: ROUTES.ABOUT },
     { label: 'Cursos', href: ROUTES.COURSES },
+    { label: 'Seguimiento', href: ROUTES.TRACKING },
     { label: 'Contactos', href: ROUTES.CONTACT },
   ];
 
@@ -301,6 +302,19 @@ const Navbar = () => {
                     }}
                   >
                     Cursos
+                  </Link>
+                </li>
+
+                <li className="dropdown">
+                  <Link
+                    href={ROUTES.TRACKING}
+                    style={{
+                      textDecoration: 'none',
+                      transition: 'color 0.3s ease',
+                      ...getLinkStyle(ROUTES.TRACKING),
+                    }}
+                  >
+                    Seguimiento
                   </Link>
                 </li>
 

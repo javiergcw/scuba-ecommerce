@@ -4,6 +4,7 @@ import { SendCreateOrderDto } from '@/core/dto/send/order/send_create_order_dto'
 import { ReceiveCreateOrderDto } from '@/core/dto/receive/order/receive_create_order_dto';
 import { ReceiveStatusOrderDto } from '@/core/dto/receive/order/receive_status_order_dto';
 import { ReceiveOrderByIdDto } from '@/core/dto/receive/order/receive_order_by_id';
+import { ReceiveTrackingOrderDto } from '@/core/dto/receive/order/receive_tracking_order_dto';
 
 export class OrderUseCase {
     
@@ -44,6 +45,31 @@ export class OrderUseCase {
         onError: (error: any) => void
     ): Promise<void> {
         const serviceResponse = await OrderService.getOrderByTracking(trackingCode);
+        
+        HandleVerifyType.handle(serviceResponse, {
+            onSuccess: (data) => {
+                onSuccess(data);
+            },
+            onError: (error) => {
+                onError(error);
+            },
+            successMessage: `Orden encontrada con tracking: ${trackingCode}`,
+            errorMessage: `Error al buscar orden con tracking: ${trackingCode}`
+        });
+    }
+
+    /**
+     * Obtener orden por tracking code (nuevo endpoint) con acciones personalizadas
+     * @param trackingCode - Código de tracking
+     * @param onSuccess - Acción a ejecutar cuando se encuentra la orden
+     * @param onError - Acción a ejecutar cuando hay error
+     */
+    public static async getOrderByTrackingCode(
+        trackingCode: string,
+        onSuccess: (data: ReceiveTrackingOrderDto) => void,
+        onError: (error: any) => void
+    ): Promise<void> {
+        const serviceResponse = await OrderService.getOrderByTrackingCode(trackingCode);
         
         HandleVerifyType.handle(serviceResponse, {
             onSuccess: (data) => {

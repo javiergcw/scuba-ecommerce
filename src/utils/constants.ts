@@ -33,6 +33,7 @@ export const ROUTES = {
   ABOUT: "/about-us",
   COURSES: "/courses",
   CONTACT: "/contact",
+  TRACKING: "/tracking",
   LOGIN: "https://panelscuba.makerstech.co/",
   LOCATION: "https://maps.app.goo.gl/H894i4a2vrtyvnDZ6",
 } as const;
