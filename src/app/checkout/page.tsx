@@ -771,311 +771,558 @@ export default function CheckoutPage() {
         px: { xs: 1, md: 2 }
       }}>
         <Box sx={{ 
-          maxWidth: 900, 
+          maxWidth: 1200, 
           mx: 'auto', 
           px: { xs: 1, sm: 2, md: 3 },
           position: 'relative',
           zIndex: 3
         }}>
-          <Box sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            minHeight: '85vh',
-            gap: { xs: 3, md: 4 }
-          }}>
-            {orderResult ? (
-              <>
+          {orderResult ? (
+            // Pantalla de éxito
+            <Box sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: { xs: 3, md: 4 },
+              py: { xs: 2, md: 4 }
+            }}>
+              {/* Header con icono y título */}
+              <Box sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                textAlign: 'center',
+                mb: { xs: 2, md: 3 }
+              }}>
                 <CheckCircleIcon sx={{ 
                   fontSize: { xs: 80, sm: 100, md: 120 }, 
-                  color: '#4caf50' 
+                  color: '#4caf50',
+                  mb: 2
                 }} />
                 
-                <Typography variant="h3" gutterBottom color="success.main" sx={{
-                  fontSize: { xs: '1.5rem', sm: '2rem', md: '2.5rem' },
-                  textAlign: 'center',
-                  fontWeight: 700
+                <Typography variant="h2" gutterBottom color="success.main" sx={{
+                  fontSize: { xs: '1.8rem', sm: '2.2rem', md: '2.8rem' },
+                  fontWeight: 700,
+                  mb: 1
                 }}>
                   ¡Orden Creada Exitosamente!
                 </Typography>
                 
-                <Typography variant="h5" textAlign="center" sx={{ 
-                  mb: 2,
-                  fontSize: { xs: '1.1rem', sm: '1.3rem', md: '1.5rem' },
-                  color: '#051b35'
+                <Typography variant="h5" sx={{ 
+                  fontSize: { xs: '1.2rem', sm: '1.4rem', md: '1.6rem' },
+                  color: '#051b35',
+                  fontWeight: 600
                 }}>
                   🐠 ¡Bienvenido al mundo submarino! 🐠
                 </Typography>
-                
-                <Card sx={{ 
-                  p: { xs: 2, sm: 3 }, 
-                  mb: 3, 
-                  borderRadius: 0, 
-                  border: '2px solid #4caf50',
-                  backgroundColor: '#f8fff8',
-                  width: '100%',
-                  maxWidth: 600
-                }}>
-                  <Typography variant="h6" gutterBottom sx={{ 
-                    fontWeight: 'bold', 
-                    color: '#051b35',
-                    fontSize: { xs: '1.1rem', sm: '1.3rem' }
-                  }}>
-                    Detalles de tu Orden:
-                  </Typography>
-                  
-                  <Box sx={{ 
-                    display: 'flex', 
-                    flexDirection: 'column', 
-                    gap: 1,
-                    fontSize: { xs: '0.875rem', sm: '1rem' }
-                  }}>
-                    <Box sx={{ 
-                      display: 'flex', 
-                      justifyContent: 'space-between',
-                      flexWrap: 'wrap',
-                      gap: 1
-                    }}>
-                      <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
-                        ID de Orden:
-                      </Typography>
-                      <Typography variant="body2" sx={{ color: '#051b35' }}>
-                        #{orderResult.data.order_id}
-                      </Typography>
-                    </Box>
-                    
-                    <Box sx={{ 
-                      display: 'flex', 
-                      justifyContent: 'space-between',
-                      flexWrap: 'wrap',
-                      gap: 1
-                    }}>
-                      <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
-                        Código de Tracking:
-                      </Typography>
-                      <Typography variant="body2" sx={{ color: '#051b35' }}>
-                        {orderResult.data.tracking_code}
-                      </Typography>
-                    </Box>
-                    
-                    <Box sx={{ 
-                      display: 'flex', 
-                      justifyContent: 'space-between',
-                      flexWrap: 'wrap',
-                      gap: 1
-                    }}>
-                      <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
-                        Total:
-                      </Typography>
-                      <Typography variant="body2" sx={{ color: '#051b35', fontWeight: 'bold' }}>
-                        {formatPrice(orderResult.data.total_amount)}
-                      </Typography>
-                    </Box>
-                    
-                    <Box sx={{ 
-                      display: 'flex', 
-                      justifyContent: 'space-between',
-                      flexWrap: 'wrap',
-                      gap: 1
-                    }}>
-                      <Typography variant="body2" sx={{ fontWeight: 'bold', color: 'success.main' }}>
-                        Total Confirmado:
-                      </Typography>
-                      <Typography variant="body2" sx={{ color: 'success.main', fontWeight: 'bold' }}>
-                        {formatPrice(orderResult.data.total_amount)}
-                      </Typography>
-                    </Box>
-                    
-                    <Box sx={{ 
-                      display: 'flex', 
-                      justifyContent: 'space-between',
-                      flexWrap: 'wrap',
-                      gap: 1
-                    }}>
-                      <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
-                        Estado:
-                      </Typography>
-                      <Typography variant="body2" sx={{ color: '#051b35' }}>
-                        {orderResult.data.status}
-                      </Typography>
-                    </Box>
-                    
-                    <Box sx={{ 
-                      display: 'flex', 
-                      justifyContent: 'space-between',
-                      flexWrap: 'wrap',
-                      gap: 1
-                    }}>
-                      <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
-                        Estado de Pago:
-                      </Typography>
-                      <Typography variant="body2" sx={{ color: '#051b35' }}>
-                        {orderResult.data.payment_status}
-                      </Typography>
-                    </Box>
-                  </Box>
-                </Card>
+              </Box>
 
-                {orderResult.data.payment_url && (
-                  <Box sx={{ 
-                    textAlign: 'center', 
-                    mb: 3,
-                    width: '100%',
-                    maxWidth: 600
+              {/* Contenido principal en dos columnas */}
+              <Box sx={{
+                display: 'grid',
+                gridTemplateColumns: { xs: '1fr', lg: '1fr 1fr' },
+                gap: { xs: 3, md: 4 },
+                alignItems: 'start'
+              }}>
+                {/* Columna izquierda - Detalles de la orden */}
+                <Box sx={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: 3
+                }}>
+                  <Card sx={{ 
+                    p: { xs: 2, sm: 3 }, 
+                    borderRadius: 0, 
+                    border: '2px solid #4caf50',
+                    backgroundColor: '#f8fff8',
+                    boxShadow: '0 4px 12px rgba(76, 175, 80, 0.15)'
                   }}>
-                    <Typography variant="h6" gutterBottom sx={{ 
+                    <Typography variant="h5" gutterBottom sx={{ 
                       fontWeight: 'bold', 
                       color: '#051b35',
-                      fontSize: { xs: '1.1rem', sm: '1.3rem' }
+                      fontSize: { xs: '1.3rem', sm: '1.5rem' },
+                      mb: 2
                     }}>
-                      🔗 Enlace de Pago:
+                      📋 Detalles de tu Orden
                     </Typography>
-                    <Button
-                      variant="contained"
-                      size="large"
-                      onClick={() => window.open(orderResult.data.payment_url, '_blank')}
-                      sx={{
-                        backgroundColor: '#ffd701',
-                        color: '#051b35',
-                        fontWeight: 'bold',
-                        borderRadius: 0,
-                        minWidth: { xs: '180px', sm: '200px' },
-                        height: { xs: '50px', sm: '55px' },
-                        fontSize: { xs: '0.9rem', sm: '1rem' },
-                        '&:hover': {
-                          backgroundColor: '#3b91e1',
-                          color: '#fff'
-                        }
-                      }}
-                    >
-                      Ir al Pago
-                    </Button>
-                  </Box>
-                )}
+                    
+                    <Box sx={{ 
+                      display: 'flex', 
+                      flexDirection: 'column', 
+                      gap: 2
+                    }}>
+                      <Box sx={{ 
+                        display: 'flex', 
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        p: 1.5,
+                        backgroundColor: '#fff',
+                        borderRadius: 1,
+                        border: '1px solid #e0e0e0'
+                      }}>
+                        <Typography variant="body1" sx={{ fontWeight: 'bold', fontSize: '1rem' }}>
+                          ID de Orden:
+                        </Typography>
+                        <Typography variant="body1" sx={{ color: '#051b35', fontWeight: 'bold', fontSize: '1rem' }}>
+                          #{orderResult.data.order_id}
+                        </Typography>
+                      </Box>
+                      
+                      <Box sx={{ 
+                        display: 'flex', 
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        p: 1.5,
+                        backgroundColor: '#fff',
+                        borderRadius: 1,
+                        border: '1px solid #e0e0e0'
+                      }}>
+                        <Typography variant="body1" sx={{ fontWeight: 'bold', fontSize: '1rem' }}>
+                          Código de Tracking:
+                        </Typography>
+                        <Typography variant="body1" sx={{ color: '#051b35', fontWeight: 'bold', fontSize: '1rem' }}>
+                          {orderResult.data.tracking_code}
+                        </Typography>
+                      </Box>
+                      
+                      <Box sx={{ 
+                        display: 'flex', 
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        p: 1.5,
+                        backgroundColor: '#fff',
+                        borderRadius: 1,
+                        border: '1px solid #e0e0e0'
+                      }}>
+                        <Typography variant="body1" sx={{ fontWeight: 'bold', fontSize: '1rem' }}>
+                          Estado:
+                        </Typography>
+                        <Typography variant="body1" sx={{ color: '#051b35', fontSize: '1rem' }}>
+                          {orderResult.data.status}
+                        </Typography>
+                      </Box>
+                      
+                      <Box sx={{ 
+                        display: 'flex', 
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        p: 1.5,
+                        backgroundColor: '#fff',
+                        borderRadius: 1,
+                        border: '1px solid #e0e0e0'
+                      }}>
+                        <Typography variant="body1" sx={{ fontWeight: 'bold', fontSize: '1rem' }}>
+                          Estado de Pago:
+                        </Typography>
+                        <Typography variant="body1" sx={{ color: '#051b35', fontSize: '1rem' }}>
+                          {orderResult.data.payment_status}
+                        </Typography>
+                      </Box>
+                      
+                      <Box sx={{ 
+                        display: 'flex', 
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        p: 1.5,
+                        backgroundColor: '#4caf50',
+                        borderRadius: 1,
+                        border: '2px solid #2e7d32'
+                      }}>
+                        <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#fff', fontSize: '1.1rem' }}>
+                          Total Confirmado:
+                        </Typography>
+                        <Typography variant="h6" sx={{ color: '#fff', fontWeight: 'bold', fontSize: '1.3rem' }}>
+                          {formatPrice(orderResult.data.total_amount)}
+                        </Typography>
+                      </Box>
+                    </Box>
+                  </Card>
 
-                <Typography variant="body1" textAlign="center" color="text.secondary" sx={{ 
-                  mb: 4,
-                  fontSize: { xs: '0.9rem', sm: '1rem' },
-                  maxWidth: 600,
-                  px: { xs: 1, sm: 2 }
-                }}>
-                  Tu orden ha sido creada exitosamente.<br />
-                  Recibirás un email con todos los detalles de tu curso de buceo.
-                </Typography>
-                
-                <Box sx={{ 
-                  textAlign: 'center',
-                  maxWidth: 600,
-                  px: { xs: 1, sm: 2 }
-                }}>
-                  <Typography variant="h6" gutterBottom sx={{
-                    fontSize: { xs: '1.1rem', sm: '1.3rem' },
-                    fontWeight: 'bold',
-                    color: '#051b35'
+                  {/* Información adicional */}
+                  <Card sx={{ 
+                    p: { xs: 2, sm: 3 }, 
+                    borderRadius: 0, 
+                    border: '1px solid #e0e0e0',
+                    backgroundColor: '#fff'
                   }}>
-                    Próximos pasos:
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary" sx={{
-                    fontSize: { xs: '0.875rem', sm: '1rem' },
-                    lineHeight: 1.6
-                  }}>
-                    • Completa el pago usando el enlace proporcionado<br />
-                    • Revisa tu email para confirmar los detalles<br />
-                    • Llega 15 minutos antes de tu clase<br />
-                    • Trae ropa cómoda y una toalla<br />
-                    • ¡Prepárate para una aventura increíble!
-                  </Typography>
+                    <Typography variant="h6" gutterBottom sx={{
+                      fontSize: { xs: '1.1rem', sm: '1.3rem' },
+                      fontWeight: 'bold',
+                      color: '#051b35',
+                      mb: 2
+                    }}>
+                      📧 Confirmación por Email
+                    </Typography>
+                    <Typography variant="body1" color="text.secondary" sx={{
+                      fontSize: { xs: '0.95rem', sm: '1rem' },
+                      lineHeight: 1.6
+                    }}>
+                      Tu orden ha sido creada exitosamente. Recibirás un email con todos los detalles de tu curso de buceo, incluyendo información importante sobre tu clase.
+                    </Typography>
+                  </Card>
                 </Box>
-              </>
-            ) : (
-              <>
-                <CancelIcon sx={{ 
-                  fontSize: { xs: 80, sm: 100, md: 120 }, 
-                  color: '#f44336' 
-                }} />
-                
-                <Typography variant="h3" gutterBottom color="error.main" sx={{
-                  fontSize: { xs: '1.5rem', sm: '2rem', md: '2.5rem' },
-                  textAlign: 'center',
-                  fontWeight: 700
+
+                {/* Columna derecha - Acciones y próximos pasos */}
+                <Box sx={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: 3
                 }}>
-                  Error al Crear Orden
-                </Typography>
-                
-                <Typography variant="h5" textAlign="center" sx={{ 
-                  mb: 2,
-                  fontSize: { xs: '1.1rem', sm: '1.3rem', md: '1.5rem' },
-                  color: '#051b35'
-                }}>
-                  🌊 No te preocupes, podemos intentarlo de nuevo 🌊
-                </Typography>
-                
-                <Typography variant="body1" textAlign="center" color="text.secondary" sx={{ 
-                  mb: 4,
-                  fontSize: { xs: '0.9rem', sm: '1rem' },
-                  maxWidth: 600,
-                  px: { xs: 1, sm: 2 }
+                  {/* Botón de pago prominente */}
+                  {orderResult.data.payment_url && (
+                    <Card sx={{ 
+                      p: { xs: 2, sm: 3 }, 
+                      borderRadius: 0, 
+                      border: '3px solid #ffd701',
+                      backgroundColor: '#fffbf0',
+                      boxShadow: '0 6px 20px rgba(255, 215, 1, 0.3)'
+                    }}>
+                      <Typography variant="h5" gutterBottom sx={{ 
+                        fontWeight: 'bold', 
+                        color: '#051b35',
+                        fontSize: { xs: '1.3rem', sm: '1.5rem' },
+                        textAlign: 'center',
+                        mb: 2
+                      }}>
+                        🔗 Enlace de Pago
+                      </Typography>
+                      <Typography variant="body1" color="text.secondary" sx={{
+                        textAlign: 'center',
+                        mb: 3,
+                        fontSize: { xs: '0.95rem', sm: '1rem' }
+                      }}>
+                        Haz clic en el botón para completar tu pago de forma segura
+                      </Typography>
+                      <Box sx={{ textAlign: 'center' }}>
+                        <Button
+                          variant="contained"
+                          size="large"
+                          onClick={() => window.open(orderResult.data.payment_url, '_blank')}
+                          sx={{
+                            backgroundColor: '#ffd701',
+                            color: '#051b35',
+                            fontWeight: 'bold',
+                            borderRadius: 0,
+                            minWidth: { xs: '200px', sm: '250px' },
+                            height: { xs: '55px', sm: '60px' },
+                            fontSize: { xs: '1rem', sm: '1.1rem' },
+                            boxShadow: '0 4px 12px rgba(255, 215, 1, 0.4)',
+                            '&:hover': {
+                              backgroundColor: '#3b91e1',
+                              color: '#fff',
+                              boxShadow: '0 6px 20px rgba(59, 145, 225, 0.4)'
+                            }
+                          }}
+                        >
+                          💳 IR AL PAGO
+                        </Button>
+                      </Box>
+                    </Card>
+                  )}
+
+                  {/* Próximos pasos */}
+                  <Card sx={{ 
+                    p: { xs: 2, sm: 3 }, 
+                    borderRadius: 0, 
+                    border: '1px solid #e0e0e0',
+                    backgroundColor: '#fff'
+                  }}>
+                    <Typography variant="h6" gutterBottom sx={{
+                      fontSize: { xs: '1.1rem', sm: '1.3rem' },
+                      fontWeight: 'bold',
+                      color: '#051b35',
+                      mb: 2
+                    }}>
+                      📋 Próximos Pasos
+                    </Typography>
+                    <Box sx={{ 
+                      display: 'flex', 
+                      flexDirection: 'column',
+                      gap: 1.5
+                    }}>
+                      <Box sx={{ 
+                        display: 'flex', 
+                        alignItems: 'center',
+                        gap: 1.5,
+                        p: 1,
+                        backgroundColor: '#f8f9fa',
+                        borderRadius: 1
+                      }}>
+                        <Typography variant="body2" sx={{ 
+                          backgroundColor: '#4caf50', 
+                          color: '#fff', 
+                          borderRadius: '50%', 
+                          width: 24, 
+                          height: 24, 
+                          display: 'flex', 
+                          alignItems: 'center', 
+                          justifyContent: 'center',
+                          fontSize: '0.8rem',
+                          fontWeight: 'bold'
+                        }}>
+                          1
+                        </Typography>
+                        <Typography variant="body1" sx={{ fontSize: { xs: '0.9rem', sm: '1rem' } }}>
+                          Completa el pago usando el enlace proporcionado
+                        </Typography>
+                      </Box>
+                      
+                      <Box sx={{ 
+                        display: 'flex', 
+                        alignItems: 'center',
+                        gap: 1.5,
+                        p: 1,
+                        backgroundColor: '#f8f9fa',
+                        borderRadius: 1
+                      }}>
+                        <Typography variant="body2" sx={{ 
+                          backgroundColor: '#4caf50', 
+                          color: '#fff', 
+                          borderRadius: '50%', 
+                          width: 24, 
+                          height: 24, 
+                          display: 'flex', 
+                          alignItems: 'center', 
+                          justifyContent: 'center',
+                          fontSize: '0.8rem',
+                          fontWeight: 'bold'
+                        }}>
+                          2
+                        </Typography>
+                        <Typography variant="body1" sx={{ fontSize: { xs: '0.9rem', sm: '1rem' } }}>
+                          Revisa tu email para confirmar los detalles
+                        </Typography>
+                      </Box>
+                      
+                      <Box sx={{ 
+                        display: 'flex', 
+                        alignItems: 'center',
+                        gap: 1.5,
+                        p: 1,
+                        backgroundColor: '#f8f9fa',
+                        borderRadius: 1
+                      }}>
+                        <Typography variant="body2" sx={{ 
+                          backgroundColor: '#4caf50', 
+                          color: '#fff', 
+                          borderRadius: '50%', 
+                          width: 24, 
+                          height: 24, 
+                          display: 'flex', 
+                          alignItems: 'center', 
+                          justifyContent: 'center',
+                          fontSize: '0.8rem',
+                          fontWeight: 'bold'
+                        }}>
+                          3
+                        </Typography>
+                        <Typography variant="body1" sx={{ fontSize: { xs: '0.9rem', sm: '1rem' } }}>
+                          Llega 15 minutos antes de tu clase
+                        </Typography>
+                      </Box>
+                      
+                      <Box sx={{ 
+                        display: 'flex', 
+                        alignItems: 'center',
+                        gap: 1.5,
+                        p: 1,
+                        backgroundColor: '#f8f9fa',
+                        borderRadius: 1
+                      }}>
+                        <Typography variant="body2" sx={{ 
+                          backgroundColor: '#4caf50', 
+                          color: '#fff', 
+                          borderRadius: '50%', 
+                          width: 24, 
+                          height: 24, 
+                          display: 'flex', 
+                          alignItems: 'center', 
+                          justifyContent: 'center',
+                          fontSize: '0.8rem',
+                          fontWeight: 'bold'
+                        }}>
+                          4
+                        </Typography>
+                        <Typography variant="body1" sx={{ fontSize: { xs: '0.9rem', sm: '1rem' } }}>
+                          Trae ropa cómoda y una toalla
+                        </Typography>
+                      </Box>
+                      
+                      <Box sx={{ 
+                        display: 'flex', 
+                        alignItems: 'center',
+                        gap: 1.5,
+                        p: 1,
+                        backgroundColor: '#f8f9fa',
+                        borderRadius: 1
+                      }}>
+                        <Typography variant="body2" sx={{ 
+                          backgroundColor: '#4caf50', 
+                          color: '#fff', 
+                          borderRadius: '50%', 
+                          width: 24, 
+                          height: 24, 
+                          display: 'flex', 
+                          alignItems: 'center', 
+                          justifyContent: 'center',
+                          fontSize: '0.8rem',
+                          fontWeight: 'bold'
+                        }}>
+                          5
+                        </Typography>
+                        <Typography variant="body1" sx={{ fontSize: { xs: '0.9rem', sm: '1rem' } }}>
+                          ¡Prepárate para una aventura increíble!
+                        </Typography>
+                      </Box>
+                    </Box>
+                  </Card>
+                </Box>
+              </Box>
+
+              {/* Botones de acción */}
+              <Box sx={{ 
+                display: 'flex', 
+                gap: { xs: 1, sm: 2 }, 
+                flexWrap: 'wrap', 
+                justifyContent: 'center',
+                mt: { xs: 2, md: 3 }
+              }}>
+                <Button
+                  variant="contained"
+                  size="large"
+                  onClick={handleReturnHome}
+                  sx={{
+                    backgroundColor: '#051b35',
+                    color: '#fff',
+                    fontWeight: 'bold',
+                    borderRadius: 0,
+                    minWidth: { xs: '180px', sm: '200px' },
+                    height: { xs: '50px', sm: '55px' },
+                    fontSize: { xs: '0.95rem', sm: '1rem' },
+                    '&:hover': {
+                      backgroundColor: '#3b91e1'
+                    }
+                  }}
+                >
+                  🏠 Volver al Inicio
+                </Button>
+              </Box>
+            </Box>
+          ) : (
+            // Pantalla de error
+            <Box sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              minHeight: '85vh',
+              gap: { xs: 3, md: 4 },
+              textAlign: 'center'
+            }}>
+              <CancelIcon sx={{ 
+                fontSize: { xs: 80, sm: 100, md: 120 }, 
+                color: '#f44336' 
+              }} />
+              
+              <Typography variant="h3" gutterBottom color="error.main" sx={{
+                fontSize: { xs: '1.5rem', sm: '2rem', md: '2.5rem' },
+                fontWeight: 700
+              }}>
+                Error al Crear Orden
+              </Typography>
+              
+              <Typography variant="h5" sx={{ 
+                mb: 2,
+                fontSize: { xs: '1.1rem', sm: '1.3rem', md: '1.5rem' },
+                color: '#051b35'
+              }}>
+                🌊 No te preocupes, podemos intentarlo de nuevo 🌊
+              </Typography>
+              
+              <Card sx={{ 
+                p: { xs: 2, sm: 3 }, 
+                borderRadius: 0, 
+                border: '2px solid #f44336',
+                backgroundColor: '#fff5f5',
+                maxWidth: 600,
+                width: '100%'
+              }}>
+                <Typography variant="body1" color="text.secondary" sx={{ 
+                  mb: 3,
+                  fontSize: { xs: '0.95rem', sm: '1rem' },
+                  lineHeight: 1.6
                 }}>
                   {orderError || 'Hubo un problema creando tu orden.'}<br />
                   Verifica los datos ingresados e intenta nuevamente.
                 </Typography>
                 
-                <Box sx={{ 
-                  textAlign: 'center',
-                  maxWidth: 600,
-                  px: { xs: 1, sm: 2 }
+                <Typography variant="h6" gutterBottom sx={{
+                  fontSize: { xs: '1.1rem', sm: '1.3rem' },
+                  fontWeight: 'bold',
+                  color: '#051b35'
                 }}>
-                  <Typography variant="h6" gutterBottom sx={{
-                    fontSize: { xs: '1.1rem', sm: '1.3rem' },
-                    fontWeight: 'bold',
-                    color: '#051b35'
-                  }}>
-                    Posibles causas:
-                  </Typography>
+                  Posibles causas:
+                </Typography>
+                <Box sx={{ 
+                  display: 'flex', 
+                  flexDirection: 'column',
+                  gap: 1,
+                  textAlign: 'left'
+                }}>
                   <Typography variant="body2" color="text.secondary" sx={{
-                    fontSize: { xs: '0.875rem', sm: '1rem' },
+                    fontSize: { xs: '0.9rem', sm: '1rem' },
                     lineHeight: 1.6
                   }}>
-                    • Datos de contacto incorrectos<br />
-                    • Productos no disponibles<br />
-                    • Problema temporal del sistema<br />
+                    • Datos de contacto incorrectos
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary" sx={{
+                    fontSize: { xs: '0.9rem', sm: '1rem' },
+                    lineHeight: 1.6
+                  }}>
+                    • Productos no disponibles
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary" sx={{
+                    fontSize: { xs: '0.9rem', sm: '1rem' },
+                    lineHeight: 1.6
+                  }}>
+                    • Problema temporal del sistema
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary" sx={{
+                    fontSize: { xs: '0.9rem', sm: '1rem' },
+                    lineHeight: 1.6
+                  }}>
                     • Error de conexión
                   </Typography>
                 </Box>
-              </>
-            )}
+              </Card>
 
-            <Box sx={{ 
-              mt: 4, 
-              display: 'flex', 
-              gap: { xs: 1, sm: 2 }, 
-              flexWrap: 'wrap', 
-              justifyContent: 'center',
-              width: '100%',
-              maxWidth: 600
-            }}>
-              <Button
-                variant="contained"
-                size="large"
-                onClick={handleReturnHome}
-                sx={{
-                  backgroundColor: '#ffd701',
-                  color: '#051b35',
-                  fontWeight: 'bold',
-                  borderRadius: 0,
-                  minWidth: { xs: '150px', sm: '180px' },
-                  height: { xs: '50px', sm: '55px' },
-                  fontSize: { xs: '0.9rem', sm: '1rem' },
-                  '&:hover': {
-                    backgroundColor: '#3b91e1',
-                    color: '#fff'
-                  }
-                }}
-              >
-                Volver al Inicio
-              </Button>
-              {orderError && (
+              <Box sx={{ 
+                display: 'flex', 
+                gap: { xs: 1, sm: 2 }, 
+                flexWrap: 'wrap', 
+                justifyContent: 'center',
+                width: '100%',
+                maxWidth: 600
+              }}>
+                <Button
+                  variant="contained"
+                  size="large"
+                  onClick={handleReturnHome}
+                  sx={{
+                    backgroundColor: '#ffd701',
+                    color: '#051b35',
+                    fontWeight: 'bold',
+                    borderRadius: 0,
+                    minWidth: { xs: '150px', sm: '180px' },
+                    height: { xs: '50px', sm: '55px' },
+                    fontSize: { xs: '0.9rem', sm: '1rem' },
+                    '&:hover': {
+                      backgroundColor: '#3b91e1',
+                      color: '#fff'
+                    }
+                  }}
+                >
+                  Volver al Inicio
+                </Button>
                 <Button
                   variant="outlined"
                   size="large"
@@ -1100,9 +1347,9 @@ export default function CheckoutPage() {
                 >
                   Intentar de Nuevo
                 </Button>
-              )}
+              </Box>
             </Box>
-          </Box>
+          )}
         </Box>
       </Box>
     );
