@@ -102,12 +102,11 @@ export default function CheckoutPage() {
           }))
         };
 
-        console.log('🛒 Obteniendo precio real para productos:', productData);
+
 
         await ProductUseCase.getProductInformation(
           productData,
           (data: ReceiveInformationProductDto) => {
-            console.log('✅ Precio real obtenido:', data.data.total_amount);
             setRealTotalPrice(data.data.total_amount);
           },
           (error) => {
@@ -132,21 +131,20 @@ export default function CheckoutPage() {
     const fetchRelatedProducts = async () => {
       try {
         setLoadingRelated(true);
-        console.log('🛒 Productos en carrito:', cartItems);
+
 
         const allProducts = await services.products.getProducts();
-        console.log('📦 Todos los productos:', allProducts.length);
+
 
         // Obtener categorías únicas de los productos en el carrito
         const cartCategories = [...new Set(cartItems.map(item => {
           // Extraer categoría del nombre del producto (asumiendo formato: "Categoría - Nombre")
           const categoryMatch = item.name.match(/^([^-]+)/);
           const category = categoryMatch ? categoryMatch[1].trim() : 'General';
-          console.log(`Categoría extraída de "${item.name}": ${category}`);
           return category;
         }))];
 
-        console.log('📋 Categorías del carrito:', cartCategories);
+
 
         // Filtrar productos relacionados (misma categoría pero no en el carrito)
         const related = allProducts.filter(product => {
@@ -154,16 +152,13 @@ export default function CheckoutPage() {
           const isInCart = cartItems.some(cartItem => cartItem.id === product.id.toString());
           const isRelated = cartCategories.includes(productCategory) && !isInCart;
 
-          console.log(`Producto "${product.name}": categoría="${productCategory}", en carrito=${isInCart}, relacionado=${isRelated}`);
-
           return isRelated;
         });
 
-        console.log('🎯 Productos relacionados encontrados:', related.length);
+
 
         // Si no hay productos relacionados por categoría, mostrar productos aleatorios
         if (related.length === 0) {
-          console.log('⚠️ No hay productos relacionados por categoría, mostrando productos aleatorios');
           const randomProducts = allProducts
             .filter(product => !cartItems.some(cartItem => cartItem.id === product.id.toString()))
             .sort(() => Math.random() - 0.5)
@@ -254,15 +249,14 @@ export default function CheckoutPage() {
           product_id: parseInt(item.id),
           quantity: item.quantity
         })),
-        notes: `Dirección: ${formData.address}, ${formData.city}, ${formData.country} ${formData.zipCode}`
+        notes: `Dirección: ${formData.address}, ${formData.country}`
       };
 
-      console.log('🛒 Creando orden:', orderData);
+
 
               await OrderUseCase.createOrder(
           orderData,
           (data: ReceiveCreateOrderDto) => {
-            console.log('✅ Orden creada exitosamente:', data);
             setOrderResult(data);
             setOrderTotalAmount(data.data.total_amount);
             setIsProcessing(false);
@@ -320,7 +314,7 @@ export default function CheckoutPage() {
   };
 
   const isFormValid = () => {
-    const requiredFields = ['firstName', 'lastName', 'email', 'phone', 'address', 'city'];
+    const requiredFields = ['firstName', 'lastName', 'email', 'phone', 'address'];
     return requiredFields.every(field => formData[field as keyof typeof formData].trim() !== '');
   };
 
@@ -540,40 +534,6 @@ export default function CheckoutPage() {
                   }
                 }}
               />
-              <Box sx={{ 
-                display: 'flex', 
-                gap: { xs: 1, sm: 2 }, 
-                flexWrap: 'wrap',
-                flexDirection: { xs: 'column', sm: 'row' }
-              }}>
-                <TextField
-                  sx={{ 
-                    flex: { sm: 1 },
-                    minWidth: { xs: '100%', sm: '250px' },
-                    '& .MuiInputBase-root': {
-                      fontSize: { xs: '0.875rem', sm: '1rem' }
-                    }
-                  }}
-                  label="Ciudad"
-                  value={formData.city}
-                  onChange={(e) => handleInputChange('city', e.target.value)}
-                  required
-                  size="small"
-                />
-                <TextField
-                  sx={{ 
-                    flex: { sm: 1 },
-                    minWidth: { xs: '100%', sm: '250px' },
-                    '& .MuiInputBase-root': {
-                      fontSize: { xs: '0.875rem', sm: '1rem' }
-                    }
-                  }}
-                  label="Código Postal"
-                  value={formData.zipCode}
-                  onChange={(e) => handleInputChange('zipCode', e.target.value)}
-                  size="small"
-                />
-              </Box>
             </Box>
           </Box>
         );

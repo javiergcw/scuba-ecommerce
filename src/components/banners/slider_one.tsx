@@ -193,7 +193,7 @@ const SliderOne: React.FC<SliderOneProps> = ({ banners }) => {
 
         <Box
           component="img"
-          src="/assets/images/shapes/slide-ribbon-1-1.png"
+          src="/assets/images/brand/brand-1-3.png"
           alt="Ribbon decoration"
           sx={{
             position: "absolute",

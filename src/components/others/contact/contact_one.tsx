@@ -1,14 +1,8 @@
 'use client'
-import React, { useState } from 'react'
+import React from 'react'
 import { CONTACT_INFO } from '@/utils/constants'
 
 export const ContactOne = () => {
-    const [selectedService, setSelectedService] = useState('')
-
-    const handleServiceChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-        setSelectedService(event.target.value)
-    }
-
     return (
         <>
             <section className="contact-one">
@@ -20,7 +14,7 @@ export const ContactOne = () => {
                         <div className="col-xl-4">
                             <div className="contact-one__content">
                                 <h3>Ponte en Contacto <br /> Con Nosotros</h3>
-                                <p>Aliq no es simplemente un texto de relleno. Lorem ipsum es simplemente un texto libre que se utiliza para rellenar espacios en el diseño, permitiendo que el contenido real se destaque. Consectetur adipiscing elit, blandit hendrerit faucibus suspendisse.</p>
+                                <p style={{ marginBottom: '40px' }}>Estamos aquí para ayudarte con cualquier consulta sobre nuestros cursos de buceo, precios, reservas o información general. No dudes en contactarnos a través de WhatsApp o Gmail.</p>
                                 <div className="footer-widget__social contact-one__social">
                                     <a href={CONTACT_INFO.SOCIAL_MEDIA.TRIPADVISOR} target="_blank" rel="noopener noreferrer"><i className="fab fa-tripadvisor"></i></a>
                                     <a href={CONTACT_INFO.SOCIAL_MEDIA.FACEBOOK} target="_blank" rel="noopener noreferrer"><i className="fab fa-facebook-square"></i></a>
@@ -30,54 +24,136 @@ export const ContactOne = () => {
                             </div>
                         </div>
                         <div className="col-xl-8">
-                            <form action="assets/inc/sendemail.php" className="contact-one__form contact-form-validated">
-                                <div className="row">
+                            <div className="contact-one__info">
+                                <div className="row" style={{ marginTop: '20px' }}>
                                     <div className="col-md-6">
-                                        <input type="text" placeholder="Nombre Completo" name="name"/>
+                                        <div className="contact-one__info-item" style={{
+                                            padding: '50px 30px',
+                                            textAlign: 'center',
+                                            marginBottom: '40px',
+                                            height: '320px',
+                                            display: 'flex',
+                                            flexDirection: 'column',
+                                            justifyContent: 'space-between',
+                                            alignItems: 'center',
+                                            transition: 'all 0.3s ease'
+                                        }} onMouseOver={(e) => {
+                                            e.currentTarget.style.transform = 'translateY(-5px)';
+                                        }} onMouseOut={(e) => {
+                                            e.currentTarget.style.transform = 'translateY(0)';
+                                        }}>
+                                            <div style={{
+                                                fontSize: '60px',
+                                                color: '#25D366',
+                                                marginBottom: '25px'
+                                            }}>
+                                                <i className="fab fa-whatsapp"></i>
+                                            </div>
+                                            <div>
+                                                <h4 style={{
+                                                    fontSize: '28px',
+                                                    fontWeight: 'bold',
+                                                    marginBottom: '20px',
+                                                    color: 'var(--thm-black)',
+                                                    fontFamily: 'var(--thm-font-two)'
+                                                }}>WhatsApp</h4>
+                                                <p style={{
+                                                    fontSize: '20px',
+                                                    color: '#838a93',
+                                                    marginBottom: '35px',
+                                                    fontWeight: '500'
+                                                }}>{CONTACT_INFO.PHONE}</p>
+                                            </div>
+                                            <a 
+                                                href={CONTACT_INFO.SOCIAL_MEDIA.WHATSAPP} 
+                                                target="_blank" 
+                                                rel="noopener noreferrer"
+                                                className="thm-btn"
+                                                style={{
+                                                    backgroundColor: '#25D366',
+                                                    color: 'white',
+                                                    padding: '18px 35px',
+                                                    fontSize: '16px',
+                                                    fontWeight: 'bold',
+                                                    textTransform: 'uppercase',
+                                                    marginTop: 'auto'
+                                                }}
+                                                onMouseOver={(e) => {
+                                                    e.currentTarget.style.backgroundColor = '#128C7E';
+                                                }}
+                                                onMouseOut={(e) => {
+                                                    e.currentTarget.style.backgroundColor = '#25D366';
+                                                }}
+                                            >
+                                                Chatear Ahora
+                                            </a>
+                                        </div>
                                     </div>
                                     <div className="col-md-6">
-                                        <input type="text" placeholder="Correo Electrónico" name="email"/>
-                                    </div>
-                                    <div className="col-md-6">
-                                        <input type="text" placeholder="Número de Teléfono" name="phone"/>
-                                    </div>
-                                    <div className="col-md-6">
-                                        <select 
-                                            name="service"
-                                            value={selectedService}
-                                            onChange={handleServiceChange}
-                                            style={{
-                                                display: 'block',
-                                                width: '100%',
-                                                height: '85px',
-                                                backgroundColor: '#EDF2F5',
-                                                border: 'none',
-                                                outline: 'none',
-                                                padding: '0 30px',
-                                                fontSize: '16px',
-                                                fontWeight: 500,
-                                                color: '#848484',
-                                                position: 'relative',
-                                                marginBottom: '20px'
-                                            }}
-                                        >
-                                            <option value="">Motivo de la Consulta</option>
-                                            <option value="About Course">Consulta sobre Cursos</option>
-                                            <option value="About Pricing">Consulta sobre Precios</option>
-                                        </select>
-                                    </div>
-                                    <div className="col-md-12">
-                                        <input type="text" placeholder="Asunto" name="subject"/>
-                                    </div>
-                                    <div className="col-md-12">
-                                        <textarea name="message" placeholder="Mensaje"/>
-                                    </div>
-                                    <div className="col-md-12">
-                                        <button  style={{  width: '100%'}} type="submit" className="thm-btn contact-one__btn">Enviar mensaje</button>
+                                        <div className="contact-one__info-item" style={{
+                                            padding: '50px 30px',
+                                            textAlign: 'center',
+                                            marginBottom: '40px',
+                                            height: '320px',
+                                            display: 'flex',
+                                            flexDirection: 'column',
+                                            justifyContent: 'space-between',
+                                            alignItems: 'center',
+                                            transition: 'all 0.3s ease'
+                                        }} onMouseOver={(e) => {
+                                            e.currentTarget.style.transform = 'translateY(-5px)';
+                                        }} onMouseOut={(e) => {
+                                            e.currentTarget.style.transform = 'translateY(0)';
+                                        }}>
+                                            <div style={{
+                                                fontSize: '60px',
+                                                color: '#EA4335',
+                                                marginBottom: '25px'
+                                            }}>
+                                                <i className="fas fa-envelope"></i>
+                                            </div>
+                                            <div>
+                                                <h4 style={{
+                                                    fontSize: '28px',
+                                                    fontWeight: 'bold',
+                                                    marginBottom: '20px',
+                                                    color: 'var(--thm-black)',
+                                                    fontFamily: 'var(--thm-font-two)'
+                                                }}>Gmail</h4>
+                                                <p style={{
+                                                    fontSize: '18px',
+                                                    color: '#838a93',
+                                                    marginBottom: '35px',
+                                                    wordBreak: 'break-word',
+                                                    fontWeight: '500',
+                                                    lineHeight: '1.4'
+                                                }}>{CONTACT_INFO.EMAIL}</p>
+                                            </div>
+                                            <a 
+                                                href={`mailto:${CONTACT_INFO.EMAIL}`}
+                                                className="thm-btn"
+                                                style={{
+                                                    backgroundColor: '#EA4335',
+                                                    color: 'white',
+                                                    padding: '18px 35px',
+                                                    fontSize: '16px',
+                                                    fontWeight: 'bold',
+                                                    textTransform: 'uppercase',
+                                                    marginTop: 'auto'
+                                                }}
+                                                onMouseOver={(e) => {
+                                                    e.currentTarget.style.backgroundColor = '#D32F2F';
+                                                }}
+                                                onMouseOut={(e) => {
+                                                    e.currentTarget.style.backgroundColor = '#EA4335';
+                                                }}
+                                            >
+                                                Enviar Email
+                                            </a>
+                                        </div>
                                     </div>
                                 </div>
-                            </form>
-                            <div className="result"/>
+                            </div>
                         </div>
                     </div>
                 </div>

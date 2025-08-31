@@ -14,9 +14,9 @@ export default function AboutUsPage() {
         <>
             <AboutUsSection />
             <AboutUsStwo />
-            <AboutUsVideoOne />
-            <AboutUsFunfact />
-            <AboutUsTestm />
+            {/* <AboutUsVideoOne /> */}
+            {/* <AboutUsFunfact /> */}
+            {/* <AboutUsTestm /> */}
             {/* <TeamBrand/> */}
 
         </>

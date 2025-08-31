@@ -6,21 +6,13 @@ export const CtoOneContact = () => {
         <>
             <section className="cta-one">
                 <div className="container wow fadeInRight" data-wow-duration="1500ms">
-                    <div className="cta-one__title">soporte</div>
+                    <div className="cta-one__title">¡Aventura Submarina!</div>
                     <div className="inner-container">
                         <div className="row">
-                            <div className="col-lg-5 d-flex">
-                                <div className="my-auto">
-                                    <div className="cta-one__phone">
-                                        <i className="fa fa-phone-alt"></i>
-                                        <a href={`tel:${CONTACT_INFO.PHONE.replace(/\s/g, '')}`}>{CONTACT_INFO.PHONE}</a>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="col-lg-7">
-                                <div className="cta-one__content">
-                                    <h3>PARA MÁS INFORMACIÓN Y PLANES <br />
-                                        PERSONALIZADOS POR FAVOR LLAMA</h3>
+                            <div className="col-lg-12">
+                                <div className="cta-one__content text-center">
+                                    <h3>¿LISTO PARA EXPLORAR EL OCÉANO? <br />
+                                        CONTÁCTANOS HOY MISMO</h3>
                                 </div>
                             </div>
                         </div>

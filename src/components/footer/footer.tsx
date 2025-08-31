@@ -1,5 +1,6 @@
 "use client";
 import Image from "next/image";
+import Link from "next/link";
 import React from "react";
 import { CONTACT_INFO } from "@/utils/constants";
 
@@ -92,7 +93,7 @@ const Footer = () => {
                 <h3 className="footer-widget__title">Explora</h3>
                 <ul className="footer-widget__links-list list-unstyled">
                   <li>
-                    <a href="/courses">Cursos Populares</a>
+                    <a href="/courses">Mundo del Buceo</a>
                   </li>
                   <li>
                     <a href="/contact">Centro de Ayuda</a>
@@ -106,6 +107,9 @@ const Footer = () => {
                 <ul className="footer-widget__links-list list-unstyled">
                   <li>
                     <a href="/padi-document">Documento Padi</a>
+                  </li>
+                  <li>
+                    <Link href="/tracking/">Consulta de Seguimiento</Link>
                   </li>
                   <li>
                     <a href="/privacy-policy">Política de Privacidad</a>

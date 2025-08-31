@@ -103,11 +103,6 @@ export default function ArrendamientoPage({ params, searchParams }: PageProps) {
     setError(null);
     setSuccess(true);
 
-    // Aquí iría la lógica para enviar los datos (API, etc.)
-    console.log('Datos del formulario:', data);
-    
-    // Opcional: Redirigir a una página de confirmación
-    // router.push(`/contrato/arrendamiento/confirmacion/${id}`);
   };
 
   if (isLoading) {

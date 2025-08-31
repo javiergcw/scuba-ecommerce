@@ -6084,11 +6084,11 @@ a:focus {
 .video-two__swimmer {
   position: absolute;
   top: 10%;
-  left: 35%;
+  left: 37%;
   z-index: 10;
   -webkit-animation: contactSwimmer 7s linear infinite;
   animation: contactSwimmer 7s linear infinite;
-  width: 15%;
+  width: 10%;
 }
 
 @media (max-width: 625px) {

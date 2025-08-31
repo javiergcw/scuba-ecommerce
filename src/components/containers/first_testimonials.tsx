@@ -5,38 +5,19 @@ import { Autoplay, Pagination } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/pagination';
 
-const testimonialsData = [
-    {
-        id: 1,
-        text: "No sé qué más decir, esto es algo que nunca antes habías visto.",
-        name: "Edwin Walsh",
-        role: "Nadador",
-        image: "assets/images/resources/testi-1-1.jpg"
-    },
-    {
-        id: 2,
-        text: "Esto se debe a su excelente servicio, precios competitivos y atención al cliente. Es realmente refrescante recibir un trato tan personal.",
-        name: "Joel Moore",
-        role: "Nadador",
-        image: "assets/images/resources/testi-1-2.jpg"
-    },
-    {
-        id: 3,
-        text: "No sé qué más decir, esto es algo que nunca antes habías visto.",
-        name: "Pauline Cross",
-        role: "Nadadora",
-        image: "assets/images/resources/testi-1-3.jpg"
-    },
-    {
-        id: 4,
-        text: "Quedé muy impresionado por el servicio de buceo Scubo, lorem ipsum es simplemente texto libre usado para copiar.",
-        name: "Alex Maldonado",
-        role: "Nadador",
-        image: "assets/images/resources/testi-1-4.jpg"
-    }
-];
+interface TestimonialProps {
+    title?: string;
+    subtitle?: string;
+    web_banner_url?: string;
+}
 
-const FirstTestimonials = () => {
+interface FirstTestimonialsProps {
+    testimonials?: TestimonialProps[];
+}
+
+const FirstTestimonials: React.FC<FirstTestimonialsProps> = ({ 
+    testimonials = []
+}) => {
     const swiperRef = useRef<any>(null);
     const [swiperInstance, setSwiperInstance] = useState<any>(null);
 
@@ -143,22 +124,32 @@ const FirstTestimonials = () => {
                             1199: { slidesPerView: 3 },
                         }}
                     >
-                        {testimonialsData.map((testimonial) => (
-                            <SwiperSlide key={testimonial.id}>
+                        {testimonials.map((testimonial, index) => (
+                            <SwiperSlide key={index}>
                                 <div className="testimonials-one__single">
                                     <div className="testimonials-one__content">
                                         <div className="testimonials-one__content-inner">
                                             <div className="testimonials-one__qoute"></div>
-                                            <p>{testimonial.text}</p>
+                                            <p>{testimonial.subtitle}</p>
                                             <div className="testimonials-one__infos">
                                                 <div className="testimonials-one__image">
                                                     <div className="testimonials-one__image-inner">
-                                                        <img src={testimonial.image} alt={testimonial.name} />
+                                                        <img 
+                                                            src={testimonial.web_banner_url} 
+                                                            alt={testimonial.title}
+                                                            style={{
+                                                                width: '50px',
+                                                                height: '50px',
+                                                                objectFit: 'cover',
+                                                                borderRadius: '50%',
+                                                                border: '2px solid #2196F3'
+                                                            }}
+                                                        />
                                                     </div>
                                                 </div>
                                                 <div className="testimonials-one__infos-content">
-                                                    <h3>{testimonial.name}</h3>
-                                                    <span>{testimonial.role}</span>
+                                                    <h3>{testimonial.title}</h3>
+                                                    <span>Nadador</span>
                                                 </div>
                                             </div>
                                         </div>
