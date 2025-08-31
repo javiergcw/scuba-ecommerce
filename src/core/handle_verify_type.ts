@@ -161,7 +161,7 @@ export class HandleVerifyType {
      * Log de éxito
      */
     private static logSuccess<T>(message: string, data: T): void {
-        console.log(`✅ ${message}`, data);
+        // Log removido por seguridad
     }
     
     /**

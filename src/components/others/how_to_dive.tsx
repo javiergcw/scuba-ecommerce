@@ -4,14 +4,20 @@ import React from "react";
 import { usePathname } from "next/navigation";
 import { ROUTES } from "@/utils/constants";
 import Link from "next/link";
-import { Banner } from 'monolite-saas';
 
 interface HowToDiveProps {
-  banners: Banner[];
-  videoUrl?: string;
+  title?: string;
+  subtitle?: string;
+  web_banner_url?: string;
+  redirect_url?: string;
 }
 
-const HowToDive: React.FC<HowToDiveProps> = ({ banners, }) => {
+const HowToDive: React.FC<HowToDiveProps> = ({ 
+  title,
+  subtitle,
+  web_banner_url,
+  redirect_url 
+}) => {
   const pathname = usePathname();
 
   const isActive = (path: string) => {
@@ -20,10 +26,6 @@ const HowToDive: React.FC<HowToDiveProps> = ({ banners, }) => {
     }
     return pathname.startsWith(path) ? "text-blue-500 font-bold" : "";
   };
-
-  const secondaryZoneBanner = banners.find(
-    (banner) => banner.zone_code === "secondary-zone" && banner.active
-  );
 
   return (
     <section
@@ -36,28 +38,18 @@ const HowToDive: React.FC<HowToDiveProps> = ({ banners, }) => {
         alt=""
       />
       <div className="container">
-        <div
-          className="video-two__box wow fadeInRight"
-          data-wow-duration="1500ms"
-        >
-          <img src={secondaryZoneBanner?.web_banner_url || ""} alt="" />
-          <a
-            href={secondaryZoneBanner?.redirect_url || ""}
-            className="video-popup"
-          >
-            <i className="bi bi-play-circle-fill"></i>
-          </a>
-        </div>
-        <div className="row">
-          <div className="col-xl-6">
+        <div className="flex flex-col lg:flex-row items-center gap-8 lg:gap-12">
+          
+          {/* Texto - Lado izquierdo */}
+          <div className="w-full lg:w-1/2">
             <div className="video-two__content">
               <div className="block-title">
                 <img src="assets/images/shapes/sec-line-1.png" alt="" />
                 <p className="text-uppercase">aprende con nosotros</p>
-                <h3 className="text-uppercase">¿Cómo bucear?</h3>
+                <h3 className="text-uppercase">{title}</h3>
               </div>
               <p>
-                ¿Sueñas con explorar el fascinante mundo submarino? En nuestra escuela de buceo te ofrecemos la oportunidad de convertirte en un buceador certificado. Nuestros instructores profesionales te guiarán paso a paso, desde los conceptos básicos hasta las técnicas avanzadas. Descubre la belleza de los arrecifes de coral, la vida marina y las increíbles formaciones submarinas. ¡No esperes más para comenzar tu aventura bajo el agua!
+                {subtitle}
               </p>
               <Link
                 href={ROUTES.CONTACT}
@@ -70,6 +62,39 @@ const HowToDive: React.FC<HowToDiveProps> = ({ banners, }) => {
                   Contáctanos
                 </a>
               </Link>
+            </div>
+          </div>
+
+          {/* Imagen - Lado derecho */}
+          <div className="w-full lg:w-1/2">
+            <div className="relative">
+              <img 
+                src={web_banner_url} 
+                alt="" 
+                className="w-full h-auto object-cover"
+              />
+              <a
+                href={redirect_url}
+                className="video-popup"
+                style={{
+                  background: 'rgba(255, 255, 0, 0.8)',
+                  borderRadius: '0px',
+                  padding: '0px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  textDecoration: 'none',
+                  width: '80px',
+                  height: '80px',
+                  border: 'none',
+                  position: 'absolute',
+                  left: '50%',
+                  top: '50%',
+                  transform: 'translate(-50%, -50%)'
+                }}
+              >
+                <i className="bi bi-play-circle-fill" style={{ color: 'black', fontSize: '32px' }}></i>
+              </a>
             </div>
           </div>
         </div>

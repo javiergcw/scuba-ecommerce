@@ -22,7 +22,7 @@ export const AboutUsSection = () => {
                         <img src="/assets/images/background/banner6.jpeg" alt=""/>
                     </div>
                     <div className="feature-two__content">
-                        <h3><a href="/courses">Que ofrecemos</a></h3>
+                        <h3><a href="/courses">Mundo del Buceo</a></h3>
                         <p>Contamos con experiencias únicas de buceo y cursos para todos los niveles, desde principiantes hasta profesionales.</p>
                     </div>
                 </div>

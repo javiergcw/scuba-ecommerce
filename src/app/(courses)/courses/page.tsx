@@ -4,11 +4,15 @@ import { HeaderCourse } from '@/components/others/course/header_course'
 import React, { useEffect, useState } from 'react'
 import { services, Product } from 'monolite-saas';
 import { Box, CircularProgress } from '@mui/material';
+import { useSearchParams } from 'next/navigation';
 
 const CoursesPage = () => {
     const [products, setProducts] = useState<Product[]>([]);
+    const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const searchParams = useSearchParams();
+    const selectedCategory = searchParams.get('category');
 
     const fetchProducts = async () => {
         try {
@@ -24,10 +28,21 @@ const CoursesPage = () => {
         }
     };
 
+    // Filtrar productos por categoría cuando cambie la categoría seleccionada
+    useEffect(() => {
+        if (selectedCategory) {
+            const filtered = products.filter(product => 
+                product.category_name === selectedCategory
+            );
+            setFilteredProducts(filtered);
+        } else {
+            setFilteredProducts(products);
+        }
+    }, [selectedCategory, products]);
+
     useEffect(() => {
         fetchProducts();
     }, []);
-
 
     if (loading) {
         return (
@@ -54,7 +69,7 @@ const CoursesPage = () => {
         return <div>Error: {error}</div>;
     }
 
-    const coursesData = products.map(product => ({
+    const coursesData = filteredProducts.map(product => ({
         id: product.id,
         level: product.category_name || "N/A",
         image: product.image_url,

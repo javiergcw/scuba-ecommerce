@@ -113,7 +113,6 @@ const BodyDetailCourse = ({
                     </div>
                     <div className="course-details__content">
                         <br/>
-                        <h3>{title}</h3>
                         <p>{description}</p>
                        {/*  <h4>Características del Curso</h4> */}
                         <ul style={{ listStyleType: 'decimal', paddingLeft: '30px' }}>

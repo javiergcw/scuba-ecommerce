@@ -16,6 +16,7 @@ import BrandBubbleSection from "@/components/others/course/BrandBubbleSection";
 
 export default function Home() {
   const [banners, setBanners] = useState<Banner[]>([]);
+  const [howToDiveBanner, setHowToDiveBanner] = useState<Banner | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -24,6 +25,7 @@ export default function Home() {
       setLoading(true);
       const bannersData = await services.banners.getBanners();
       setBanners(bannersData);
+      setHowToDiveBanner(bannersData.find(banner => banner.zone_code === "como_bucear") || null);
       setError(null);
     } catch (err) {
       setError('Error al cargar los banners');
@@ -41,6 +43,14 @@ export default function Home() {
     (banner) => banner.zone_code === "primary-zone" && banner.active
   );
 
+  const secondaryZoneBanners = banners.filter(
+    (banner) => banner.zone_code === "como_bucear" && banner.active
+  );
+
+  const testimonialsBanners = banners.filter(
+    (banner) => banner.zone_code === "testimonio" && banner.active
+  );
+
   return (
     <div className="w-full max-w-[100vw] overflow-x-hidden">
       <div className="w-full">
@@ -50,8 +60,13 @@ export default function Home() {
         <CoursesFirst />
         <BrandBubbleSection />
         {/* <BrandOne /> */}
-        <HowToDive banners={banners} />
-        <FirstTestimonials />
+        <HowToDive 
+          title={howToDiveBanner?.title || "¿Cómo bucear?"}
+          subtitle={howToDiveBanner?.subtitle || "¿Sueñas con explorar el fascinante mundo submarino? En nuestra escuela de buceo te ofrecemos la oportunidad de convertirte en un buceador certificado. Nuestros instructores profesionales te guiarán paso a paso, desde los conceptos básicos hasta las técnicas avanzadas. Descubre la belleza de los arrecifes de coral, la vida marina y las increíbles formaciones submarinas. ¡No esperes más para comenzar tu aventura bajo el agua!"}
+          web_banner_url={howToDiveBanner?.web_banner_url || "/assets/images/video-2-1.jpg"}
+          redirect_url={howToDiveBanner?.redirect_url || "https://www.youtube.com/watch?v=dQw4w9WgXcQ"}
+        />
+       <FirstTestimonials testimonials={testimonialsBanners} />
         <CtaThree />
       </div>
     </div>
