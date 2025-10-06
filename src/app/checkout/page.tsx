@@ -218,10 +218,10 @@ export default function CheckoutPage() {
 
   const handleNext = () => {
     // Si no estamos en producción, mostrar popup de desarrollo
-    // if (!isProduction) {
-    //   setShowDevPopup(true);
-    //   return;
-    // }
+    if (!isProduction) {
+      setShowDevPopup(true);
+      return;
+    }
 
     if (activeStep === steps.length - 1) {
       // Crear orden usando el caso de uso
@@ -1554,7 +1554,7 @@ export default function CheckoutPage() {
               }
             }}
           >
-            {activeStep === steps.length - 1 ? 'Crear Orden' : 'Siguiente'}
+            {activeStep === steps.length - 1 ? (isProduction ? 'Crear Orden' : '🚧 En Desarrollo') : 'Siguiente'}
           </Button>
         </Box>
 
@@ -1757,7 +1757,7 @@ export default function CheckoutPage() {
           fontWeight: 'bold',
           fontSize: '1.5rem'
         }}>
-          🚧 Sitio en Desarrollo 🚧
+          🚧 Sistema de Pagos en Desarrollo 🚧
         </DialogTitle>
         <DialogContent sx={{ py: 3 }}>
           <Box sx={{ textAlign: 'center' }}>
@@ -1767,13 +1767,16 @@ export default function CheckoutPage() {
               style={{ width: 120, height: 120, margin: '0 auto 20px' }}
             />
             <Typography variant="h5" gutterBottom sx={{ color: '#051b35', fontWeight: 'bold' }}>
-              ¡Estamos trabajando en esto!
+              ¡Pagos Temporalmente Deshabilitados!
             </Typography>
             <Typography variant="body1" sx={{ color: 'text.secondary', mb: 2 }}>
-              Esta funcionalidad está en desarrollo y estará disponible pronto.
+              El sistema de pagos está en desarrollo y no está disponible en este momento.
             </Typography>
-            <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+            <Typography variant="body2" sx={{ color: 'text.secondary', mb: 2 }}>
               🌊 Mientras tanto, puedes explorar nuestros cursos de buceo disponibles 🌊
+            </Typography>
+            <Typography variant="body2" sx={{ color: '#051b35', fontWeight: 'bold' }}>
+              ¡Pronto podrás realizar tus compras de forma segura!
             </Typography>
           </Box>
         </DialogContent>
