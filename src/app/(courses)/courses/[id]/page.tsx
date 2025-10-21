@@ -16,9 +16,14 @@ const CourseDetailPage = () => {
         const fetchCourse = async () => {
             try {
                 setLoading(true);
-                const courseData = await services.products.getProductById(Number(id));
-                setCourse(courseData);
-                setError(null);
+                const allProducts = await services.products.getProducts();
+                const courseData = allProducts.find(product => product.id === Number(id));
+                if (courseData) {
+                    setCourse(courseData);
+                    setError(null);
+                } else {
+                    setError('Curso no encontrado');
+                }
             } catch (err) {
                 setError('Error al cargar el curso');
                 console.error('Error:', err);

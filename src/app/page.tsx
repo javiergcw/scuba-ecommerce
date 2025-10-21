@@ -56,7 +56,7 @@ export default function Home() {
       <div className="w-full">
         <SliderOne banners={primaryZoneBanners} />
         <ServiceOne />
-        <FunFact />
+        {/* <FunFact /> */}
         <CoursesFirst />
         <BrandBubbleSection />
         {/* <BrandOne /> */}
@@ -67,7 +67,7 @@ export default function Home() {
           redirect_url={howToDiveBanner?.redirect_url || "https://www.youtube.com/watch?v=dQw4w9WgXcQ"}
         />
        <FirstTestimonials testimonials={testimonialsBanners} />
-        <CtaThree />
+        {/* ß<CtaThree /> */}
       </div>
     </div>
   );

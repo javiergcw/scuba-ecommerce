@@ -939,8 +939,8 @@ a:focus {
   position: absolute;
   top: 50%;
   left: 50%;
-  -webkit-transform: translate(-59%, calc(-40% + 25px));
-  transform: translate(-59%, calc(-40% + 25px));
+  -webkit-transform: translate(-59%, calc(-40% + 45px));
+  transform: translate(-59%, calc(-40% + 45px));
   text-align: center;
   padding: 36.5px 0;
   border-bottom: 10px solid var(--thm-primary);
@@ -1155,8 +1155,8 @@ a:focus {
 
 .stricked-menu .logo-box {
   padding: 26px 0 20px;
-  -webkit-transform: translate(-59%, calc(-55% + 25px));
-  transform: translate(-59%, calc(-55% + 25px));
+  -webkit-transform: translate(-59%, calc(-55% + 45px));
+  transform: translate(-59%, calc(-55% + 45px));
   border-bottom: 5px solid var(--thm-primary);
   background-color: #fff;
 }
@@ -4350,7 +4350,7 @@ a:focus {
 .course-one__title {
   background-color: #edf2f5;
   position: relative;
-  padding-top: 260px;
+  padding-top: 100px;
   padding-bottom: 375px;
 }
 
@@ -6390,7 +6390,7 @@ a:focus {
  --------------------------------------------------------------*/
 
 .service-one {
-  padding-top: 120px;
+  padding-top: 80px;
   padding-bottom: 90px;
   position: relative;
 }
@@ -6406,7 +6406,7 @@ a:focus {
   font-weight: bold;
   color: #edf2f5;
   position: absolute;
-  bottom: -12px;
+  bottom: 20px;
   left: 50%;
   text-align: center;
   text-transform: uppercase;
