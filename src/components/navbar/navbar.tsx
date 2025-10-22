@@ -3,7 +3,6 @@
 import {
   Facebook,
   Instagram,
-  Twitter,
   Share2,
   Menu as MenuIcon,
   ChevronDown,
@@ -11,7 +10,7 @@ import {
 import { CONTACT_INFO, ROUTES } from '@/utils/constants';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   AppBar,
   Box,
@@ -26,7 +25,7 @@ import {
   MenuItem,
   Button,
 } from '@mui/material';
-import { services, Product } from 'monolite-saas';
+import { services } from 'monolite-saas';
 
 const Navbar = () => {
   const pathname = usePathname();
@@ -144,9 +143,6 @@ const Navbar = () => {
             <Box display="flex" gap={1}>
               <a href={CONTACT_INFO.SOCIAL_MEDIA.FACEBOOK} target="_blank">
                 <Facebook style={{ color: 'white', width: 16, height: 16 }} />
-              </a>
-              <a href={CONTACT_INFO.SOCIAL_MEDIA.TRIPADVISOR} target="_blank">
-                <Twitter style={{ color: 'white', width: 16, height: 16 }} />
               </a>
               <a href={CONTACT_INFO.SOCIAL_MEDIA.FLICKR} target="_blank">
                 <Share2 style={{ color: 'white', width: 16, height: 16 }} />
@@ -312,13 +308,6 @@ const Navbar = () => {
               rel="noopener noreferrer"
             >
               <Facebook className="w-5 h-5" />
-            </a>
-            <a
-              href={CONTACT_INFO.SOCIAL_MEDIA.TRIPADVISOR}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <Twitter className="w-5 h-5" />
             </a>
             <a
               href={CONTACT_INFO.SOCIAL_MEDIA.FLICKR}

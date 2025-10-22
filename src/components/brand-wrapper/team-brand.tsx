@@ -20,7 +20,6 @@ export const TeamBrand = () => {
                                         <h3>Maggie Goodman</h3>
                                         <span>Co Founder</span>
                                         <div className="team-one__social">
-                                            <a href="#"><i className="fab fa-twitter"></i></a>
                                             <a href="#"><i className="fab fa-facebook-square"></i></a>
                                             <a href="#"><i className="fab fa-instagram"></i></a>
                                         </div>
@@ -36,7 +35,6 @@ export const TeamBrand = () => {
                                         <h3>Craig Hawkins</h3>
                                         <span>Co Founder</span>
                                         <div className="team-one__social">
-                                            <a href="#"><i className="fab fa-twitter"></i></a>
                                             <a href="#"><i className="fab fa-facebook-square"></i></a>
                                             <a href="#"><i className="fab fa-instagram"></i></a>
                                         </div>
@@ -52,7 +50,6 @@ export const TeamBrand = () => {
                                         <h3>Katharine Alvarez</h3>
                                         <span>Co Founder</span>
                                         <div className="team-one__social">
-                                            <a href="#"><i className="fab fa-twitter"></i></a>
                                             <a href="#"><i className="fab fa-facebook-square"></i></a>
                                             <a href="#"><i className="fab fa-instagram"></i></a>
                                         </div>
@@ -68,7 +65,6 @@ export const TeamBrand = () => {
                                         <h3>Mabel Underwood</h3>
                                         <span>Co Founder</span>
                                         <div className="team-one__social">
-                                            <a href="#"><i className="fab fa-twitter"></i></a>
                                             <a href="#"><i className="fab fa-facebook-square"></i></a>
                                             <a href="#"><i className="fab fa-instagram"></i></a>
                                         </div>

@@ -31,65 +31,49 @@ const ServiceOne = () => {
           <h3 className="text-uppercase">Lo que ofrecemos</h3>
         </div>
         <div className="row">
-          <div className="col-xl-3 col-md-6 col-sm-12">
+          <div className="col-xl-4 col-md-6 col-sm-12">
             <div className="service-one__single">
               <i className="scubo-icon-scuba-diving"></i>
               <h3>
                 <a href="courses.html">
-                  {" "}
-                  En <br />
-                  Submarinismo
+                  Bucear en el <br />
+                  Parque Tayrona
                 </a>
               </h3>
               <p>
-                Sumérgete en el corazón del océano y descubre un universo
-                submarino lleno de vida y color. Te acompañamos en cada
-                inmersión para que explores con total seguridad.
+                Explora las aguas cristalinas del Parque Nacional Natural Tayrona.
+                Descubre arrecifes de coral, peces tropicales y formaciones rocosas
+                únicas en uno de los destinos de buceo más hermosos de Colombia.
               </p>
             </div>
           </div>
-          <div className="col-xl-3 col-md-6 col-sm-12">
+          <div className="col-xl-4 col-md-6 col-sm-12">
             <div className="service-one__single">
               <i className="scubo-icon-aqualung"></i>
               <h3>
                 <a href="courses.html">
-                  buceo <br /> con snorkel
+                  Entrenamiento <br /> Recreativo
                 </a>
               </h3>
               <p>
-                Disfruta de la belleza marina desde la superficie. Con snorkel
-                observarás arrecifes y peces multicolores, de forma sencilla y
-                al alcance de todos.
+                Aprende a bucear de forma segura y divertida con nuestros cursos
+                recreativos certificados. Desde principiantes hasta niveles avanzados,
+                te preparamos para disfrutar del mundo submarino.
               </p>
             </div>
           </div>
-          <div className="col-xl-3 col-md-6 col-sm-12">
+          <div className="col-xl-4 col-md-6 col-sm-12">
             <div className="service-one__single">
               <i className="scubo-icon-swimming"></i>
               <h3>
                 <a href="courses.html">
-                  Aprender <br /> a nadar
+                  Entrenamiento <br /> Profesional
                 </a>
               </h3>
               <p>
-                Da tus primeras brazadas con la guía de nuestros instructores
-                expertos. Desarrolla habilidades y confianza para sentirte libre
-                y seguro en el agua.
-              </p>
-            </div>
-          </div>
-          <div className="col-xl-3 col-md-6 col-sm-12">
-            <div className="service-one__single">
-              <i className="scubo-icon-snorkel"></i>
-              <h3>
-                <a href="courses.html">
-                  Buceo <br /> libre
-                </a>
-              </h3>
-              <p>
-                Vive la emoción de sumergirte sin equipo pesado. Aprende
-                técnicas de respiración y control para sumergirte a pulmón y
-                alcanzar una conexión única con el entorno marino. 
+                Convierte tu pasión en profesión. Nuestros programas profesionales
+                te certifican como instructor de buceo, guía y especialista,
+                preparándote para una carrera en el mundo del buceo.
               </p>
             </div>
           </div>
