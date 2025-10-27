@@ -13,6 +13,7 @@ const CoursesContent = () => {
     const [error, setError] = useState<string | null>(null);
     const searchParams = useSearchParams();
     const selectedCategory = searchParams.get('category');
+    const selectedSubcategory = searchParams.get('subcategory');
 
     const fetchProducts = async () => {
         try {
@@ -28,17 +29,24 @@ const CoursesContent = () => {
         }
     };
 
-    // Filtrar productos por categoría cuando cambie la categoría seleccionada
+    // Filtrar productos por categoría y subcategoría cuando cambien los filtros
     useEffect(() => {
+        let filtered = products;
+
         if (selectedCategory) {
-            const filtered = products.filter(product => 
+            filtered = filtered.filter(product => 
                 product.category_name === selectedCategory
             );
-            setFilteredProducts(filtered);
-        } else {
-            setFilteredProducts(products);
         }
-    }, [selectedCategory, products]);
+
+        if (selectedSubcategory) {
+            filtered = filtered.filter(product => 
+                product.subcategory_name === selectedSubcategory
+            );
+        }
+
+        setFilteredProducts(filtered);
+    }, [selectedCategory, selectedSubcategory, products]);
 
     useEffect(() => {
         fetchProducts();

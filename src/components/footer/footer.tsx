@@ -93,7 +93,7 @@ const Footer = () => {
                 <h3 className="footer-widget__title">Explora</h3>
                 <ul className="footer-widget__links-list list-unstyled">
                   <li>
-                    <a href="/courses">Mundo del Buceo</a>
+                    <a href="/courses">Entrenamiento</a>
                   </li>
                   <li>
                     <a href="/contact">Centro de Ayuda</a>

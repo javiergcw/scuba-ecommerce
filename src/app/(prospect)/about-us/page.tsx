@@ -13,10 +13,8 @@ export default function AboutUsPage() {
     return (
         <>
             <AboutUsSection />
-            <AboutUsStwo />
-            {/* <AboutUsVideoOne /> */}
-            {/* <AboutUsFunfact /> */}
-            {/* <AboutUsTestm /> */}
+            {/*<AboutUsStwo />*/}
+            {/* <AboutUsVideoOne /> */} {/* <AboutUsFunfact /> */} {/* <AboutUsTestm /> */}
             {/* <TeamBrand/> */}
 
         </>
