@@ -8,8 +8,9 @@ import "../../styles/carousel.css";
 import { usePathname } from "next/navigation";
 import { ROUTES } from "@/utils/constants";
 import Link from "next/link";
-import { services, Product } from "monolite-saas";
+import { Product } from "monolite-saas";
 import SwiperNavigationButtons from "./SwiperNavigationButtons";
+import { getProductsMock } from "@/core/mocks/courses_mock";
 
 const CoursesFirst = () => {
   const pathname = usePathname();
@@ -23,7 +24,9 @@ const CoursesFirst = () => {
   const fetchProducts = async () => {
     try {
       setLoading(true);
-      const productsData = await services.products.getProducts();
+      // Simulamos una pequeña demora para mantener la experiencia de carga
+      await new Promise(resolve => setTimeout(resolve, 300));
+      const productsData = getProductsMock() as Product[];
       setProducts(productsData);
       setError(null);
     } catch (err) {

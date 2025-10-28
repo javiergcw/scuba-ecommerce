@@ -2,9 +2,10 @@
 import { BodyCourse } from '@/components/others/course/body_course'
 import { HeaderCourse } from '@/components/others/course/header_course'
 import React, { useEffect, useState, Suspense } from 'react'
-import { services, Product } from 'monolite-saas';
+import { Product } from 'monolite-saas';
 import { Box, CircularProgress } from '@mui/material';
 import { useSearchParams } from 'next/navigation';
+import { getProductsMock, MockProduct } from '@/core/mocks/courses_mock';
 
 const CoursesContent = () => {
     const [products, setProducts] = useState<Product[]>([]);
@@ -17,7 +18,9 @@ const CoursesContent = () => {
     const fetchProducts = async () => {
         try {
             setLoading(true);
-            const productsData = await services.products.getProducts();
+            // Simulamos una pequeña demora para mantener la experiencia de carga
+            await new Promise(resolve => setTimeout(resolve, 300));
+            const productsData = getProductsMock() as Product[];
             setProducts(productsData);
             setError(null);
         } catch (err) {

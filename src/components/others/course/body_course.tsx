@@ -102,8 +102,18 @@ export const BodyCourse = ({ courses }: BodyCourseProps) => {
                         )}
                         <div className="row">
                             {group.map((course) => (
-                                <div key={course.id} className="col-lg-4 col-md-6">
-                                    <div className="course-one__single" style={{ width: '100%' }}>
+                                <div key={course.id} className="col-lg-4 col-md-6" style={{ marginBottom: '30px' }}>
+                                    <div 
+                                        className="course-one__single" 
+                                        style={{ 
+                                            width: '100%', 
+                                            height: '100%',
+                                            minHeight: '520px',
+                                            display: 'flex',
+                                            flexDirection: 'column',
+                                            background: '#fff'
+                                        }}
+                                    >
                                         <div className="course-one__image" style={{ width: '100%' }}>
                                             <Link href={course.link} className="course-one__cat">{course.level}</Link>
                                             <div className="course-one__image-inner" style={{ width: '100%' }}>
@@ -113,18 +123,51 @@ export const BodyCourse = ({ courses }: BodyCourseProps) => {
                                                     style={{
                                                         width: '100%',
                                                         height: '333px',
-                                                        objectFit: 'cover'
+                                                        objectFit: 'cover',
+                                                        display: 'block'
                                                     }}
                                                 />
                                                 <Link href={course.link}><i className="scubo-icon-plus-symbol"></i></Link>
                                             </div>
                                         </div>
-                                        <div className="course-one__content hvr-sweep-to-bottom" style={{ width: '100%' }}>
-                                            <h3><Link href={course.link}>{course.title}</Link></h3>
-                                            <p>{course.description}</p>
+                                        <div 
+                                            className="course-one__content hvr-sweep-to-bottom" 
+                                            style={{ 
+                                                width: '100%',
+                                                padding: '20px',
+                                                flex: '1',
+                                                display: 'flex',
+                                                flexDirection: 'column',
+                                                justifyContent: 'space-between'
+                                            }}
+                                        >
+                                            <div>
+                                                <h3 style={{ marginBottom: '10px' }}><Link href={course.link}>{course.title}</Link></h3>
+                                                <p style={{ 
+                                                    fontSize: '14px',
+                                                    color: '#666',
+                                                    lineHeight: '1.5',
+                                                    overflow: 'hidden',
+                                                    textOverflow: 'ellipsis',
+                                                    display: '-webkit-box',
+                                                    WebkitLineClamp: 3,
+                                                    WebkitBoxOrient: 'vertical'
+                                                }}>{course.description}</p>
+                                            </div>
                                         </div>
-                                        <Link href={course.link} className="course-one__book-link" style={{ width: '100%', display: 'block' }}>
-                                            Book this course
+                                        <Link 
+                                            href={course.link} 
+                                            className="course-one__book-link" 
+                                            style={{ 
+                                                width: '100%', 
+                                                display: 'block',
+                                                textAlign: 'center',
+                                                padding: '12px',
+                                                borderTop: '1px solid #f0f0f0',
+                                                marginTop: 'auto'
+                                            }}
+                                        >
+                                            Ver detalles
                                         </Link>
                                     </div>
                                 </div>

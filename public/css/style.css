@@ -4612,7 +4612,7 @@ a:focus {
   top: calc(100% - 73.5px);
   right: 0;
   width: 100%;
-  max-width: 590px;
+  max-width: 680px;
   display: -webkit-box;
   display: flex;
   -webkit-box-align: center;
@@ -4620,8 +4620,8 @@ a:focus {
   -webkit-box-pack: center;
   justify-content: center;
   background-color: var(--thm-primary);
-  padding-left: 60px;
-  padding-right: 60px;
+  padding-left: 70px;
+  padding-right: 70px;
   padding-top: 48.5px;
   padding-bottom: 48.5px;
 }
@@ -4630,14 +4630,15 @@ a:focus {
   .course-details__infos {
     position: absolute !important;
     width: 75% !important;
+    max-width: 600px !important;
     display: flex !important;
     flex-direction: row !important;
-    flex-wrap: wrap !important;
+    flex-wrap: nowrap !important;
     justify-content: space-around !important;
-    align-items: stretch !important; /* hijos alineados al tope para números a la misma altura */
-    padding: 23.5px !important;
+    align-items: stretch !important;
+    padding: 25px 35px !important;
     font-size: 12px !important;
-    margin: 6px 0 !important; /* modificado: mismo espacio arriba y abajo */
+    margin: 6px 0 !important;
   }
 
   .course-details__infos-title,
@@ -4735,6 +4736,7 @@ a:focus {
   flex: 1 1 33.333%;
   max-width: 33.333%;
   position: relative;
+  min-width: 180px;
 }
 
 .course-details__infos-single + .course-details__infos-single::before {
@@ -4761,12 +4763,13 @@ a:focus {
 .course-details__infos-single p {
   font-size: 16px;
   font-weight: 500;
-  line-height: 1em;
+  line-height: 1.3em;
   text-transform: uppercase;
   color: var(--thm-black);
   opacity: 0.7;
   margin: 0;
-  margin-left: 10px;
+  margin-left: 15px;
+  white-space: normal;
 }
 
 /*-------------------------------------------------------------- 

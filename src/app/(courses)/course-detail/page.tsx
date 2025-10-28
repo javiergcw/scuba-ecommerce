@@ -2,8 +2,9 @@
 import BodyDetailCourse from '@/components/others/course/body_detail_course';
 import { HeaderDetailCourse } from '@/components/others/course/header_detail_course';
 import React, { useEffect, useState } from 'react';
-import { services, Product } from 'monolite-saas';
+import { Product } from 'monolite-saas';
 import { useParams } from 'next/navigation';
+import { getProductByIdMock, MockProduct } from '@/core/mocks/courses_mock';
 
 const CourseDetailPage = () => {
     const { id } = useParams();
@@ -15,9 +16,15 @@ const CourseDetailPage = () => {
         const fetchCourse = async () => {
             try {
                 setLoading(true);
-                const courseData = await services.products.getProductById(Number(id));
-                setCourse(courseData);
-                setError(null);
+                // Simulamos una pequeña demora para mantener la experiencia de carga
+                await new Promise(resolve => setTimeout(resolve, 300));
+                const courseData = getProductByIdMock(Number(id));
+                if (courseData) {
+                    setCourse(courseData as Product);
+                    setError(null);
+                } else {
+                    setError('Curso no encontrado');
+                }
             } catch (err) {
                 setError('Error al cargar el curso');
                 console.error('Error:', err);
@@ -39,15 +46,27 @@ const CourseDetailPage = () => {
         return <div>Error: {error || 'Curso no encontrado'}</div>;
     }
 
+    const mockCourse = course as MockProduct;
+    const numberOfDives = typeof mockCourse.cuantos_dives_only === 'number' 
+        ? mockCourse.cuantos_dives_only 
+        : typeof mockCourse.cuantos_dives_only === 'string' && mockCourse.cuantos_dives_only.startsWith('mas')
+        ? 20 
+        : 0;
+    const courseDuration = typeof mockCourse.cuantos_days_course === 'number' 
+        ? mockCourse.cuantos_days_course 
+        : typeof mockCourse.cuantos_days_course === 'string' && mockCourse.cuantos_days_course.startsWith('mas')
+        ? 15 
+        : 1;
+
     const courseDetailData = {
         image: course.image_url,
         price: course.price,
-        numberOfDives: 2, // Este valor debería venir del producto
-        courseDuration: 4, // Este valor debería venir del producto
+        numberOfDives: numberOfDives,
+        courseDuration: courseDuration,
         title: course.name,
-        description: course.description || 'Descripción no disponible',
-        tips:/*  course.tips || */ 'Información adicional no disponible',
-        additionalInfo: /* course.additional_info || */ 'Información adicional no disponible',
+        description: mockCourse.descripcion_larga || course.description || 'Descripción no disponible',
+        tips: mockCourse.descripcion_corta || 'Información adicional no disponible',
+        additionalInfo: mockCourse.descripcion_larga || 'Información adicional no disponible',
         courseId: course.id.toString(),
         subcategory_name: course.subcategory_name
     };
