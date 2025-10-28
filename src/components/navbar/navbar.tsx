@@ -10,7 +10,7 @@ import {
 import { CONTACT_INFO, ROUTES } from '@/utils/constants';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import {
   AppBar,
   Box,
@@ -33,24 +33,61 @@ const Navbar = () => {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [showTopbar, setShowTopbar] = useState(true);
   const [categories, setCategories] = useState<string[]>([]);
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [anchorElEntrenamiento, setAnchorElEntrenamiento] = useState<null | HTMLElement>(null);
+  const [anchorElYaSoyBuzo, setAnchorElYaSoyBuzo] = useState<null | HTMLElement>(null);
+  const [dropdownOpenYaSoyBuzo, setDropdownOpenYaSoyBuzo] = useState(false);
+  const [dropdownOpenEntrenamiento, setDropdownOpenEntrenamiento] = useState(false);
+  
+  // Refs para los dropdowns
+  const entrenamientoRef = useRef<HTMLLIElement>(null);
+  const yaSoyBuzoRef = useRef<HTMLLIElement>(null);
 
   const theme = useTheme();
   const isDesktop = useMediaQuery('(min-width:1200px)');
+
+  // Definir categorías y subcategorías para "Ya soy buzo"
+  const yaSoyBuzoCategorias = [
+    "¡Formación PADI a otro nivel!",
+    "Solo para profesionales"
+  ];
+
+  // Definir categorías y subcategorías para "Entrenamiento"
+  const entrenamientoCategorias = [
+    "¿Aún no eres buzo?",
+    "Solo en Oceano Scuba",
+    "Snorkeling / Acompañante"
+  ];
 
   // Obtener categorías únicas de los productos
   useEffect(() => {
     const fetchCategories = async () => {
       try {
         const products = await services.products.getProducts();
-        const uniqueCategories = [...new Set(products.map(product => product.category_name).filter(Boolean))];
+        
+        // Combinar todas las subcategorías definidas
+        const allSubcategories: string[] = [
+          ...yaSoyBuzoCategorias,
+          ...entrenamientoCategorias
+        ];
+
+        // Verificar qué subcategorías tienen productos
+        const productsWithSubcats = products.map(product => 
+          product.subcategory_name || product.category_name
+        ).filter(Boolean);
+        
+        // Mantener solo las subcategorías que tienen productos Y están en la estructura definida
+        const validCategories = allSubcategories.filter(subcat => 
+          productsWithSubcats.includes(subcat as string)
+        );
+        
+        const uniqueCategories = [...new Set(validCategories)];
         setCategories(uniqueCategories);
       } catch (error) {
         console.error('Error al cargar categorías:', error);
       }
     };
     fetchCategories();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Comentario: Mostrar topbar solo si scrollY === 0, sin transiciones
@@ -80,31 +117,47 @@ const Navbar = () => {
     };
   };
 
-  const handleCategoryClick = (category: string) => {
-    setAnchorEl(null);
-    router.push(`${ROUTES.COURSES}?category=${encodeURIComponent(category)}`);
+  const handleCategoryClick = (category: string, menuType: 'entrenamiento' | 'yaSoyBuzo') => {
+    if (menuType === 'entrenamiento') {
+      setAnchorElEntrenamiento(null);
+      setDropdownOpenEntrenamiento(false);
+      router.push(`${ROUTES.HOME}?category=${encodeURIComponent(category)}`);
+    } else {
+      setAnchorElYaSoyBuzo(null);
+      setDropdownOpenYaSoyBuzo(false);
+      router.push(`${ROUTES.COURSES}?category=${encodeURIComponent(category)}`);
+    }
   };
 
-  const navLinks = [
-    { label: 'Inicio', href: ROUTES.HOME },
-    { label: 'Nosotros', href: ROUTES.ABOUT },
-    { label: 'Contactos', href: ROUTES.CONTACT },
-  ];
-
-  // Cerrar dropdown al hacer clic fuera
+  // Cerrar dropdowns al hacer clic fuera
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       const target = event.target as HTMLElement;
-      if (!target.closest('.dropdown')) {
-        setDropdownOpen(false);
+      
+      // Verificar si el click está fuera del dropdown de Entrenamiento
+      if (dropdownOpenEntrenamiento && 
+          entrenamientoRef.current && 
+          !entrenamientoRef.current.contains(target)) {
+        setDropdownOpenEntrenamiento(false);
+      }
+      
+      // Verificar si el click está fuera del dropdown de Ya soy buzo
+      if (dropdownOpenYaSoyBuzo && 
+          yaSoyBuzoRef.current && 
+          !yaSoyBuzoRef.current.contains(target)) {
+        setDropdownOpenYaSoyBuzo(false);
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
+    // Solo agregar el listener si algún dropdown está abierto
+    if (dropdownOpenEntrenamiento || dropdownOpenYaSoyBuzo) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, []);
+  }, [dropdownOpenEntrenamiento, dropdownOpenYaSoyBuzo]);
 
   const TOPBAR_HEIGHT = 43;
   const APPBAR_HEIGHT = 56;
@@ -172,51 +225,131 @@ const Navbar = () => {
                 <img src="/assets/images/logo.png" alt="Logo" width="120" />
               </Link>
             </Box>
-            <Box display={{ xs: 'none', sm: 'flex' }} gap={4}>
-              {navLinks.map(({ label, href }) => (
+            <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', flex: 1, justifyContent: 'flex-end' }}>
+              <Box sx={{ display: { xs: 'none', md: 'block' } }}>
                 <Link
-                  key={label}
-                  href={href}
+                  href={ROUTES.ABOUT}
                   style={{
                     textDecoration: 'none',
-                    ...getLinkStyle(href),
+                    ...getLinkStyle(ROUTES.ABOUT),
                   }}
                 >
-                  {label}
+                  ¿Por qué nosotros?
                 </Link>
-              ))}
+              </Box>
               <Button
-                onClick={(e) => setAnchorEl(e.currentTarget)}
+                onClick={(e) => setAnchorElEntrenamiento(e.currentTarget)}
                 endIcon={<ChevronDown />}
+                className="nav-link-entrenamiento-mobile"
+                size="small"
                 sx={{
                   textTransform: 'none',
                   color: '#444',
+                  fontSize: { xs: '11px', sm: '14px' },
                   '&:hover': { color: '#87CEEB' },
                 }}
               >
-                Mundo del Buceo
+                Entrenamiento
               </Button>
-            </Box>
-            <Box display={{ xs: 'flex', sm: 'none' }}>
-              <IconButton onClick={() => setDrawerOpen(true)}>
-                <MenuIcon />
-              </IconButton>
+              <Button
+                onClick={(e) => setAnchorElYaSoyBuzo(e.currentTarget)}
+                endIcon={<ChevronDown />}
+                className="nav-link-ya-soy-buzo-mobile"
+                size="small"
+                sx={{
+                  textTransform: 'none',
+                  color: '#444',
+                  fontSize: { xs: '11px', sm: '14px' },
+                  '&:hover': { color: '#87CEEB' },
+                }}
+              >
+                Ya soy buzo
+              </Button>
+              <Box sx={{ display: { xs: 'none', md: 'block' } }}>
+                <Link
+                  href={ROUTES.CONTACT}
+                  style={{
+                    textDecoration: 'none',
+                    ...getLinkStyle(ROUTES.CONTACT),
+                  }}
+                >
+                  Contactanos
+                </Link>
+              </Box>
             </Box>
           </Toolbar>
         </AppBar>
 
+        {/* Menu de Entrenamiento */}
         <Menu
-          anchorEl={anchorEl}
-          open={Boolean(anchorEl)}
-          onClose={() => setAnchorEl(null)}
-          sx={{ zIndex: 1300 }}
+          anchorEl={anchorElEntrenamiento}
+          open={Boolean(anchorElEntrenamiento)}
+          onClose={() => setAnchorElEntrenamiento(null)}
+          anchorOrigin={{
+            vertical: 'bottom',
+            horizontal: 'left',
+          }}
+          transformOrigin={{
+            vertical: 'top',
+            horizontal: 'left',
+          }}
+          slotProps={{
+            paper: {
+              sx: {
+                zIndex: 1500,
+                mt: 1,
+                boxShadow: '0 8px 16px rgba(0,0,0,0.1)',
+              }
+            }
+          }}
         >
-          <MenuItem onClick={() => handleCategoryClick('')}>
+          <MenuItem onClick={() => handleCategoryClick('', 'entrenamiento')}>
             Todos los cursos
           </MenuItem>
-          {categories.map((category) => (
-            <MenuItem key={category} onClick={() => handleCategoryClick(category)}>
-              {category}
+          {entrenamientoCategorias.map((subcat) => (
+            <MenuItem 
+              key={subcat}
+              onClick={() => handleCategoryClick(subcat, 'entrenamiento')}
+              sx={{ pl: 2 }}
+            >
+              {subcat}
+            </MenuItem>
+          ))}
+        </Menu>
+
+        {/* Menu de Ya soy buzo */}
+        <Menu
+          anchorEl={anchorElYaSoyBuzo}
+          open={Boolean(anchorElYaSoyBuzo)}
+          onClose={() => setAnchorElYaSoyBuzo(null)}
+          anchorOrigin={{
+            vertical: 'bottom',
+            horizontal: 'left',
+          }}
+          transformOrigin={{
+            vertical: 'top',
+            horizontal: 'left',
+          }}
+          slotProps={{
+            paper: {
+              sx: {
+                zIndex: 1500,
+                mt: 1,
+                boxShadow: '0 8px 16px rgba(0,0,0,0.1)',
+              }
+            }
+          }}
+        >
+          <MenuItem onClick={() => handleCategoryClick('', 'yaSoyBuzo')}>
+            Todos los cursos
+          </MenuItem>
+          {yaSoyBuzoCategorias.map((subcat) => (
+            <MenuItem 
+              key={subcat}
+              onClick={() => handleCategoryClick(subcat, 'yaSoyBuzo')}
+              sx={{ pl: 2 }}
+            >
+              {subcat}
             </MenuItem>
           ))}
         </Menu>
@@ -229,26 +362,73 @@ const Navbar = () => {
         >
           <Box width={250} role="presentation">
             <List>
-              {navLinks.map(({ label, href }) => (
-                <ListItem key={label}>
+              <ListItem>
+                <Link
+                  onClick={() => setDrawerOpen(false)}
+                  href={ROUTES.ABOUT}
+                  style={{
+                    textDecoration: 'none',
+                    display: 'block',
+                    width: '100%',
+                    padding: '0.5rem 1rem',
+                    ...getLinkStyle(ROUTES.ABOUT),
+                  }}
+                >
+                  ¿Por qué nosotros?
+                </Link>
+              </ListItem>
+              
+              {/* Sección Entrenamiento */}
+              <ListItem>
+                <div style={{ width: '100%', padding: '0.5rem 1rem' }}>
+                  <div style={{ 
+                    fontWeight: 'bold', 
+                    marginBottom: '0.5rem',
+                    color: '#87CEEB'
+                  }}>
+                    Entrenamiento
+                  </div>
                   <Link
                     onClick={() => setDrawerOpen(false)}
-                    href={href}
+                    href={ROUTES.HOME}
                     style={{
                       textDecoration: 'none',
                       display: 'block',
-                      width: '100%',
-                      padding: '0.5rem 1rem',
-                      ...getLinkStyle(href),
+                      padding: '0.25rem 0',
+                      color: '#444',
                     }}
                   >
-                    {label}
+                    Todos los cursos
                   </Link>
-                </ListItem>
-              ))}
+                  {entrenamientoCategorias.map((subcat) => (
+                    <Link
+                      key={subcat}
+                      onClick={() => setDrawerOpen(false)}
+                      href={`${ROUTES.HOME}?category=${encodeURIComponent(subcat)}`}
+                      style={{
+                        textDecoration: 'none',
+                        display: 'block',
+                        padding: '0.25rem 0',
+                        paddingLeft: '1rem',
+                        color: '#444',
+                      }}
+                    >
+                      {subcat}
+                    </Link>
+                  ))}
+                </div>
+              </ListItem>
+
+              {/* Sección Ya soy buzo */}
               <ListItem>
                 <div style={{ width: '100%', padding: '0.5rem 1rem' }}>
-                  <div style={{ fontWeight: 'bold', marginBottom: '0.5rem' }}>Mundo del Buceo</div>
+                  <div style={{ 
+                    fontWeight: 'bold', 
+                    marginBottom: '0.5rem',
+                    color: '#87CEEB'
+                  }}>
+                    Ya soy buzo
+                  </div>
                   <Link
                     onClick={() => setDrawerOpen(false)}
                     href={ROUTES.COURSES}
@@ -261,22 +441,39 @@ const Navbar = () => {
                   >
                     Todos los cursos
                   </Link>
-                  {categories.map((category) => (
+                  {yaSoyBuzoCategorias.map((subcat) => (
                     <Link
-                      key={category}
+                      key={subcat}
                       onClick={() => setDrawerOpen(false)}
-                      href={`${ROUTES.COURSES}?category=${encodeURIComponent(category)}`}
+                      href={`${ROUTES.COURSES}?category=${encodeURIComponent(subcat)}`}
                       style={{
                         textDecoration: 'none',
                         display: 'block',
                         padding: '0.25rem 0',
+                        paddingLeft: '1rem',
                         color: '#444',
                       }}
                     >
-                      {category}
+                      {subcat}
                     </Link>
                   ))}
                 </div>
+              </ListItem>
+
+              <ListItem>
+                <Link
+                  onClick={() => setDrawerOpen(false)}
+                  href={ROUTES.CONTACT}
+                  style={{
+                    textDecoration: 'none',
+                    display: 'block',
+                    width: '100%',
+                    padding: '0.5rem 1rem',
+                    ...getLinkStyle(ROUTES.CONTACT),
+                  }}
+                >
+                  Contactanos
+                </Link>
               </ListItem>
             </List>
           </Box>
@@ -301,7 +498,7 @@ const Navbar = () => {
             <Link href={ROUTES.LOGIN}>Inició de sesión</Link>
             <Link href={ROUTES.LOCATION}>Ubicación</Link>
           </div>
-          <div className="topbar-one__social">
+          <div className="topbar-one__social" style={{ gap: '10px' }}>
             <a
               href={CONTACT_INFO.SOCIAL_MEDIA.FACEBOOK}
               target="_blank"
@@ -354,20 +551,8 @@ const Navbar = () => {
               </a>
             </div>
 
-            <div className="main-nav__main-navigation">
+            <div className="main-nav__main-navigation" style={{ width: '100%', maxWidth: 'none' }}>
               <ul className="main-nav__navigation-box">
-                <li className="dropdown">
-                  <Link
-                    href={ROUTES.HOME}
-                    style={{
-                      textDecoration: 'none',
-                      transition: 'color 0.3s ease',
-                      ...getLinkStyle(ROUTES.HOME),
-                    }}
-                  >
-                    Inicio
-                  </Link>
-                </li>
                 <li className="dropdown">
                   <Link
                     href={ROUTES.ABOUT}
@@ -377,79 +562,171 @@ const Navbar = () => {
                       ...getLinkStyle(ROUTES.ABOUT),
                     }}
                   >
-                    Nosotros
+                    ¿Por qué nosotros?
                   </Link>
                 </li>
-                <li></li>
-                <li className="dropdown" 
-                    style={{ position: 'relative' }}>
-                  <Link
-                    href="#"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      setDropdownOpen(!dropdownOpen);
-                    }}
+                <li 
+                    ref={entrenamientoRef}
+                    className="dropdown" 
+                    style={{ position: 'relative', zIndex: 9999 }}
+                    onMouseEnter={() => {
+                      setDropdownOpenEntrenamiento(true);
+                      setDropdownOpenYaSoyBuzo(false);
+                    }}>
+                  <a
                     style={{
                       textDecoration: 'none',
                       transition: 'color 0.3s ease',
-                      ...getLinkStyle(ROUTES.COURSES),
                       cursor: 'pointer',
+                      color: '#444',
                     }}
+                    className="nav-link-entrenamiento"
                   >
-                    Mundo del Buceo
-                  </Link>
-                  {dropdownOpen && (
-                    <ul style={{
+                    Entrenamiento
+                  </a>
+                  <ul style={{
                       position: 'absolute',
                       top: '100%',
                       left: 0,
                       backgroundColor: '#fff',
-                      minWidth: '200px',
+                      minWidth: '250px',
                       boxShadow: '0 8px 16px rgba(0,0,0,0.1)',
                       borderRadius: '4px',
-                      zIndex: 1000,
+                      zIndex: 9999,
                       padding: '8px 0',
                       marginTop: '5px',
                       listStyle: 'none',
+                      display: dropdownOpenEntrenamiento ? 'block' : 'none',
                     }}>
                       <li>
-                        <Link 
-                          href={ROUTES.COURSES}
-                          onClick={() => setDropdownOpen(false)}
+                        <a 
+                          href={ROUTES.HOME}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            setDropdownOpenEntrenamiento(false);
+                            router.push(ROUTES.HOME);
+                          }}
                           style={{
                             display: 'block',
                             padding: '8px 16px',
                             textDecoration: 'none',
                             color: '#444',
                             transition: 'background-color 0.3s ease',
+                            cursor: 'pointer',
                           }}
                           onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f5f5f5'}
                           onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                         >
                           Todos los cursos
-                        </Link>
+                        </a>
                       </li>
-                      {categories.map((category) => (
-                        <li key={category}>
-                          <Link 
-                            href={`${ROUTES.COURSES}?category=${encodeURIComponent(category)}`}
-                            onClick={() => setDropdownOpen(false)}
+                      {entrenamientoCategorias.map((subcat) => (
+                        <li key={subcat}>
+                          <a 
+                            href={`${ROUTES.HOME}?category=${encodeURIComponent(subcat)}`}
+                            onClick={(e) => {
+                              e.preventDefault();
+                              setDropdownOpenEntrenamiento(false);
+                              router.push(`${ROUTES.HOME}?category=${encodeURIComponent(subcat)}`);
+                            }}
                             style={{
                               display: 'block',
-                              padding: '8px 16px',
+                              padding: '8px 32px',
                               textDecoration: 'none',
                               color: '#444',
                               transition: 'background-color 0.3s ease',
+                              cursor: 'pointer',
                             }}
                             onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f5f5f5'}
                             onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                           >
-                            {category}
-                          </Link>
+                            {subcat}
+                          </a>
                         </li>
                       ))}
                     </ul>
-                  )}
+                </li>
+                <li></li>
+                <li 
+                    ref={yaSoyBuzoRef}
+                    className="dropdown" 
+                    style={{ position: 'relative', zIndex: 9999 }}
+                    onMouseEnter={() => {
+                      setDropdownOpenYaSoyBuzo(true);
+                      setDropdownOpenEntrenamiento(false);
+                    }}>
+                  <a
+                    style={{
+                      textDecoration: 'none',
+                      transition: 'color 0.3s ease',
+                      cursor: 'pointer',
+                      color: '#444',
+                    }}
+                    className="nav-link-ya-soy-buzo"
+                  >
+                    Ya soy buzo
+                  </a>
+                  <ul style={{
+                      position: 'absolute',
+                      top: '100%',
+                      left: 0,
+                      backgroundColor: '#fff',
+                      minWidth: '250px',
+                      boxShadow: '0 8px 16px rgba(0,0,0,0.1)',
+                      borderRadius: '4px',
+                      zIndex: 9999,
+                      padding: '8px 0',
+                      marginTop: '5px',
+                      listStyle: 'none',
+                      display: dropdownOpenYaSoyBuzo ? 'block' : 'none',
+                    }}>
+                      <li>
+                        <a 
+                          href={ROUTES.COURSES}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            setDropdownOpenYaSoyBuzo(false);
+                            router.push(ROUTES.COURSES);
+                          }}
+                          style={{
+                            display: 'block',
+                            padding: '8px 16px',
+                            textDecoration: 'none',
+                            color: '#444',
+                            transition: 'background-color 0.3s ease',
+                            cursor: 'pointer',
+                          }}
+                          onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f5f5f5'}
+                          onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+                        >
+                          Todos los cursos
+                        </a>
+                      </li>
+                      {yaSoyBuzoCategorias.map((subcat) => (
+                        <li key={subcat}>
+                          <a 
+                            href={`${ROUTES.COURSES}?category=${encodeURIComponent(subcat)}`}
+                            onClick={(e) => {
+                              e.preventDefault();
+                              setDropdownOpenYaSoyBuzo(false);
+                              router.push(`${ROUTES.COURSES}?category=${encodeURIComponent(subcat)}`);
+                            }}
+                            style={{
+                              display: 'block',
+                              padding: '8px 32px',
+                              textDecoration: 'none',
+                              color: '#444',
+                              transition: 'background-color 0.3s ease',
+                              cursor: 'pointer',
+                            }}
+                            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f5f5f5'}
+                            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+                          >
+                            {subcat}
+                          </a>
+                        </li>
+                      ))}
+                    </ul>
                 </li>
 
                 <li className="dropdown">
@@ -461,7 +738,7 @@ const Navbar = () => {
                       ...getLinkStyle(ROUTES.CONTACT),
                     }}
                   >
-                    Contactos
+                    Contactanos
                   </Link>
                 </li>
               </ul>

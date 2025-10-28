@@ -37,8 +37,11 @@ export default function RelatedCoursesSlider({
     const fetchRelatedProducts = async () => {
       try {
         setLoadingRelated(true);
+        console.log('🛒 Productos en carrito:', cartItems);
+
         // Obtener todos los productos del backend
         const allProducts = await services.products.getProducts();
+        console.log('📦 Total de productos del backend:', allProducts.length);
 
         // PASO 1: Extraer las subcategorías de los productos en el carrito
         const cartSubcategories: string[] = [];
@@ -46,13 +49,18 @@ export default function RelatedCoursesSlider({
         cartItems.forEach(item => {
           if (item.subcategory_name) {
             cartSubcategories.push(item.subcategory_name);
+            console.log(`✅ Subcategoría del carrito: "${item.name}" → ${item.subcategory_name}`);
+          } else {
+            console.log(`⚠️ Producto sin subcategoría: "${item.name}"`);
           }
         });
 
         // Obtener subcategorías únicas
         const uniqueCartSubcategories = [...new Set(cartSubcategories)];
+        console.log('📋 Subcategorías únicas del carrito:', uniqueCartSubcategories);
 
         if (uniqueCartSubcategories.length === 0) {
+          console.log('❌ No se encontraron subcategorías en el carrito');
           setRelatedProducts([]);
           return;
         }
@@ -66,10 +74,40 @@ export default function RelatedCoursesSlider({
           // Solo incluir si tiene la misma subcategoría Y no está en el carrito
           const isRelated = hasMatchingSubcategory && !isInCart;
 
+          if (isRelated) {
+            console.log(`🎯 Producto relacionado: "${product.name}" (${productSubcategory})`);
+          }
+
           return isRelated;
         });
 
+        console.log('🎯 Total de productos relacionados encontrados:', related.length);
 
+        // PASO 3: Mostrar información de debug detallada
+        console.log('📊 RESUMEN DE BÚSQUEDA:');
+        console.log(`   - Productos en carrito: ${cartItems.length}`);
+        console.log(`   - Subcategorías del carrito: ${uniqueCartSubcategories.join(', ')}`);
+        console.log(`   - Productos relacionados encontrados: ${related.length}`);
+        
+        if (related.length === 0) {
+          console.log('🔍 ANÁLISIS DE PRODUCTOS DISPONIBLES:');
+          
+          // Mostrar todas las subcategorías disponibles
+          const allSubcategories = [...new Set(allProducts.map(p => p.subcategory_name || 'General'))];
+          console.log(`   - Subcategorías disponibles en el sistema: ${allSubcategories.join(', ')}`);
+          
+          // Mostrar productos que coinciden con las subcategorías pero están en el carrito
+          const matchingButInCart = allProducts.filter(product => {
+            const productSubcategory = product.subcategory_name || 'General';
+            const isInCart = cartItems.some(cartItem => cartItem.id === product.id.toString());
+            return uniqueCartSubcategories.includes(productSubcategory) && isInCart;
+          });
+          
+          console.log(`   - Productos con subcategorías coincidentes pero en carrito: ${matchingButInCart.length}`);
+          matchingButInCart.forEach(product => {
+            console.log(`     * "${product.name}" (${product.subcategory_name || 'General'})`);
+          });
+        }
 
         // PASO 4: Establecer los productos relacionados
         setRelatedProducts(related);

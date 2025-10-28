@@ -8,9 +8,9 @@ export const HeaderCourse = () => {
                 <div className="container">
                     <ul className="list-unstyled thm-breadcrumb">
                         <li><a href="index.html">Home</a></li>
-                        <li className="active"><a href="#">Mundo del Buceo</a></li>
+                        <li className="active"><a href="#">Ya soy buzo</a></li>
                     </ul>
-                    <h2 className="page-header__title">Mundo del Buceo</h2>
+                    <h2 className="page-header__title">Ya soy buzo</h2>
                 </div>
             </section>
         </>

@@ -176,6 +176,7 @@ const ContratoPage = () => {
     setSuccess(true);
     
     // Aquí iría la lógica para enviar los datos (API, etc.)
+    console.log('Datos del formulario:', data);
   };
 
   return (
