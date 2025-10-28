@@ -831,6 +831,8 @@ a:focus {
 .main-nav-one {
   box-shadow: 0px 10px 20px 0px rgba(0, 0, 0, 0.05);
   background-color: #fff;
+  position: relative;
+  z-index: 9998;
 }
 
 /* main nav infos */
@@ -924,7 +926,7 @@ a:focus {
 }
 
 .main-nav-one .inner-container {
-  max-width: 900px;
+  max-width: 950px;
   width: 100%;
   margin-left: auto;
   margin-right: auto;
@@ -938,7 +940,7 @@ a:focus {
   box-shadow: 0px 20px 20px 0px rgba(0, 0, 0, 0.03);
   position: absolute;
   top: 50%;
-  left: 50%;
+  left: 52.6%;
   -webkit-transform: translate(-59%, calc(-40% + 45px));
   transform: translate(-59%, calc(-40% + 45px));
   text-align: center;
@@ -981,7 +983,7 @@ a:focus {
 }
 
 .main-nav-one .main-nav__main-navigation .main-nav__navigation-box {
-  display: -webkit-box;
+
   display: flex;
   -webkit-box-align: center;
   align-items: center;
@@ -1042,7 +1044,7 @@ a:focus {
 
 .main-nav__main-navigation .main-nav__navigation-box > li ul {
   position: absolute;
-  width: 210px;
+  z-index: 9999;
   background-color: #fff;
   border-top: 2px solid var(--thm-primary);
   box-shadow: 2px 2px 5px 1px rgba(0, 0, 0, 0.05),
@@ -1153,12 +1155,32 @@ a:focus {
   transition: all 0.4s ease;
 }
 
+.stricked-menu .container {
+  position: relative;
+}
+
+.stricked-menu .inner-container {
+  max-width: 950px;
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  position: relative;
+}
+
 .stricked-menu .logo-box {
-  padding: 26px 0 20px;
-  -webkit-transform: translate(-59%, calc(-55% + 45px));
-  transform: translate(-59%, calc(-55% + 45px));
-  border-bottom: 5px solid var(--thm-primary);
+  width: 100%;
+  max-width: 281px;
   background-color: #fff;
+  box-shadow: 0px 20px 20px 0px rgba(0, 0, 0, 0.03);
+  position: absolute;
+  top: 50%;
+  left: 52.6%;
+  -webkit-transform: translate(-59%, calc(-40% + 45px));
+  transform: translate(-59%, calc(-40% + 45px));
+  text-align: center;
+  padding: 36.5px 0;
+  border-bottom: 10px solid var(--thm-primary);
+  z-index: 100;
 }
 
 .stricked-menu.stricky-fixed {
@@ -1168,8 +1190,48 @@ a:focus {
 }
 
 .stricked-menu .main-nav__main-navigation .main-nav__navigation-box > li {
-  padding-top: 25px;
-  padding-bottom: 25px;
+  padding: 37px 0;
+}
+
+.stricked-menu .main-nav__main-navigation .main-nav__navigation-box > li + li {
+  margin-left: 64px;
+}
+
+.stricked-menu
+  .main-nav__main-navigation
+  .main-nav__navigation-box
+  > li:nth-child(3) {
+  margin-right: auto;
+}
+
+.stricked-menu
+  .main-nav__main-navigation
+  .main-nav__navigation-box
+  > li:nth-child(4) {
+  margin-left: auto;
+}
+
+.stricked-menu .main-nav__main-navigation .main-nav__navigation-box > li > a {
+  text-transform: uppercase;
+  font-size: 18px;
+  font-weight: 500;
+  color: #838a93;
+  display: block;
+  -webkit-transition: all 500ms ease;
+  transition: all 500ms ease;
+}
+
+.stricked-menu
+  .main-nav__main-navigation
+  .main-nav__navigation-box
+  > li:hover
+  > a,
+.stricked-menu
+  .main-nav__main-navigation
+  .main-nav__navigation-box
+  > li.current
+  > a {
+  color: var(--thm-base);
 }
 
 /*-------------------------------------------------------------- 
@@ -6619,4 +6681,26 @@ a:focus {
   font-weight: 400;
   line-height: 34px;
   color: #828690;
+}
+
+/* Custom styles for Entrenamiento and Ya soy buzo navigation links */
+.nav-link-entrenamiento,
+.nav-link-ya-soy-buzo {
+  color: #444 !important;
+}
+
+.nav-link-entrenamiento:hover,
+.nav-link-ya-soy-buzo:hover {
+  color: #87CEEB !important;
+}
+
+/* Custom styles for Entrenamiento and Ya soy buzo mobile buttons */
+.nav-link-entrenamiento-mobile,
+.nav-link-ya-soy-buzo-mobile {
+  color: #444 !important;
+}
+
+.nav-link-entrenamiento-mobile:hover,
+.nav-link-ya-soy-buzo-mobile:hover {
+  color: #87CEEB !important;
 }

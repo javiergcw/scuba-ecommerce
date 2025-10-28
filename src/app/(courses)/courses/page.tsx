@@ -32,7 +32,7 @@ const CoursesContent = () => {
     useEffect(() => {
         if (selectedCategory) {
             const filtered = products.filter(product => 
-                product.category_name === selectedCategory
+                product.subcategory_name === selectedCategory || product.category_name === selectedCategory
             );
             setFilteredProducts(filtered);
         } else {
@@ -71,7 +71,7 @@ const CoursesContent = () => {
 
     const coursesData = filteredProducts.map(product => ({
         id: product.id,
-        level: product.category_name || "N/A",
+        level: product.subcategory_name || product.category_name || "N/A",
         image: product.image_url,
         title: product.name,
         description: product.description || 'Descripción no disponible',

@@ -215,6 +215,15 @@
     }
     if ($('.stricky').length) {
         $('.stricky').addClass('original').clone(true).insertAfter('.stricky').addClass('stricked-menu').removeClass('original');
+        
+        // Agregar funcionalidad de dropdown al menú clonado - se abre con hover y se queda abierto
+        $('.stricked-menu .dropdown').on('mouseenter', function() {
+            $(this).find('ul').css('display', 'block');
+            $(this).addClass('dropdown-open');
+            // Cerrar el otro dropdown
+            $('.stricked-menu .dropdown').not(this).find('ul').css('display', 'none');
+            $('.stricked-menu .dropdown').not(this).removeClass('dropdown-open');
+        });
     }
     if ($('.scroll-to-target').length) {
         $(".scroll-to-target").on('click', function () {

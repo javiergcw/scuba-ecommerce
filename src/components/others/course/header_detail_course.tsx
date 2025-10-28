@@ -13,7 +13,7 @@ export const HeaderDetailCourse = ({ category, courseName }: HeaderDetailCourseP
                 <div className="container">
                     <ul className="list-unstyled thm-breadcrumb">
                         <li><a href="index.html">Home</a></li>
-                        <li><a href="courses.html">Mundo del Buceo</a></li>
+                        <li><a href="courses.html">Ya soy buzo</a></li>
                         <li className="active"><a href="#">{category || 'Categoría'}</a></li>
                     </ul>
                     <h2 className="page-header__title">{courseName || 'Nombre del Curso'}</h2>
