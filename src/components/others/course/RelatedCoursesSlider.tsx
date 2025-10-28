@@ -10,8 +10,9 @@ import "swiper/css";
 import "swiper/css/navigation";
 import "@/styles/carousel.css";
 import Link from "next/link";
-import { services, Product } from "monolite-saas";
+import { Product } from "monolite-saas";
 import SwiperNavigationButtons from "@/components/containers/SwiperNavigationButtons";
+import { getProductsMock } from "@/core/mocks/courses_mock";
 
 interface RelatedCoursesSliderProps {
   title?: string;
@@ -39,9 +40,9 @@ export default function RelatedCoursesSlider({
         setLoadingRelated(true);
         console.log('🛒 Productos en carrito:', cartItems);
 
-        // Obtener todos los productos del backend
-        const allProducts = await services.products.getProducts();
-        console.log('📦 Total de productos del backend:', allProducts.length);
+        // Obtener todos los productos del mock
+        const allProducts = getProductsMock() as Product[];
+        console.log('📦 Total de productos del mock:', allProducts.length);
 
         // PASO 1: Extraer las subcategorías de los productos en el carrito
         const cartSubcategories: string[] = [];

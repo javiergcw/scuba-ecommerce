@@ -25,7 +25,7 @@ import {
   MenuItem,
   Button,
 } from '@mui/material';
-import { services } from 'monolite-saas';
+import { getProductsMock } from '@/core/mocks/courses_mock';
 
 const Navbar = () => {
   const pathname = usePathname();
@@ -62,7 +62,7 @@ const Navbar = () => {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const products = await services.products.getProducts();
+        const products = getProductsMock();
         
         // Combinar todas las subcategorías definidas
         const allSubcategories: string[] = [
@@ -121,7 +121,7 @@ const Navbar = () => {
     if (menuType === 'entrenamiento') {
       setAnchorElEntrenamiento(null);
       setDropdownOpenEntrenamiento(false);
-      router.push(`${ROUTES.HOME}?category=${encodeURIComponent(category)}`);
+      router.push(`${ROUTES.COURSES}?category=${encodeURIComponent(category)}`);
     } else {
       setAnchorElYaSoyBuzo(null);
       setDropdownOpenYaSoyBuzo(false);
@@ -225,57 +225,16 @@ const Navbar = () => {
                 <img src="/assets/images/logo.png" alt="Logo" width="120" />
               </Link>
             </Box>
-            <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', flex: 1, justifyContent: 'flex-end' }}>
-              <Box sx={{ display: { xs: 'none', md: 'block' } }}>
-                <Link
-                  href={ROUTES.ABOUT}
-                  style={{
-                    textDecoration: 'none',
-                    ...getLinkStyle(ROUTES.ABOUT),
-                  }}
-                >
-                  ¿Por qué nosotros?
-                </Link>
-              </Box>
-              <Button
-                onClick={(e) => setAnchorElEntrenamiento(e.currentTarget)}
-                endIcon={<ChevronDown />}
-                className="nav-link-entrenamiento-mobile"
-                size="small"
+            <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+              <IconButton
+                onClick={() => setDrawerOpen(true)}
                 sx={{
-                  textTransform: 'none',
                   color: '#444',
-                  fontSize: { xs: '11px', sm: '14px' },
-                  '&:hover': { color: '#87CEEB' },
+                  padding: '8px',
                 }}
               >
-                Entrenamiento
-              </Button>
-              <Button
-                onClick={(e) => setAnchorElYaSoyBuzo(e.currentTarget)}
-                endIcon={<ChevronDown />}
-                className="nav-link-ya-soy-buzo-mobile"
-                size="small"
-                sx={{
-                  textTransform: 'none',
-                  color: '#444',
-                  fontSize: { xs: '11px', sm: '14px' },
-                  '&:hover': { color: '#87CEEB' },
-                }}
-              >
-                Ya soy buzo
-              </Button>
-              <Box sx={{ display: { xs: 'none', md: 'block' } }}>
-                <Link
-                  href={ROUTES.CONTACT}
-                  style={{
-                    textDecoration: 'none',
-                    ...getLinkStyle(ROUTES.CONTACT),
-                  }}
-                >
-                  Contactanos
-                </Link>
-              </Box>
+                <MenuIcon />
+              </IconButton>
             </Box>
           </Toolbar>
         </AppBar>
@@ -362,7 +321,12 @@ const Navbar = () => {
         >
           <Box width={250} role="presentation">
             <List>
-              <ListItem>
+              <ListItem 
+                sx={{ 
+                  padding: 0,
+                  '&:hover': { backgroundColor: 'transparent' }
+                }}
+              >
                 <Link
                   onClick={() => setDrawerOpen(false)}
                   href={ROUTES.ABOUT}
@@ -371,15 +335,23 @@ const Navbar = () => {
                     display: 'block',
                     width: '100%',
                     padding: '0.5rem 1rem',
+                    transition: 'background-color 0.3s ease',
                     ...getLinkStyle(ROUTES.ABOUT),
                   }}
+                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f5f5f5'}
+                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                 >
                   ¿Por qué nosotros?
                 </Link>
               </ListItem>
               
               {/* Sección Entrenamiento */}
-              <ListItem>
+              <ListItem 
+                sx={{ 
+                  padding: 0,
+                  '&:hover': { backgroundColor: 'transparent' }
+                }}
+              >
                 <div style={{ width: '100%', padding: '0.5rem 1rem' }}>
                   <div style={{ 
                     fontWeight: 'bold', 
@@ -394,9 +366,13 @@ const Navbar = () => {
                     style={{
                       textDecoration: 'none',
                       display: 'block',
-                      padding: '0.25rem 0',
+                      padding: '0.25rem 1rem',
                       color: '#444',
+                      transition: 'background-color 0.3s ease',
+                      cursor: 'pointer',
                     }}
+                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f5f5f5'}
+                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                   >
                     Todos los cursos
                   </Link>
@@ -404,14 +380,18 @@ const Navbar = () => {
                     <Link
                       key={subcat}
                       onClick={() => setDrawerOpen(false)}
-                      href={`${ROUTES.HOME}?category=${encodeURIComponent(subcat)}`}
+                      href={`${ROUTES.COURSES}?category=${encodeURIComponent(subcat)}`}
                       style={{
                         textDecoration: 'none',
                         display: 'block',
-                        padding: '0.25rem 0',
-                        paddingLeft: '1rem',
+                        padding: '0.25rem 1rem',
+                        paddingLeft: '2rem',
                         color: '#444',
+                        transition: 'background-color 0.3s ease',
+                        cursor: 'pointer',
                       }}
+                      onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f5f5f5'}
+                      onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                     >
                       {subcat}
                     </Link>
@@ -420,7 +400,12 @@ const Navbar = () => {
               </ListItem>
 
               {/* Sección Ya soy buzo */}
-              <ListItem>
+              <ListItem 
+                sx={{ 
+                  padding: 0,
+                  '&:hover': { backgroundColor: 'transparent' }
+                }}
+              >
                 <div style={{ width: '100%', padding: '0.5rem 1rem' }}>
                   <div style={{ 
                     fontWeight: 'bold', 
@@ -435,9 +420,13 @@ const Navbar = () => {
                     style={{
                       textDecoration: 'none',
                       display: 'block',
-                      padding: '0.25rem 0',
+                      padding: '0.25rem 1rem',
                       color: '#444',
+                      transition: 'background-color 0.3s ease',
+                      cursor: 'pointer',
                     }}
+                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f5f5f5'}
+                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                   >
                     Todos los cursos
                   </Link>
@@ -449,10 +438,14 @@ const Navbar = () => {
                       style={{
                         textDecoration: 'none',
                         display: 'block',
-                        padding: '0.25rem 0',
-                        paddingLeft: '1rem',
+                        padding: '0.25rem 1rem',
+                        paddingLeft: '2rem',
                         color: '#444',
+                        transition: 'background-color 0.3s ease',
+                        cursor: 'pointer',
                       }}
+                      onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f5f5f5'}
+                      onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                     >
                       {subcat}
                     </Link>
@@ -460,7 +453,12 @@ const Navbar = () => {
                 </div>
               </ListItem>
 
-              <ListItem>
+              <ListItem 
+                sx={{ 
+                  padding: 0,
+                  '&:hover': { backgroundColor: 'transparent' }
+                }}
+              >
                 <Link
                   onClick={() => setDrawerOpen(false)}
                   href={ROUTES.CONTACT}
@@ -469,8 +467,11 @@ const Navbar = () => {
                     display: 'block',
                     width: '100%',
                     padding: '0.5rem 1rem',
+                    transition: 'background-color 0.3s ease',
                     ...getLinkStyle(ROUTES.CONTACT),
                   }}
+                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f5f5f5'}
+                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                 >
                   Contactanos
                 </Link>
@@ -611,11 +612,17 @@ const Navbar = () => {
                             padding: '8px 16px',
                             textDecoration: 'none',
                             color: '#444',
-                            transition: 'background-color 0.3s ease',
+                            transition: 'background-color 0.3s ease, color 0.3s ease',
                             cursor: 'pointer',
                           }}
-                          onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f5f5f5'}
-                          onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+                          onMouseEnter={(e) => {
+                            e.currentTarget.style.backgroundColor = '#f5f5f5';
+                            e.currentTarget.style.color = '#444';
+                          }}
+                          onMouseLeave={(e) => {
+                            e.currentTarget.style.backgroundColor = 'transparent';
+                            e.currentTarget.style.color = '#444';
+                          }}
                         >
                           Todos los cursos
                         </a>
@@ -623,22 +630,28 @@ const Navbar = () => {
                       {entrenamientoCategorias.map((subcat) => (
                         <li key={subcat}>
                           <a 
-                            href={`${ROUTES.HOME}?category=${encodeURIComponent(subcat)}`}
+                            href={`${ROUTES.COURSES}?category=${encodeURIComponent(subcat)}`}
                             onClick={(e) => {
                               e.preventDefault();
                               setDropdownOpenEntrenamiento(false);
-                              router.push(`${ROUTES.HOME}?category=${encodeURIComponent(subcat)}`);
+                              router.push(`${ROUTES.COURSES}?category=${encodeURIComponent(subcat)}`);
                             }}
                             style={{
                               display: 'block',
                               padding: '8px 32px',
                               textDecoration: 'none',
                               color: '#444',
-                              transition: 'background-color 0.3s ease',
+                              transition: 'background-color 0.3s ease, color 0.3s ease',
                               cursor: 'pointer',
                             }}
-                            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f5f5f5'}
-                            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+                            onMouseEnter={(e) => {
+                              e.currentTarget.style.backgroundColor = '#f5f5f5';
+                              e.currentTarget.style.color = '#444';
+                            }}
+                            onMouseLeave={(e) => {
+                              e.currentTarget.style.backgroundColor = 'transparent';
+                              e.currentTarget.style.color = '#444';
+                            }}
                           >
                             {subcat}
                           </a>
@@ -693,11 +706,17 @@ const Navbar = () => {
                             padding: '8px 16px',
                             textDecoration: 'none',
                             color: '#444',
-                            transition: 'background-color 0.3s ease',
+                            transition: 'background-color 0.3s ease, color 0.3s ease',
                             cursor: 'pointer',
                           }}
-                          onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f5f5f5'}
-                          onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+                          onMouseEnter={(e) => {
+                            e.currentTarget.style.backgroundColor = '#f5f5f5';
+                            e.currentTarget.style.color = '#444';
+                          }}
+                          onMouseLeave={(e) => {
+                            e.currentTarget.style.backgroundColor = 'transparent';
+                            e.currentTarget.style.color = '#444';
+                          }}
                         >
                           Todos los cursos
                         </a>
@@ -716,11 +735,17 @@ const Navbar = () => {
                               padding: '8px 32px',
                               textDecoration: 'none',
                               color: '#444',
-                              transition: 'background-color 0.3s ease',
+                              transition: 'background-color 0.3s ease, color 0.3s ease',
                               cursor: 'pointer',
                             }}
-                            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f5f5f5'}
-                            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+                            onMouseEnter={(e) => {
+                              e.currentTarget.style.backgroundColor = '#f5f5f5';
+                              e.currentTarget.style.color = '#444';
+                            }}
+                            onMouseLeave={(e) => {
+                              e.currentTarget.style.backgroundColor = 'transparent';
+                              e.currentTarget.style.color = '#444';
+                            }}
                           >
                             {subcat}
                           </a>

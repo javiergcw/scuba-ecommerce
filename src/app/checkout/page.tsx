@@ -39,7 +39,8 @@ import "swiper/css";
 import "swiper/css/navigation";
 import "@/styles/carousel.css";
 import Link from "next/link";
-import { services, Product } from "monolite-saas";
+import { Product } from "monolite-saas";
+import { getProductsMock } from "@/core/mocks/courses_mock";
 import SwiperNavigationButtons from "@/components/containers/SwiperNavigationButtons";
 import { ProductUseCase } from "@/core/use-case/product/product_use_case";
 import { OrderUseCase } from "@/core/use-case/order/order_use_case";
@@ -133,7 +134,7 @@ export default function CheckoutPage() {
         setLoadingRelated(true);
 
 
-        const allProducts = await services.products.getProducts();
+        const allProducts = getProductsMock() as Product[];
 
 
         // Obtener categorías únicas de los productos en el carrito
@@ -172,7 +173,7 @@ export default function CheckoutPage() {
         console.error('❌ Error al cargar productos relacionados:', error);
         // En caso de error, mostrar productos aleatorios
         try {
-          const allProducts = await services.products.getProducts();
+          const allProducts = getProductsMock() as Product[];
           const randomProducts = allProducts
             .filter(product => !cartItems.some(cartItem => cartItem.id === product.id.toString()))
             .sort(() => Math.random() - 0.5)

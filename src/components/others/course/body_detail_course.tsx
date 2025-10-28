@@ -93,12 +93,27 @@ const BodyDetailCourse = ({
 
                         <div className="course-details__infos wow fadeInRight" data-wow-duration="1500ms" style={{
                             position: 'absolute',
-                            zIndex: 1
+                            zIndex: 1,
+                            maxWidth: '680px',
+                            width: '75%',
+                            paddingLeft: '70px',
+                            paddingRight: '70px'
                         }}>
                             <div className="course-details__infos-title">Detail</div>
-                            <div className="course-details__infos-single">
-                                <span>${price}</span>
-                                <p>Dive <br />price</p>
+                            <div className="course-details__infos-single" style={{ marginLeft: '-20px', paddingLeft: '0' }}>
+                                <div style={{ display: 'flex', alignItems: 'flex-start', flexDirection: 'column' }}>
+                                    <span style={{ display: 'flex', alignItems: 'baseline', gap: '8px' }}>
+                                        {price && price > 0 
+                                            ? (
+                                                <>
+                                                    <span style={{ fontSize: '50px', fontWeight: 300, lineHeight: '1em', color: 'var(--thm-black)' }}>${Math.round(price)}</span>
+                                                    <span style={{ fontSize: '24px', fontWeight: 500, color: 'var(--thm-black)', opacity: 0.8 }}>USD</span>
+                                                </>
+                                            )
+                                            : 'Consultar'}
+                                    </span>
+                                </div>
+                                <p>Course <br />price</p>
                             </div>
                             <div className="course-details__infos-single">
                                 <span>{numberOfDives}</span>
@@ -113,13 +128,54 @@ const BodyDetailCourse = ({
                     </div>
                     <div className="course-details__content">
                         <br/>
-                        <p>{description}</p>
-                       {/*  <h4>Características del Curso</h4> */}
-                        <ul style={{ listStyleType: 'decimal', paddingLeft: '30px' }}>
-                            {features && Object.entries(features).map(([key, value]) => (
-                                <li key={key} style={{ marginBottom: '10px' }}>{value}</li>
-                            ))}
-                        </ul>
+                        <div 
+                            dangerouslySetInnerHTML={{ 
+                                __html: description.replace(/\n/g, '<br/>').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                            }} 
+                            style={{
+                                lineHeight: '1.8',
+                                fontSize: '16px',
+                                color: '#333',
+                                whiteSpace: 'pre-wrap'
+                            }}
+                        />
+                        {tips && tips !== additionalInfo && tips !== description && (
+                            <div style={{ marginTop: '30px' }}>
+                                <h4 style={{ marginBottom: '15px', color: '#051b35' }}>Información Adicional</h4>
+                                <p style={{ 
+                                    lineHeight: '1.8',
+                                    fontSize: '16px',
+                                    color: '#666',
+                                    whiteSpace: 'pre-wrap'
+                                }}>{tips}</p>
+                            </div>
+                        )}
+                        {additionalInfo && additionalInfo !== description && additionalInfo !== tips && (
+                            <div style={{ marginTop: '30px' }}>
+                                <h4 style={{ marginBottom: '15px', color: '#051b35' }}>Detalles del Curso</h4>
+                                <div 
+                                    dangerouslySetInnerHTML={{ 
+                                        __html: additionalInfo.replace(/\n/g, '<br/>').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                                    }} 
+                                    style={{
+                                        lineHeight: '1.8',
+                                        fontSize: '16px',
+                                        color: '#666',
+                                        whiteSpace: 'pre-wrap'
+                                    }}
+                                />
+                            </div>
+                        )}
+                        {features && Object.keys(features).length > 0 && (
+                            <>
+                                <h4 style={{ marginTop: '30px', marginBottom: '15px', color: '#051b35' }}>Características del Curso</h4>
+                                <ul style={{ listStyleType: 'decimal', paddingLeft: '30px' }}>
+                                    {Object.entries(features).map(([key, value]) => (
+                                        <li key={key} style={{ marginBottom: '10px' }}>{value}</li>
+                                    ))}
+                                </ul>
+                            </>
+                        )}
 
                         <div style={{ display: 'flex', gap: '15px', marginTop: '20px', flexWrap: 'wrap' }}>
                             <button 
