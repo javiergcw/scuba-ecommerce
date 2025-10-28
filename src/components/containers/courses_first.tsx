@@ -26,7 +26,13 @@ const CoursesFirst = () => {
       setLoading(true);
       // Simulamos una pequeña demora para mantener la experiencia de carga
       await new Promise(resolve => setTimeout(resolve, 300));
-      const productsData = getProductsMock() as Product[];
+      const mockProducts = getProductsMock();
+      const productsData: Product[] = mockProducts.map(product => ({
+        ...product,
+        sku: product.product_sku,
+        category_id: '0',
+        subcategory_id: '0'
+      }));
       setProducts(productsData);
       setError(null);
     } catch (err) {

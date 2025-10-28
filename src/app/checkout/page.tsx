@@ -134,8 +134,13 @@ export default function CheckoutPage() {
         setLoadingRelated(true);
 
 
-        const allProducts = getProductsMock() as Product[];
-
+        const mockProducts = getProductsMock();
+        const allProducts: Product[] = mockProducts.map(product => ({
+          ...product,
+          sku: product.product_sku,
+          category_id: '0',
+          subcategory_id: '0'
+        }));
 
         // Obtener categorías únicas de los productos en el carrito
         const cartCategories = [...new Set(cartItems.map(item => {
@@ -173,7 +178,13 @@ export default function CheckoutPage() {
         console.error('❌ Error al cargar productos relacionados:', error);
         // En caso de error, mostrar productos aleatorios
         try {
-          const allProducts = getProductsMock() as Product[];
+          const mockProducts = getProductsMock();
+          const allProducts: Product[] = mockProducts.map(product => ({
+            ...product,
+            sku: product.product_sku,
+            category_id: '0',
+            subcategory_id: '0'
+          }));
           const randomProducts = allProducts
             .filter(product => !cartItems.some(cartItem => cartItem.id === product.id.toString()))
             .sort(() => Math.random() - 0.5)

@@ -41,7 +41,13 @@ export default function RelatedCoursesSlider({
         console.log('🛒 Productos en carrito:', cartItems);
 
         // Obtener todos los productos del mock
-        const allProducts = getProductsMock() as Product[];
+        const mockProducts = getProductsMock();
+        const allProducts: Product[] = mockProducts.map(product => ({
+          ...product,
+          sku: product.product_sku,
+          category_id: '0',
+          subcategory_id: '0'
+        }));
         console.log('📦 Total de productos del mock:', allProducts.length);
 
         // PASO 1: Extraer las subcategorías de los productos en el carrito

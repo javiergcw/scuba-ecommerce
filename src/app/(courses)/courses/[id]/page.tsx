@@ -21,7 +21,14 @@ const CourseDetailPage = () => {
                 await new Promise(resolve => setTimeout(resolve, 300));
                 const courseData = getProductByIdMock(Number(id));
                 if (courseData) {
-                    setCourse(courseData as Product);
+                    // Mapear MockProduct a Product
+                    const mappedCourse: Product = {
+                        ...courseData,
+                        sku: courseData.product_sku,
+                        category_id: '0',
+                        subcategory_id: '0'
+                    };
+                    setCourse(mappedCourse);
                     setError(null);
                 } else {
                     setError('Curso no encontrado');
@@ -57,7 +64,7 @@ const CourseDetailPage = () => {
         return <div>Error: {error || 'Curso no encontrado'}</div>;
     }
 
-    const mockCourse = course as MockProduct;
+    const mockCourse = course as unknown as MockProduct;
     const numberOfDives = typeof mockCourse.cuantos_dives_only === 'number' 
         ? mockCourse.cuantos_dives_only 
         : typeof mockCourse.cuantos_dives_only === 'string' && mockCourse.cuantos_dives_only.startsWith('mas')
