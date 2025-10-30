@@ -6689,21 +6689,26 @@ a:focus {
 /* Custom styles for Entrenamiento and Ya soy buzo navigation links */
 .nav-link-entrenamiento,
 .nav-link-ya-soy-buzo {
-  color: #444 !important;
+  color: #444;
 }
 
 .nav-link-entrenamiento:hover,
 .nav-link-ya-soy-buzo:hover {
+  color: #87CEEB;
+}
+
+/* Explicit active state helper */
+.nav-link-active {
   color: #87CEEB !important;
 }
 
 /* Custom styles for Entrenamiento and Ya soy buzo mobile buttons */
 .nav-link-entrenamiento-mobile,
 .nav-link-ya-soy-buzo-mobile {
-  color: #444 !important;
+  color: #444;
 }
 
 .nav-link-entrenamiento-mobile:hover,
 .nav-link-ya-soy-buzo-mobile:hover {
-  color: #87CEEB !important;
+  color: #87CEEB;
 }

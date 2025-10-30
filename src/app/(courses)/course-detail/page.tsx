@@ -80,7 +80,10 @@ const CourseDetailPage = () => {
 
     return (
         <>
-            <HeaderDetailCourse />
+            <HeaderDetailCourse 
+                category={course.subcategory_name || course.category_name}
+                courseName={course.name}
+            />
             <BodyDetailCourse {...courseDetailData} />
         </>
     )
