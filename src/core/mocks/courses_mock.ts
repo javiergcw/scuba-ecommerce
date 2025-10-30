@@ -64,6 +64,17 @@ export const mapCourseToProduct = (course: ReceiveCourseDto, index: number): Moc
 
 export const coursesMock: ReceiveCourseDto[] = [
   {
+    nombre: 'Fun Dive',
+    descripcion_larga: `Si ya estas certificad@ y deseas conocer el Parque Nacional Tayrona, el Fun dive es perfecto para ti! \n\nEs un día de buceo, que incluye dos inmersiones en diferentes puntos del parque Tayrona.\n\nEl servicio incluye:\n\n-2 Inmersiones/ 2 tanques \n\n-Alquiler de todo el equipo necesario\n\n-Guía y acompañamiento de profesional PADI\n\n-Refrigerio entre cada inmersión\n\n*Recordar que se debe descansar mínimo 18 horas después de la última inmersión para tomar un vuelo*`,
+    descripcion_corta: 'Bucea el Parque Tayrona',
+    foto: '/assets/images/courses/Fun-Dive.jpg',
+    precio: '$95',
+    categoria: 'Aventuras',
+    subcategoria: 'Fun dive',
+    cuantos_dives_only: 2,
+    cuantos_days_course: 1
+  },
+  {
     nombre: 'Discover Scuba Diving - Minicurso',
     descripcion_larga: `🤿Si quieres vivir la experiencia de bucear por un día, el curso Discover Scuba Diving de PADI es perfecto para ti. Es una sesión de un día de buceo, que incluye dos inmersiones en diferentes puntos del parque Tayrona. 
 La primera desde un sitio tranquilo y de baja profundidad, y la segunda en un sitio tipico de buceo para que sientas lo que es ser buz@ por un día.

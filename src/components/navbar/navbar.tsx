@@ -9,7 +9,7 @@ import {
 } from 'lucide-react';
 import { CONTACT_INFO, ROUTES } from '@/utils/constants';
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState, useRef } from 'react';
 import {
   AppBar,
@@ -44,18 +44,22 @@ const Navbar = () => {
 
   const theme = useTheme();
   const isDesktop = useMediaQuery('(min-width:1200px)');
+  const searchParams = useSearchParams();
+  const selectedCategory = searchParams.get('category');
+  const selectedGroup = searchParams.get('group'); // 'entrenamiento' | 'recreativo'
 
-  // Definir categorías y subcategorías para "Ya soy buzo"
+  // Definir categorías y subcategorías para "Recreativo"
   const yaSoyBuzoCategorias = [
-    "¡Formación PADI a otro nivel!",
-    "Solo para profesionales"
+    "Fun dive",
+    "Snorkeling / Acompañante"
   ];
 
-  // Definir categorías y subcategorías para "Entrenamiento"
+  // Definir categorías y subcategorías para "Entrenamiento" (coinciden EXACTO con los mocks)
   const entrenamientoCategorias = [
     "¿Aún no eres buzo?",
+    "¡Formación PADI a otro nivel!",
     "Solo en Oceano Scuba",
-    "Snorkeling / Acompañante"
+    "Solo para profesionales"
   ];
 
   // Obtener categorías únicas de los productos
@@ -117,15 +121,32 @@ const Navbar = () => {
     };
   };
 
+  const entrenamientoActive = Boolean(
+    (selectedCategory && entrenamientoCategorias.includes(selectedCategory)) ||
+    selectedGroup === 'entrenamiento'
+  );
+  const recreativoActive = Boolean(
+    (selectedCategory && yaSoyBuzoCategorias.includes(selectedCategory)) ||
+    selectedGroup === 'recreativo'
+  );
+
   const handleCategoryClick = (category: string, menuType: 'entrenamiento' | 'yaSoyBuzo') => {
     if (menuType === 'entrenamiento') {
       setAnchorElEntrenamiento(null);
       setDropdownOpenEntrenamiento(false);
-      router.push(`${ROUTES.COURSES}?category=${encodeURIComponent(category)}`);
+      if (!category) {
+        router.push(`${ROUTES.COURSES}?group=entrenamiento`);
+      } else {
+        router.push(`${ROUTES.COURSES}?group=entrenamiento&category=${encodeURIComponent(category)}`);
+      }
     } else {
       setAnchorElYaSoyBuzo(null);
       setDropdownOpenYaSoyBuzo(false);
-      router.push(`${ROUTES.COURSES}?category=${encodeURIComponent(category)}`);
+      if (!category) {
+        router.push(`${ROUTES.COURSES}?group=recreativo`);
+      } else {
+        router.push(`${ROUTES.COURSES}?group=recreativo&category=${encodeURIComponent(category)}`);
+      }
     }
   };
 
@@ -356,13 +377,13 @@ const Navbar = () => {
                   <div style={{ 
                     fontWeight: 'bold', 
                     marginBottom: '0.5rem',
-                    color: '#87CEEB'
+                    color: entrenamientoActive ? '#87CEEB' : '#444'
                   }}>
                     Entrenamiento
                   </div>
                   <Link
                     onClick={() => setDrawerOpen(false)}
-                    href={ROUTES.HOME}
+                    href={`${ROUTES.COURSES}?group=entrenamiento`}
                     style={{
                       textDecoration: 'none',
                       display: 'block',
@@ -380,7 +401,7 @@ const Navbar = () => {
                     <Link
                       key={subcat}
                       onClick={() => setDrawerOpen(false)}
-                      href={`${ROUTES.COURSES}?category=${encodeURIComponent(subcat)}`}
+                      href={`${ROUTES.COURSES}?group=entrenamiento&category=${encodeURIComponent(subcat)}`}
                       style={{
                         textDecoration: 'none',
                         display: 'block',
@@ -410,13 +431,13 @@ const Navbar = () => {
                   <div style={{ 
                     fontWeight: 'bold', 
                     marginBottom: '0.5rem',
-                    color: '#87CEEB'
+                    color: recreativoActive ? '#87CEEB' : '#444'
                   }}>
-                    Ya soy buzo
+                    Recreativo
                   </div>
                   <Link
                     onClick={() => setDrawerOpen(false)}
-                    href={ROUTES.COURSES}
+                    href={`${ROUTES.COURSES}?group=recreativo`}
                     style={{
                       textDecoration: 'none',
                       display: 'block',
@@ -434,7 +455,7 @@ const Navbar = () => {
                     <Link
                       key={subcat}
                       onClick={() => setDrawerOpen(false)}
-                      href={`${ROUTES.COURSES}?category=${encodeURIComponent(subcat)}`}
+                      href={`${ROUTES.COURSES}?group=recreativo&category=${encodeURIComponent(subcat)}`}
                       style={{
                         textDecoration: 'none',
                         display: 'block',
@@ -579,9 +600,9 @@ const Navbar = () => {
                       textDecoration: 'none',
                       transition: 'color 0.3s ease',
                       cursor: 'pointer',
-                      color: '#444',
+                      color: entrenamientoActive ? '#87CEEB' : '#444',
                     }}
-                    className="nav-link-entrenamiento"
+                    className={`nav-link-entrenamiento ${entrenamientoActive ? 'nav-link-active' : ''}`}
                   >
                     Entrenamiento
                   </a>
@@ -601,11 +622,11 @@ const Navbar = () => {
                     }}>
                       <li>
                         <a 
-                          href={ROUTES.HOME}
+                          href={`${ROUTES.COURSES}?group=entrenamiento`}
                           onClick={(e) => {
                             e.preventDefault();
                             setDropdownOpenEntrenamiento(false);
-                            router.push(ROUTES.HOME);
+                            router.push(`${ROUTES.COURSES}?group=entrenamiento`);
                           }}
                           style={{
                             display: 'block',
@@ -630,11 +651,11 @@ const Navbar = () => {
                       {entrenamientoCategorias.map((subcat) => (
                         <li key={subcat}>
                           <a 
-                            href={`${ROUTES.COURSES}?category=${encodeURIComponent(subcat)}`}
+                          href={`${ROUTES.COURSES}?group=entrenamiento&category=${encodeURIComponent(subcat)}`}
                             onClick={(e) => {
                               e.preventDefault();
                               setDropdownOpenEntrenamiento(false);
-                              router.push(`${ROUTES.COURSES}?category=${encodeURIComponent(subcat)}`);
+                            router.push(`${ROUTES.COURSES}?group=entrenamiento&category=${encodeURIComponent(subcat)}`);
                             }}
                             style={{
                               display: 'block',
@@ -673,11 +694,11 @@ const Navbar = () => {
                       textDecoration: 'none',
                       transition: 'color 0.3s ease',
                       cursor: 'pointer',
-                      color: '#444',
+                      color: recreativoActive ? '#87CEEB' : '#444',
                     }}
-                    className="nav-link-ya-soy-buzo"
+                    className={`nav-link-ya-soy-buzo ${recreativoActive ? 'nav-link-active' : ''}`}
                   >
-                    Ya soy buzo
+                    Recreativo
                   </a>
                   <ul style={{
                       position: 'absolute',
@@ -695,11 +716,11 @@ const Navbar = () => {
                     }}>
                       <li>
                         <a 
-                          href={ROUTES.COURSES}
+                          href={`${ROUTES.COURSES}?group=recreativo`}
                           onClick={(e) => {
                             e.preventDefault();
                             setDropdownOpenYaSoyBuzo(false);
-                            router.push(ROUTES.COURSES);
+                            router.push(`${ROUTES.COURSES}?group=recreativo`);
                           }}
                           style={{
                             display: 'block',
@@ -724,11 +745,11 @@ const Navbar = () => {
                       {yaSoyBuzoCategorias.map((subcat) => (
                         <li key={subcat}>
                           <a 
-                            href={`${ROUTES.COURSES}?category=${encodeURIComponent(subcat)}`}
+                            href={`${ROUTES.COURSES}?group=recreativo&category=${encodeURIComponent(subcat)}`}
                             onClick={(e) => {
                               e.preventDefault();
                               setDropdownOpenYaSoyBuzo(false);
-                              router.push(`${ROUTES.COURSES}?category=${encodeURIComponent(subcat)}`);
+                              router.push(`${ROUTES.COURSES}?group=recreativo&category=${encodeURIComponent(subcat)}`);
                             }}
                             style={{
                               display: 'block',

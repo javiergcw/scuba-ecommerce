@@ -1,4 +1,5 @@
 import React from 'react'
+import Link from 'next/link'
 
 interface HeaderDetailCourseProps {
     category?: string;
@@ -12,9 +13,11 @@ export const HeaderDetailCourse = ({ category, courseName }: HeaderDetailCourseP
                 <div className="page-header__bg" style={{ backgroundImage: "url(/assets/images/background/footer-bg-1-1.jpg)" }}></div>
                 <div className="container">
                     <ul className="list-unstyled thm-breadcrumb">
-                        <li><a href="index.html">Home</a></li>
-                        <li><a href="courses.html">Ya soy buzo</a></li>
-                        <li className="active"><a href="#">{category || 'Categoría'}</a></li>
+                        <li><Link href="/">Home</Link></li>
+                        <li><Link href={category ? `/courses?category=${encodeURIComponent(category)}` : '/courses'}>Cursos</Link></li>
+                        {category && (
+                            <li className="active"><a href="#">{category}</a></li>
+                        )}
                     </ul>
                     <h2 className="page-header__title">{courseName || 'Nombre del Curso'}</h2>
                 </div>
