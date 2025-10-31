@@ -107,7 +107,7 @@ Nuestra tarifa incluye:
 
 *Recuerda que debes descansar mínimo 18 horas después de su última inmersión para tomar un vuelo*`,
     descripcion_corta: 'Mejora tus habilidades de buceo y gana experiencia',
-    foto: 'https://s3.makerstech.co/public/space_20250512055823/file_20250715155345.jpg',
+    foto: 'https://s3.makerstech.co/public/space_20250512055823/file_20250723203621.jpeg',
     precio: '$375',
     categoria: 'Otros servicios',
     subcategoria: '¡Formación PADI a otro nivel!',
@@ -190,7 +190,7 @@ REQUISITOS:
 • Solo para mujeres
 `,
     descripcion_corta: 'Una invitación a adaptar todos los conocimientos de los cursos de buceo PADI a las necesidades propias de cada mujer',
-    foto: 'https://s3.makerstech.co/public/space_20250512055823/file_20250728230605.jpg',
+    foto: '/assets/images/courses/girll.jpeg',
     precio: '$159',
     categoria: 'Otros servicios',
     subcategoria: 'Solo en Oceano Scuba',
