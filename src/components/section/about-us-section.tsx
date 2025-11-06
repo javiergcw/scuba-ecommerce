@@ -1,4 +1,5 @@
 import React from 'react'
+import { BannerDto } from '@/core/dto/receive/zone/receive_zones_dto'
 
 interface FeatureCard {
     id: number;
@@ -10,7 +11,7 @@ interface FeatureCard {
     isExternal?: boolean;
 }
 
-const featuresData: FeatureCard[] = [
+const featuresDataFallback: FeatureCard[] = [
     {
         id: 1,
         image: "/assets/images/background/banner6.jpeg",
@@ -62,7 +63,24 @@ const featuresData: FeatureCard[] = [
     }
 ];
 
-export const AboutUsSection = () => {
+interface AboutUsSectionProps {
+    banners?: BannerDto[];
+}
+
+export const AboutUsSection: React.FC<AboutUsSectionProps> = ({ banners = [] }) => {
+    // Mapear banners del API al formato FeatureCard
+    const featuresFromApi: FeatureCard[] = banners.map((banner, index) => ({
+        id: index + 1,
+        image: banner.image_url,
+        title: banner.title,
+        link: banner.link_url,
+        description: banner.subtitles,
+        delay: `${index * 100}ms`,
+        isExternal: banner.link_url.startsWith('http') && !banner.link_url.includes(window.location.hostname)
+    }));
+
+    // Usar banners del API si existen, sino usar los de fallback
+    const featuresData = featuresFromApi.length > 0 ? featuresFromApi : featuresDataFallback;
     return <>
         <section className="page-header">
             <div className="page-header__bg" style={{ backgroundImage: 'url(/assets/images/background/footer-bg-1-1.jpg)' }}></div>

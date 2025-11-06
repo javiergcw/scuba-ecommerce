@@ -2,14 +2,13 @@
 import { BodyCourse } from '@/components/others/course/body_course'
 import { HeaderCourse } from '@/components/others/course/header_course'
 import React, { useEffect, useState, Suspense } from 'react'
-import { Product } from 'monolite-saas';
-import { Box, CircularProgress } from '@mui/material';
 import { useSearchParams } from 'next/navigation';
-import { getProductsMock, MockProduct } from '@/core/mocks/courses_mock';
+import { ProductService } from '@/core/service/product/product_service';
+import { ProductDto } from '@/core/dto/receive/product/receive_products_dto';
 
 const CoursesContent = () => {
-    const [products, setProducts] = useState<Product[]>([]);
-    const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
+    const [products, setProducts] = useState<ProductDto[]>([]);
+    const [filteredProducts, setFilteredProducts] = useState<ProductDto[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const searchParams = useSearchParams();
@@ -18,17 +17,13 @@ const CoursesContent = () => {
     const fetchProducts = async () => {
         try {
             setLoading(true);
-            // Simulamos una pequeña demora para mantener la experiencia de carga
-            await new Promise(resolve => setTimeout(resolve, 300));
-            const mockProducts = getProductsMock();
-            const productsData: Product[] = mockProducts.map(product => ({
-                ...product,
-                sku: product.product_sku,
-                category_id: '0',
-                subcategory_id: '0'
-            }));
-            setProducts(productsData);
-            setError(null);
+            const productsData = await ProductService.getAllProducts();
+            if (productsData) {
+                setProducts(productsData);
+                setError(null);
+            } else {
+                setError('Error al cargar los productos');
+            }
         } catch (err) {
             setError('Error al cargar los productos');
             console.error('Error:', err);
@@ -81,9 +76,9 @@ const CoursesContent = () => {
     const coursesData = filteredProducts.map(product => ({
         id: product.id,
         level: product.subcategory_name || product.category_name || "N/A",
-        image: product.image_url,
+        image: product.photo,
         title: product.name,
-        description: product.description || 'Descripción no disponible',
+        description: product.short_description || 'Descripción no disponible',
         link: `/courses/${product.id}`
     }));
 

@@ -10,9 +10,9 @@ import "swiper/css";
 import "swiper/css/navigation";
 import "@/styles/carousel.css";
 import Link from "next/link";
-import { Product } from "monolite-saas";
 import SwiperNavigationButtons from "@/components/containers/SwiperNavigationButtons";
-import { getProductsMock } from "@/core/mocks/courses_mock";
+import { ProductService } from '@/core/service/product/product_service';
+import { ProductDto } from '@/core/dto/receive/product/receive_products_dto';
 
 interface RelatedCoursesSliderProps {
   title?: string;
@@ -25,7 +25,7 @@ export default function RelatedCoursesSlider({
 }: RelatedCoursesSliderProps) {
   const { cartItems, addToCart } = useCart();
   const router = useRouter();
-  const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
+  const [relatedProducts, setRelatedProducts] = useState<ProductDto[]>([]);
   const [loadingRelated, setLoadingRelated] = useState(true);
   const [showSuccess, setShowSuccess] = useState(false);
 
@@ -40,15 +40,16 @@ export default function RelatedCoursesSlider({
         setLoadingRelated(true);
         console.log('🛒 Productos en carrito:', cartItems);
 
-        // Obtener todos los productos del mock
-        const mockProducts = getProductsMock();
-        const allProducts: Product[] = mockProducts.map(product => ({
-          ...product,
-          sku: product.product_sku,
-          category_id: '0',
-          subcategory_id: '0'
-        }));
-        console.log('📦 Total de productos del mock:', allProducts.length);
+        // Obtener todos los productos desde la API
+        const allProducts = await ProductService.getAllProducts();
+        
+        if (!allProducts) {
+          console.log('❌ No se pudieron obtener productos de la API');
+          setRelatedProducts([]);
+          return;
+        }
+        
+        console.log('📦 Total de productos de la API:', allProducts.length);
 
         // PASO 1: Extraer las subcategorías de los productos en el carrito
         const cartSubcategories: string[] = [];
@@ -75,7 +76,7 @@ export default function RelatedCoursesSlider({
         // PASO 2: Filtrar productos del backend que tengan las mismas subcategorías
         const related = allProducts.filter(product => {
           const productSubcategory = product.subcategory_name || 'General';
-          const isInCart = cartItems.some(cartItem => cartItem.id === product.id.toString());
+          const isInCart = cartItems.some(cartItem => cartItem.id === product.id);
           const hasMatchingSubcategory = uniqueCartSubcategories.includes(productSubcategory);
           
           // Solo incluir si tiene la misma subcategoría Y no está en el carrito
@@ -145,14 +146,14 @@ export default function RelatedCoursesSlider({
 
   const handleAddToCart = (product: Product) => {
     const courseItem = {
-      id: product.id.toString(),
+      id: product.id,
       name: product.name,
       price: product.price,
       quantity: 1,
-      image: product.image_url,
-      courseDuration: 4, // Valor por defecto
-      numberOfDives: 2,   // Valor por defecto
-      subcategory_name: product.subcategory_name // Incluir la subcategoría
+      image: product.photo,
+      courseDuration: product.days_course,
+      numberOfDives: product.dives_only,
+      subcategory_name: product.subcategory_name
     };
 
     addToCart(courseItem);
@@ -265,9 +266,9 @@ export default function RelatedCoursesSlider({
                         {product.subcategory_name || 'General'}
                       </Link>
                       <div className="course-one__image-inner w-full">
-                        {product.image_url ? (
+                        {product.photo ? (
                           <img
-                            src={product.image_url}
+                            src={product.photo}
                             alt={product.name}
                             style={{
                               width: "100%",
@@ -304,7 +305,7 @@ export default function RelatedCoursesSlider({
                         <Link href={`/courses/${product.id}`}>{product.name}</Link>
                       </h3>
                       <p className="text-sm text-gray-600 text-center mt-2">
-                        {product.description || "Descripción no disponible"}
+                        {product.short_description || "Descripción no disponible"}
                       </p>
                     </div>
 

@@ -8,24 +8,36 @@ import ServiceOne from "@/components/containers/service_one";
 import FunFact from "@/components/others/fun_fact";
 import HowToDive from "@/components/others/how_to_dive";
 import { BrandOne } from "@/components/others/brand_one";
-import { services } from 'monolite-saas';
 import { useEffect, useState } from 'react';
-import { Banner } from 'monolite-saas';
 import BrandBubbleSection from "@/components/others/course/BrandBubbleSection";
+import { GetZonesUseCase } from '@/core/use-case/zone/get_zones_use_case';
+import { ZONE_IDS } from '@/core/const/zone_const';
+import { BannerDto } from '@/core/dto/receive/zone/receive_zones_dto';
 
 
 export default function Home() {
-  const [banners, setBanners] = useState<Banner[]>([]);
-  const [howToDiveBanner, setHowToDiveBanner] = useState<Banner | null>(null);
+  const [primaryZoneBanners, setPrimaryZoneBanners] = useState<BannerDto[]>([]);
+  const [howToDiveBanners, setHowToDiveBanners] = useState<BannerDto[]>([]);
+  const [testimonialsBanners, setTestimonialsBanners] = useState<BannerDto[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const fetchBanners = async () => {
     try {
       setLoading(true);
-      const bannersData = await services.banners.getBanners();
-      setBanners(bannersData);
-      setHowToDiveBanner(bannersData.find(banner => banner.zone_code === "como_bucear") || null);
+      
+      // Obtener banners de la zona home desde el nuevo API
+      const homeBanners = await GetZonesUseCase.getBannersByZoneId(ZONE_IDS.ZONA_BANNER_HOME);
+      setPrimaryZoneBanners(homeBanners);
+      
+      // Obtener banners de la zona "cómo bucear" desde el nuevo API
+      const comoBucearBanners = await GetZonesUseCase.getBannersByZoneId(ZONE_IDS.ZONA_COMO_BUCEAR);
+      setHowToDiveBanners(comoBucearBanners);
+      
+      // Obtener banners de la zona "testimonios" desde el nuevo API
+      const testimoniosBanners = await GetZonesUseCase.getBannersByZoneId(ZONE_IDS.ZONA_TESTIMONIOS);
+      setTestimonialsBanners(testimoniosBanners);
+      
       setError(null);
     } catch (err) {
       setError('Error al cargar los banners');
@@ -39,17 +51,15 @@ export default function Home() {
     fetchBanners();
   }, []);
 
-  const primaryZoneBanners = banners.filter(
-    (banner) => banner.zone_code === "primary-zone" && banner.active
-  );
-
-  const secondaryZoneBanners = banners.filter(
-    (banner) => banner.zone_code === "como_bucear" && banner.active
-  );
-
-  const testimonialsBanners = banners.filter(
-    (banner) => banner.zone_code === "testimonio" && banner.active
-  );
+  // Obtener el primer banner de "cómo bucear" para mostrarlo
+  const howToDiveBanner = howToDiveBanners.length > 0 ? howToDiveBanners[0] : null;
+  
+  // Mapear los banners del nuevo DTO al formato que espera FirstTestimonials
+  const mappedTestimonials = testimonialsBanners.map(banner => ({
+    title: banner.title,
+    subtitle: banner.subtitles,
+    web_banner_url: banner.image_url
+  }));
 
   return (
     <div className="w-full max-w-[100vw] overflow-x-hidden">
@@ -62,11 +72,11 @@ export default function Home() {
         {/* <BrandOne /> */}
         <HowToDive 
           title={howToDiveBanner?.title || "¿Cómo bucear?"}
-          subtitle={howToDiveBanner?.subtitle || "¿Sueñas con explorar el fascinante mundo submarino? En nuestra escuela de buceo te ofrecemos la oportunidad de convertirte en un buceador certificado. Nuestros instructores profesionales te guiarán paso a paso, desde los conceptos básicos hasta las técnicas avanzadas. Descubre la belleza de los arrecifes de coral, la vida marina y las increíbles formaciones submarinas. ¡No esperes más para comenzar tu aventura bajo el agua!"}
-          web_banner_url={howToDiveBanner?.web_banner_url || "/assets/images/video-2-1.jpg"}
-          redirect_url={howToDiveBanner?.redirect_url || "https://www.youtube.com/watch?v=dQw4w9WgXcQ"}
+          subtitle="¿Sueñas con explorar el fascinante mundo submarino? En nuestra escuela de buceo te ofrecemos la oportunidad de convertirte en un buceador certificado. Nuestros instructores profesionales te guiarán paso a paso, desde los conceptos básicos hasta las técnicas avanzadas. Descubre la belleza de los arrecifes de coral, la vida marina y las increíbles formaciones submarinas. ¡No esperes más para comenzar tu aventura bajo el agua!"
+          web_banner_url={howToDiveBanner?.image_url || "/assets/images/video-2-1.jpg"}
+          redirect_url={howToDiveBanner?.link_url || "https://www.youtube.com/watch?v=dQw4w9WgXcQ"}
         />
-       <FirstTestimonials testimonials={testimonialsBanners} />
+       <FirstTestimonials testimonials={mappedTestimonials} />
         {/* ß<CtaThree /> */}
       </div>
     </div>

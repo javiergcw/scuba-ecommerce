@@ -8,13 +8,13 @@ import "../../styles/carousel.css";
 import { usePathname } from "next/navigation";
 import { ROUTES } from "@/utils/constants";
 import Link from "next/link";
-import { Product } from "monolite-saas";
 import SwiperNavigationButtons from "./SwiperNavigationButtons";
-import { getProductsMock } from "@/core/mocks/courses_mock";
+import { ProductService } from "@/core/service/product/product_service";
+import { ProductDto } from "@/core/dto/receive/product/receive_products_dto";
 
 const CoursesFirst = () => {
   const pathname = usePathname();
-  const [products, setProducts] = useState<Product[]>([]);
+  const [products, setProducts] = useState<ProductDto[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isSwiperReady, setIsSwiperReady] = useState(false);
@@ -24,19 +24,16 @@ const CoursesFirst = () => {
   const fetchProducts = async () => {
     try {
       setLoading(true);
-      // Simulamos una pequeña demora para mantener la experiencia de carga
-      await new Promise(resolve => setTimeout(resolve, 300));
-      const mockProducts = getProductsMock();
-      const productsData: Product[] = mockProducts.map(product => ({
-        ...product,
-        sku: product.product_sku,
-        category_id: '0',
-        subcategory_id: '0'
-      }));
-      setProducts(productsData);
-      setError(null);
+      const productsData = await ProductService.getAllProducts();
+      if (productsData) {
+        setProducts(productsData);
+        setError(null);
+      } else {
+        setError("Error al cargar los productos");
+      }
     } catch (err) {
       setError("Error al cargar los productos");
+      console.error('Error fetching products:', err);
     } finally {
       setLoading(false);
     }
@@ -147,9 +144,9 @@ const CoursesFirst = () => {
                       {product.category_name}
                     </Link>
                     <div className="course-one__image-inner w-full">
-                      {product.image_url ? (
+                      {product.photo ? (
                         <img
-                          src={product.image_url}
+                          src={product.photo}
                           alt={product.name}
                           style={{
                             width: "100%",
@@ -186,7 +183,7 @@ const CoursesFirst = () => {
                       <Link href={`/courses/${product.id}`}>{product.name}</Link>
                     </h3>
                     <p className="text-sm text-gray-600 text-center mt-2">
-                      {product.description || "Descripción no disponible"}
+                      {product.short_description || "Descripción no disponible"}
                     </p>
                   </div>
 

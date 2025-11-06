@@ -2,13 +2,14 @@
 import BodyDetailCourse from '@/components/others/course/body_detail_course';
 import { HeaderDetailCourse } from '@/components/others/course/header_detail_course';
 import React, { useEffect, useState } from 'react';
-import { Product } from 'monolite-saas';
 import { useParams } from 'next/navigation';
-import { getProductByIdMock, MockProduct } from '@/core/mocks/courses_mock';
+import { Box, CircularProgress, Typography, Button } from '@mui/material';
+import { ProductService } from '@/core/service/product/product_service';
+import { ProductDto } from '@/core/dto/receive/product/receive_products_dto';
 
 const CourseDetailPage = () => {
     const { id } = useParams();
-    const [course, setCourse] = useState<Product | null>(null);
+    const [course, setCourse] = useState<ProductDto | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
@@ -16,25 +17,19 @@ const CourseDetailPage = () => {
         const fetchCourse = async () => {
             try {
                 setLoading(true);
-                // Simulamos una pequeña demora para mantener la experiencia de carga
-                await new Promise(resolve => setTimeout(resolve, 300));
-                const courseData = getProductByIdMock(Number(id));
+                console.log('🔍 Buscando curso con ID:', id);
+                const courseData = await ProductService.getProductById(id as string);
                 if (courseData) {
-                    // Mapear MockProduct a Product
-                    const mappedCourse: Product = {
-                        ...courseData,
-                        sku: courseData.product_sku,
-                        category_id: '0', // Valor por defecto
-                        subcategory_id: '0' // Valor por defecto
-                    };
-                    setCourse(mappedCourse);
+                    console.log('✅ Curso encontrado:', courseData.name);
+                    setCourse(courseData);
                     setError(null);
                 } else {
+                    console.error('❌ Curso no encontrado con ID:', id);
                     setError('Curso no encontrado');
                 }
             } catch (err) {
+                console.error('❌ Error al cargar el curso:', err);
                 setError('Error al cargar el curso');
-                console.error('Error:', err);
             } finally {
                 setLoading(false);
             }
@@ -46,35 +41,61 @@ const CourseDetailPage = () => {
     }, [id]);
 
     if (loading) {
-        return <div>Cargando curso...</div>;
+        return (
+            <Box sx={{ 
+                width: '100%',
+                height: '100vh',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center'
+            }}>
+                <CircularProgress size={60} />
+            </Box>
+        );
     }
 
     if (error || !course) {
-        return <div>Error: {error || 'Curso no encontrado'}</div>;
+        return (
+            <Box sx={{ 
+                width: '100%',
+                minHeight: '50vh',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                alignItems: 'center',
+                padding: 4
+            }}>
+                <Typography variant="h4" sx={{ mb: 2, color: '#051b35', fontWeight: 'bold' }}>
+                    Curso no encontrado
+                </Typography>
+                <Typography variant="body1" sx={{ mb: 3, color: '#666', textAlign: 'center' }}>
+                    {error || 'El curso que buscas no existe o ha sido eliminado.'}
+                </Typography>
+                <Button 
+                    variant="contained" 
+                    onClick={() => window.location.href = '/courses'}
+                    sx={{
+                        backgroundColor: '#87CEEB',
+                        '&:hover': { backgroundColor: '#6ab5d8' }
+                    }}
+                >
+                    Ver todos los cursos
+                </Button>
+            </Box>
+        );
     }
 
-    const mockCourse = course as unknown as MockProduct;
-    const numberOfDives = typeof mockCourse.cuantos_dives_only === 'number' 
-        ? mockCourse.cuantos_dives_only 
-        : typeof mockCourse.cuantos_dives_only === 'string' && mockCourse.cuantos_dives_only.startsWith('mas')
-        ? 20 
-        : 0;
-    const courseDuration = typeof mockCourse.cuantos_days_course === 'number' 
-        ? mockCourse.cuantos_days_course 
-        : typeof mockCourse.cuantos_days_course === 'string' && mockCourse.cuantos_days_course.startsWith('mas')
-        ? 15 
-        : 1;
-
     const courseDetailData = {
-        image: course.image_url,
+        image: course.photo,
         price: course.price,
-        numberOfDives: numberOfDives,
-        courseDuration: courseDuration,
+        numberOfDives: course.dives_only,
+        courseDuration: course.days_course,
         title: course.name,
-        description: mockCourse.descripcion_larga || course.description || 'Descripción no disponible',
-        tips: mockCourse.descripcion_corta || 'Información adicional no disponible',
-        additionalInfo: mockCourse.descripcion_larga || 'Información adicional no disponible',
-        courseId: course.id.toString(),
+        description: course.long_description || 'Descripción no disponible',
+        tips: course.short_description || 'Información adicional no disponible',
+        additionalInfo: course.long_description || 'Información adicional no disponible',
+        features: {},
+        courseId: course.id,
         subcategory_name: course.subcategory_name
     };
 

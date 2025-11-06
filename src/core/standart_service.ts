@@ -12,7 +12,7 @@ export class ApiService {
         baseURL: GATEWAY_URL,
         headers: {
             'Content-Type': 'application/json',
-            'X-license-Key': 'AAAAAAAAAAAAAAAAEvvVEw0tkvEhkG7hUirrMZTWQJeKzW4cskKUFv/agA=='
+            'X-license-Key': process.env.NEXT_PUBLIC_LICENSE_KEY || '5cef21be9f78ab3844598129e69f14f8f8b4a23e9dcce403a69b6e3e85d1a673'
         },
     });
 
@@ -28,6 +28,7 @@ export class ApiService {
             return this.handleError(error);
         }
     }
+
     public static async requestS3<T>(config: AxiosRequestConfig): Promise<T | ApiError | null> {
         try {
             const response: AxiosResponse<T> = await this.instance(config);

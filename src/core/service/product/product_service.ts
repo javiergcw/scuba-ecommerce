@@ -2,8 +2,64 @@ import { ApiService } from '@/core/standart_service';
 import { API_ENDPOINTS } from '@/core/const/api_const';
 import { SendInformationProductDto } from '@/core/dto/send/product/send_information_product_dto';
 import { ReceiveInformationProductDto } from '@/core/dto/receive/product/receive_information_product_dto';
+import { ReceiveProductsDto, ProductDto } from '@/core/dto/receive/product/receive_products_dto';
 
 export class ProductService {
+    
+    /**
+     * Obtener todos los productos públicos
+     * @returns Promise con la lista de productos
+     */
+    public static async getAllProducts(): Promise<ProductDto[] | null> {
+        try {
+            const response = await fetch(API_ENDPOINTS.PRODUCTS, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                cache: 'no-store'
+            });
+
+            if (!response.ok) {
+                console.error('❌ Error al obtener productos:', response.status, response.statusText);
+                return null;
+            }
+
+            const data: ReceiveProductsDto = await response.json();
+            return data.data;
+        } catch (error) {
+            console.error('❌ Error al obtener productos:', error);
+            return null;
+        }
+    }
+
+    /**
+     * Obtener un producto por ID
+     * @param id - ID del producto (UUID)
+     * @returns Promise con el producto
+     */
+    public static async getProductById(id: string): Promise<ProductDto | null> {
+        try {
+            const response = await fetch(API_ENDPOINTS.PRODUCT_BY_ID(id), {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                cache: 'no-store'
+            });
+
+            if (!response.ok) {
+                console.error('❌ Error al obtener producto:', response.status, response.statusText);
+                return null;
+            }
+
+            const data: { success: boolean; data: ProductDto } = await response.json();
+            return data.data;
+        } catch (error) {
+            console.error('❌ Error al obtener producto:', error);
+            return null;
+        }
+    }
     
     /**
      * Obtener información de productos con precios y stock
