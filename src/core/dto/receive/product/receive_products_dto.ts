@@ -1,3 +1,16 @@
+export interface SubcategoryDto {
+  id: string;
+  name: string;
+  description: string;
+}
+
+export interface CategoryDto {
+  id: string;
+  name: string;
+  description: string;
+  subcategories: SubcategoryDto[];
+}
+
 export interface ProductDto {
   id: string;
   name: string;
@@ -9,8 +22,12 @@ export interface ProductDto {
   days_course: number;
   category_id: string;
   category_name: string;
+  category: CategoryDto;
   subcategory_id: string;
   subcategory_name: string;
+  subcategory: SubcategoryDto;
+  created_at?: string;
+  updated_at?: string;
 }
 
 export interface ReceiveProductsDto {

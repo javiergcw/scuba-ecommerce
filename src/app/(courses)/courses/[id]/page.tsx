@@ -92,8 +92,8 @@ const CourseDetailPage = () => {
         courseDuration: course.days_course,
         title: course.name,
         description: course.long_description || 'Descripción no disponible',
-        tips: course.short_description || 'Información adicional no disponible',
-        additionalInfo: course.long_description || 'Información adicional no disponible',
+        tips: '',
+        additionalInfo: '',
         features: {},
         courseId: course.id,
         subcategory_name: course.subcategory_name

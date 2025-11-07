@@ -144,7 +144,7 @@ export default function RelatedCoursesSlider({
     };
   }, []);
 
-  const handleAddToCart = (product: Product) => {
+  const handleAddToCart = (product: ProductDto) => {
     const courseItem = {
       id: product.id,
       name: product.name,

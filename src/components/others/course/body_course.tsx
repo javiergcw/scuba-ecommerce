@@ -3,7 +3,7 @@ import Link from 'next/link'
 import { useSearchParams } from 'next/navigation';
 
 interface Course {
-    id: number
+    id: string
     level: string
     image: string
     title: string
