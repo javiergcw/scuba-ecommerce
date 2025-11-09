@@ -1,4 +1,5 @@
 import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from 'axios';
+import { API_CONFIG } from '@/core/const/api_const';
 import { GATEWAY_URL } from '@/core/const/url_const';
 
 interface ApiError {
@@ -12,7 +13,7 @@ export class ApiService {
         baseURL: GATEWAY_URL,
         headers: {
             'Content-Type': 'application/json',
-            'X-license-Key': process.env.NEXT_PUBLIC_LICENSE_KEY || '5cef21be9f78ab3844598129e69f14f8f8b4a23e9dcce403a69b6e3e85d1a673'
+            'X-license-Key': API_CONFIG.LICENSE_KEY
         },
     });
 

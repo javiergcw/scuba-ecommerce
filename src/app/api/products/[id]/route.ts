@@ -1,21 +1,19 @@
 import { NextResponse } from 'next/server';
+import { API_CONFIG } from '@/core/const/api_const';
 
 export async function GET(
   request: Request,
   { params }: { params: { id: string } }
 ) {
   try {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://api.oceanoscuba.com.co';
-    const licenseKey = process.env.NEXT_PUBLIC_LICENSE_KEY || '5cef21be9f78ab3844598129e69f14f8f8b4a23e9dcce403a69b6e3e85d1a673';
-    
-    const fullUrl = `${apiUrl}/api/v1/public/products/${params.id}`;
+    const fullUrl = `${API_CONFIG.BASE_URL}/api/v1/public/products/${params.id}`;
     console.log('🔍 Intentando obtener producto:', fullUrl);
     
     const response = await fetch(fullUrl, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        'X-License-Key': licenseKey
+        'X-License-Key': API_CONFIG.LICENSE_KEY
       },
       cache: 'no-store'
     });

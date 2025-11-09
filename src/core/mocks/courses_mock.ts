@@ -97,7 +97,7 @@ Se puede elegir otros tres entre varias opciones, pero siempre recomendamos toma
 •        Flotabilidad: controlar tu cuerpo bajo del Agua,  es el distintivo de un buzo de élite.
 •        Buceo nocturno: todo el mundo quiere sumergirse en la noche, es una gran experiencia y te dará confianza bajo el agua.
 Nuestra tarifa incluye:
-•        Todos los materiales.
+•        Todos los materiales.WS
 •        El alquiler de todo el equipo necesario.
 •        Instrucción por un profesional PADI.
 •        5 inmersiones / 5 tanques en el parque Tayrona.

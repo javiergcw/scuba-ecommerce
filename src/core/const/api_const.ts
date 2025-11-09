@@ -1,3 +1,9 @@
+// Configuración de API
+export const API_CONFIG = {
+  BASE_URL: process.env.NEXT_PUBLIC_API_URL || 'https://api.oceanoscuba.com.co',
+  LICENSE_KEY: process.env.NEXT_PUBLIC_LICENSE_KEY || '19289217e1caffd627fdaaca08ebd61d18ac1869b98df527803d972681917a3f',
+} as const;
+
 export const API_ENDPOINTS = {
   // Productos - Obtener todos los productos públicos (a través de API Route para evitar CORS)
   PRODUCTS: '/api/products',
