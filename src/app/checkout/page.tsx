@@ -172,7 +172,6 @@ export default function CheckoutPage() {
       } catch (error) {
         console.error('❌ Error al cargar productos relacionados:', error);
         setRelatedProducts([]);
-      }
       } finally {
         setLoadingRelated(false);
       }
@@ -243,10 +242,7 @@ export default function CheckoutPage() {
         })),
         notes: `Dirección: ${formData.address}, ${formData.country}`
       };
-
-
-
-              await OrderUseCase.createOrder(
+      await OrderUseCase.createOrder(
           orderData,
           (data: ReceiveCreateOrderDto) => {
             setOrderResult(data);
