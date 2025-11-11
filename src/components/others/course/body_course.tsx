@@ -101,6 +101,7 @@ export const BodyCourse = ({ courses }: BodyCourseProps) => {
                             <h2 style={{ marginBottom: '20px', color: '#000', fontWeight: 'bold' }}>{level}</h2>
                         )}
                         <div className="row">
+
                             {group.map((course) => (
                                 <div key={course.id} className="col-lg-4 col-md-6" style={{ marginBottom: '30px' }}>
                                     <div
