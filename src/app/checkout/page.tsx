@@ -39,9 +39,9 @@ import "swiper/css";
 import "swiper/css/navigation";
 import "@/styles/carousel.css";
 import Link from "next/link";
-import { Product } from "monolite-saas";
-import { getProductsMock } from "@/core/mocks/courses_mock";
 import SwiperNavigationButtons from "@/components/containers/SwiperNavigationButtons";
+import { ProductService } from "@/core/service/product/product_service";
+import { ProductDto } from "@/core/dto/receive/product/receive_products_dto";
 import { ProductUseCase } from "@/core/use-case/product/product_use_case";
 import { OrderUseCase } from "@/core/use-case/order/order_use_case";
 import { SendInformationProductDto } from "@/core/dto/send/product/send_information_product_dto";
@@ -61,7 +61,7 @@ export default function CheckoutPage() {
   const [showSuccess, setShowSuccess] = useState(false);
   const [paymentResult, setPaymentResult] = useState<'success' | 'failed' | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
-  const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
+  const [relatedProducts, setRelatedProducts] = useState<ProductDto[]>([]);
   const [loadingRelated, setLoadingRelated] = useState(true);
   const [showDevPopup, setShowDevPopup] = useState(false);
   const [realTotalPrice, setRealTotalPrice] = useState<number>(0);
@@ -133,14 +133,13 @@ export default function CheckoutPage() {
       try {
         setLoadingRelated(true);
 
-
-        const mockProducts = getProductsMock();
-        const allProducts: Product[] = mockProducts.map(product => ({
-          ...product,
-          sku: product.product_sku,
-          category_id: '0',
-          subcategory_id: '0'
-        }));
+        const allProducts = await ProductService.getAllProducts();
+        
+        if (!allProducts) {
+          console.error('❌ No se pudieron obtener productos de la API');
+          setRelatedProducts([]);
+          return;
+        }
 
         // Obtener categorías únicas de los productos en el carrito
         const cartCategories = [...new Set(cartItems.map(item => {
@@ -150,23 +149,19 @@ export default function CheckoutPage() {
           return category;
         }))];
 
-
-
         // Filtrar productos relacionados (misma categoría pero no en el carrito)
         const related = allProducts.filter(product => {
           const productCategory = product.category_name || 'General';
-          const isInCart = cartItems.some(cartItem => cartItem.id === product.id.toString());
+          const isInCart = cartItems.some(cartItem => cartItem.id === product.id);
           const isRelated = cartCategories.includes(productCategory) && !isInCart;
 
           return isRelated;
         });
 
-
-
         // Si no hay productos relacionados por categoría, mostrar productos aleatorios
         if (related.length === 0) {
           const randomProducts = allProducts
-            .filter(product => !cartItems.some(cartItem => cartItem.id === product.id.toString()))
+            .filter(product => !cartItems.some(cartItem => cartItem.id === product.id))
             .sort(() => Math.random() - 0.5)
             .slice(0, 6);
           setRelatedProducts(randomProducts);
@@ -176,23 +171,8 @@ export default function CheckoutPage() {
         }
       } catch (error) {
         console.error('❌ Error al cargar productos relacionados:', error);
-        // En caso de error, mostrar productos aleatorios
-        try {
-          const mockProducts = getProductsMock();
-          const allProducts: Product[] = mockProducts.map(product => ({
-            ...product,
-            sku: product.product_sku,
-            category_id: '0',
-            subcategory_id: '0'
-          }));
-          const randomProducts = allProducts
-            .filter(product => !cartItems.some(cartItem => cartItem.id === product.id.toString()))
-            .sort(() => Math.random() - 0.5)
-            .slice(0, 6);
-          setRelatedProducts(randomProducts);
-        } catch (fallbackError) {
-          console.error('❌ Error en fallback:', fallbackError);
-        }
+        setRelatedProducts([]);
+      }
       } finally {
         setLoadingRelated(false);
       }
@@ -296,15 +276,15 @@ export default function CheckoutPage() {
     router.push('/');
   };
 
-  const handleAddToCart = (product: Product) => {
+  const handleAddToCart = (product: ProductDto) => {
     const courseItem = {
-      id: product.id.toString(),
+      id: product.id,
       name: product.name,
       price: product.price,
       quantity: 1,
-      image: product.image_url,
-      courseDuration: 4, // Valor por defecto
-      numberOfDives: 2,   // Valor por defecto
+      image: product.photo,
+      courseDuration: product.days_course,
+      numberOfDives: product.dives_only,
       subcategory_name: product.subcategory_name
     };
 
@@ -1637,9 +1617,9 @@ export default function CheckoutPage() {
                             {product.category_name}
                           </Link>
                           <div className="course-one__image-inner w-full">
-                            {product.image_url ? (
+                            {product.photo ? (
                               <img
-                                src={product.image_url}
+                                src={product.photo}
                                 alt={product.name}
                                 style={{
                                   width: "100%",
@@ -1676,7 +1656,7 @@ export default function CheckoutPage() {
                             <Link href={`/courses/${product.id}`}>{product.name}</Link>
                           </h3>
                           <p className="text-sm text-gray-600 text-center mt-2">
-                            {product.description || "Descripción no disponible"}
+                            {product.short_description || "Descripción no disponible"}
                           </p>
                         </div>
 

@@ -1,4 +1,16 @@
+// Configuración de API
+export const API_CONFIG = {
+  BASE_URL: process.env.NEXT_PUBLIC_API_URL || 'https://api.oceanoscuba.com.co',
+  LICENSE_KEY: process.env.NEXT_PUBLIC_LICENSE_KEY || '19289217e1caffd627fdaaca08ebd61d18ac1869b98df527803d972681917a3f',
+} as const;
+
 export const API_ENDPOINTS = {
+  // Productos - Obtener todos los productos públicos (a través de API Route para evitar CORS)
+  PRODUCTS: '/api/products',
+  
+  // Productos - Obtener producto por ID (a través de API Route para evitar CORS)
+  PRODUCT_BY_ID: (id: string) => `/api/products/${id}`,
+  
   // Órdenes - Información de producto
   ORDERS_PRODUCT_INFO: '/api/v2/orders/product-info',
   
@@ -10,4 +22,7 @@ export const API_ENDPOINTS = {
   
   // Órdenes - Buscar por email
   ORDERS_BY_EMAIL: (email: string) => `/api/v2/orders/by-email?email=${email}`,
+  
+  // Zonas - Obtener zonas con banners (a través de API Route para evitar CORS)
+  ZONES: '/api/zones',
 } as const;

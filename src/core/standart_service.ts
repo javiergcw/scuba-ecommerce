@@ -1,4 +1,5 @@
 import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from 'axios';
+import { API_CONFIG } from '@/core/const/api_const';
 import { GATEWAY_URL } from '@/core/const/url_const';
 
 interface ApiError {
@@ -12,7 +13,7 @@ export class ApiService {
         baseURL: GATEWAY_URL,
         headers: {
             'Content-Type': 'application/json',
-            'X-license-Key': 'AAAAAAAAAAAAAAAAEvvVEw0tkvEhkG7hUirrMZTWQJeKzW4cskKUFv/agA=='
+            'X-license-Key': API_CONFIG.LICENSE_KEY
         },
     });
 
@@ -28,6 +29,7 @@ export class ApiService {
             return this.handleError(error);
         }
     }
+
     public static async requestS3<T>(config: AxiosRequestConfig): Promise<T | ApiError | null> {
         try {
             const response: AxiosResponse<T> = await this.instance(config);

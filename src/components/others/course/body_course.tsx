@@ -3,7 +3,7 @@ import Link from 'next/link'
 import { useSearchParams } from 'next/navigation';
 
 interface Course {
-    id: number
+    id: string
     level: string
     image: string
     title: string
@@ -103,69 +103,65 @@ export const BodyCourse = ({ courses }: BodyCourseProps) => {
                         <div className="row">
                             {group.map((course) => (
                                 <div key={course.id} className="col-lg-4 col-md-6" style={{ marginBottom: '30px' }}>
-                                    <div 
-                                        className="course-one__single" 
-                                        style={{ 
-                                            width: '100%', 
-                                            height: '100%',
-                                            minHeight: '520px',
-                                            display: 'flex',
-                                            flexDirection: 'column',
-                                            background: '#fff'
-                                        }}
+                                    <div
+                                        className="course-one__single w-full flex flex-col justify-between"
+                                        style={{ height: "100%", minHeight: 520, background: "#fff" }}
                                     >
-                                        <div className="course-one__image" style={{ width: '100%' }}>
-                                            <Link href={course.link} className="course-one__cat">{course.level}</Link>
-                                            <div className="course-one__image-inner" style={{ width: '100%' }}>
-                                                <img
-                                                    src={course.image}
-                                                    alt={course.title}
-                                                    style={{
-                                                        width: '100%',
-                                                        height: '333px',
-                                                        objectFit: 'cover',
-                                                        display: 'block'
-                                                    }}
-                                                />
-                                                <Link href={course.link}><i className="scubo-icon-plus-symbol"></i></Link>
+                                        <div className="course-one__image w-full">
+                                            <Link
+                                                href={course.link}
+                                                className="course-one__cat"
+                                            >
+                                                {course.level}
+                                            </Link>
+                                            <div className="course-one__image-inner w-full">
+                                                {course.image ? (
+                                                    <img
+                                                        src={course.image}
+                                                        alt={course.title}
+                                                        style={{
+                                                            width: "100%",
+                                                            height: "333px",
+                                                            objectFit: "cover",
+                                                            display: "block",
+                                                        }}
+                                                    />
+                                                ) : (
+                                                    <div
+                                                        style={{
+                                                            width: "100%",
+                                                            height: "333px",
+                                                            backgroundColor: "#f0f0f0",
+                                                            display: "flex",
+                                                            alignItems: "center",
+                                                            justifyContent: "center",
+                                                        }}
+                                                    >
+                                                        <span>Imagen no disponible</span>
+                                                    </div>
+                                                )}
+                                                <Link href={course.link}>
+                                                    <i className="scubo-icon-plus-symbol"></i>
+                                                </Link>
                                             </div>
                                         </div>
-                                        <div 
-                                            className="course-one__content hvr-sweep-to-bottom" 
-                                            style={{ 
-                                                width: '100%',
-                                                padding: '20px',
-                                                flex: '1',
-                                                display: 'flex',
-                                                flexDirection: 'column',
-                                                justifyContent: 'space-between'
-                                            }}
+
+                                        <div
+                                            className="course-one__content hvr-sweep-to-bottom w-full px-4 py-3 flex-grow flex flex-col justify-between"
+                                            style={{ backgroundColor: "#fff" }}
                                         >
-                                            <div>
-                                                <h3 style={{ marginBottom: '10px' }}><Link href={course.link}>{course.title}</Link></h3>
-                                                <p style={{ 
-                                                    fontSize: '14px',
-                                                    color: '#666',
-                                                    lineHeight: '1.5',
-                                                    overflow: 'hidden',
-                                                    textOverflow: 'ellipsis',
-                                                    display: '-webkit-box',
-                                                    WebkitLineClamp: 3,
-                                                    WebkitBoxOrient: 'vertical'
-                                                }}>{course.description}</p>
-                                            </div>
+                                            <h3 className="text-base font-bold leading-tight text-center">
+                                                <Link href={course.link}>{course.title}</Link>
+                                            </h3>
+                                            <p className="text-sm text-gray-600 text-center mt-2">
+                                                {course.description || "Descripción no disponible"}
+                                            </p>
                                         </div>
-                                        <Link 
-                                            href={course.link} 
-                                            className="course-one__book-link" 
-                                            style={{ 
-                                                width: '100%', 
-                                                display: 'block',
-                                                textAlign: 'center',
-                                                padding: '12px',
-                                                borderTop: '1px solid #f0f0f0',
-                                                marginTop: 'auto'
-                                            }}
+
+                                        <Link
+                                            href={course.link}
+                                            className="course-one__book-link block w-full text-center mt-auto py-2 transition-colors duration-200 hover:text-blue-500"
+                                            style={{ borderTop: "1px solid #f0f0f0" }}
                                         >
                                             Ver detalles
                                         </Link>

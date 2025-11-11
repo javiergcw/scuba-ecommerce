@@ -1,4 +1,6 @@
 import React from 'react'
+import { BannerDto } from '@/core/dto/receive/zone/receive_zones_dto'
+import styles from './about-us-section.module.css'
 
 interface FeatureCard {
     id: number;
@@ -10,7 +12,7 @@ interface FeatureCard {
     isExternal?: boolean;
 }
 
-const featuresData: FeatureCard[] = [
+const featuresDataFallback: FeatureCard[] = [
     {
         id: 1,
         image: "/assets/images/background/banner6.jpeg",
@@ -62,7 +64,24 @@ const featuresData: FeatureCard[] = [
     }
 ];
 
-export const AboutUsSection = () => {
+interface AboutUsSectionProps {
+    banners?: BannerDto[];
+}
+
+export const AboutUsSection: React.FC<AboutUsSectionProps> = ({ banners = [] }) => {
+    // Mapear banners del API al formato FeatureCard
+    const featuresFromApi: FeatureCard[] = banners.map((banner, index) => ({
+        id: index + 1,
+        image: banner.image_url,
+        title: banner.title,
+        link: banner.link_url,
+        description: banner.subtitles,
+        delay: `${index * 100}ms`,
+        isExternal: banner.link_url.startsWith('http') && !banner.link_url.includes(window.location.hostname)
+    }));
+
+    // Usar banners del API si existen, sino usar los de fallback
+    const featuresData = featuresFromApi.length > 0 ? featuresFromApi : featuresDataFallback;
     return <>
         <section className="page-header">
             <div className="page-header__bg" style={{ backgroundImage: 'url(/assets/images/background/footer-bg-1-1.jpg)' }}></div>
@@ -82,16 +101,15 @@ export const AboutUsSection = () => {
                     {featuresData.map((feature) => (
                         <div
                             key={feature.id}
-                            className="col-lg-4 wow fadeInUp"
+                            className={`col-lg-4 wow fadeInUp ${styles.featureColumn}`}
                             data-wow-duration="1500ms"
                             data-wow-delay={feature.delay}
-                            style={{ marginBottom: '40px' }}
                         >
-                            <div className="feature-two__single">
+                            <div className={`feature-two__single ${styles.featureCard}`}>
                                 <div className="feature-two__image">
                                     <img src={feature.image} alt={feature.title} />
                                 </div>
-                                <div className="feature-two__content">
+                                <div className={`feature-two__content ${styles.featureContent}`}>
                                     <h3>
                                         {feature.isExternal ? (
                                             <a href={feature.link} target="_blank" rel="noopener noreferrer">
@@ -101,7 +119,7 @@ export const AboutUsSection = () => {
                                             <a href={feature.link}>{feature.title}</a>
                                         )}
                                     </h3>
-                                    <p>{feature.description}</p>
+                                    <p className={styles.featureDescription}>{feature.description}</p>
                                 </div>
                             </div>
                         </div>

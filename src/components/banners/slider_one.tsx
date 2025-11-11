@@ -12,6 +12,7 @@ import { usePathname } from "next/navigation";
 import { ROUTES } from "@/utils/constants";
 import Link from "next/link";
 import { Banner } from 'monolite-saas';
+import { BannerDto } from '@/core/dto/receive/zone/receive_zones_dto';
 import {
   Box,
   Typography,
@@ -25,7 +26,7 @@ import {
 
 
 interface SliderOneProps {
-  banners: Banner[];
+  banners: Banner[] | BannerDto[];
 }
 
 const SliderOne: React.FC<SliderOneProps> = ({ banners }) => {
@@ -89,11 +90,18 @@ const SliderOne: React.FC<SliderOneProps> = ({ banners }) => {
             prevEl: ".custom-swiper-prev",
           }}
         >
-          {banners.map((banner) => (
-            <SwiperSlide key={banner.id}>
+          {banners.map((banner, index) => {
+            const isBannerDto = 'image_url' in banner;
+            const imageUrl = isBannerDto ? (banner as BannerDto).image_url : (banner as Banner).web_banner_url;
+            const linkUrl = isBannerDto ? (banner as BannerDto).link_url : (banner as Banner).redirect_url;
+            const subtitle = isBannerDto ? (banner as BannerDto).subtitles : (banner as Banner).subtitle;
+            const bannerId = banner.id || `banner-${index}`;
+            
+            return (
+            <SwiperSlide key={bannerId}>
               <Box
                 sx={{
-                  backgroundImage: `url(${banner.web_banner_url})`,
+                  backgroundImage: `url(${imageUrl})`,
                   backgroundSize: "cover",
                   backgroundPosition: "center",
                   height: isMobile ? "60vh" : "90vh",
@@ -106,19 +114,21 @@ const SliderOne: React.FC<SliderOneProps> = ({ banners }) => {
                     textAlign="center"
                     sx={{ width: { xs: "90%", md: "100%" }, mx: "auto" }}
                   >
-                    <Typography
-                      variant={isMobile ? "subtitle1" : "h6"}
-                      color="white"
-                      mb={2}
-                      sx={{
-                        fontFamily: '"Barlow Condensed", sans-serif',
-                        fontWeight: 600,
-                        textShadow: "1px 1px 2px rgba(0,0,0,0.4)",
-                        mt: { xs: 2, md: 0 }, // Margen superior extra solo en mobile
-                      }}
-                    >
-                      {banner.subtitle}
-                    </Typography>
+                    {subtitle && (
+                      <Typography
+                        variant={isMobile ? "subtitle1" : "h6"}
+                        color="white"
+                        mb={2}
+                        sx={{
+                          fontFamily: '"Barlow Condensed", sans-serif',
+                          fontWeight: 600,
+                          textShadow: "1px 1px 2px rgba(0,0,0,0.4)",
+                          mt: { xs: 2, md: 0 },
+                        }}
+                      >
+                        {subtitle}
+                      </Typography>
+                    )}
 
                     <Typography
                       variant={isMobile ? "h4" : "h3"}
@@ -133,7 +143,7 @@ const SliderOne: React.FC<SliderOneProps> = ({ banners }) => {
                       {banner.title}
                     </Typography>
 
-                    <Link href={banner.redirect_url} passHref>
+                    <Link href={linkUrl} passHref>
                       <Button
                         variant="contained"
                         sx={{
@@ -149,7 +159,7 @@ const SliderOne: React.FC<SliderOneProps> = ({ banners }) => {
                           borderRadius: 0,
                           fontFamily: '"Barlow Condensed", sans-serif',
                         }}
-                        className={isActive(banner.redirect_url)}
+                        className={isActive(linkUrl)}
                       >
                         Ver todos los cursos
                       </Button>
@@ -158,8 +168,8 @@ const SliderOne: React.FC<SliderOneProps> = ({ banners }) => {
                 </Container>
               </Box>
             </SwiperSlide>
-
-          ))}
+          );
+          })}
         </Swiper>
 
         <Stack
