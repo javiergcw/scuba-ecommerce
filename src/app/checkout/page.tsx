@@ -172,7 +172,6 @@ export default function CheckoutPage() {
       } catch (error) {
         console.error('❌ Error al cargar productos relacionados:', error);
         setRelatedProducts([]);
-      }
       } finally {
         setLoadingRelated(false);
       }

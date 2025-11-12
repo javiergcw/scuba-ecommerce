@@ -3,10 +3,11 @@ import { API_CONFIG } from '@/core/const/api_const';
 
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const fullUrl = `${API_CONFIG.BASE_URL}/api/v1/public/products/${params.id}`;
+    const { id } = await params;
+    const fullUrl = `${API_CONFIG.BASE_URL}/api/v1/public/products/${id}`;
     console.log('🔍 Intentando obtener producto:', fullUrl);
     
     const response = await fetch(fullUrl, {

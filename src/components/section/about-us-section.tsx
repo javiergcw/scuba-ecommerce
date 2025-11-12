@@ -1,6 +1,5 @@
 import React from 'react'
 import { BannerDto } from '@/core/dto/receive/zone/receive_zones_dto'
-import styles from './about-us-section.module.css'
 
 interface FeatureCard {
     id: number;
@@ -101,15 +100,16 @@ export const AboutUsSection: React.FC<AboutUsSectionProps> = ({ banners = [] }) 
                     {featuresData.map((feature) => (
                         <div
                             key={feature.id}
-                            className={`col-lg-4 wow fadeInUp ${styles.featureColumn}`}
+                            className="col-lg-4 wow fadeInUp"
                             data-wow-duration="1500ms"
                             data-wow-delay={feature.delay}
+                            style={{ marginBottom: '40px' }}
                         >
-                            <div className={`feature-two__single ${styles.featureCard}`}>
+                            <div className="feature-two__single">
                                 <div className="feature-two__image">
                                     <img src={feature.image} alt={feature.title} />
                                 </div>
-                                <div className={`feature-two__content ${styles.featureContent}`}>
+                                <div className="feature-two__content">
                                     <h3>
                                         {feature.isExternal ? (
                                             <a href={feature.link} target="_blank" rel="noopener noreferrer">
@@ -119,7 +119,7 @@ export const AboutUsSection: React.FC<AboutUsSectionProps> = ({ banners = [] }) 
                                             <a href={feature.link}>{feature.title}</a>
                                         )}
                                     </h3>
-                                    <p className={styles.featureDescription}>{feature.description}</p>
+                                    <p>{feature.description}</p>
                                 </div>
                             </div>
                         </div>
