@@ -253,9 +253,6 @@ const ConsultarContratoPage = () => {
                                         }}>
                                             {contract.template_name}
                                         </h3>
-                                        <p style={{ color: '#838a93', margin: 0, fontSize: '16px' }}>
-                                            <strong>Código:</strong> {contract.code} | <strong>SKU:</strong> {contract.sku}
-                                        </p>
                                     </div>
                                     <div className="text-end">
                                         {isSigned ? (
@@ -325,52 +322,54 @@ const ConsultarContratoPage = () => {
                         </div>
                     </div>
 
-                    {/* Contract Content */}
-                    <div className="row mb-4">
-                        <div className="col-lg-12">
-                            <div className="course-details__content" style={{ 
-                                background: '#fff',
-                                borderRadius: '10px',
-                                padding: '40px',
-                                boxShadow: '0px 10px 30px 0px rgba(0, 0, 0, 0.05)'
-                            }}>
-                                <h3 style={{ 
-                                    color: 'var(--thm-black)', 
-                                    fontSize: '24px', 
-                                    fontWeight: 'bold',
-                                    marginBottom: '30px',
-                                    paddingBottom: '20px',
-                                    borderBottom: '2px solid var(--thm-gray)'
+                    {/* Contract Content - Only show if not signed */}
+                    {!isSigned && (
+                        <div className="row mb-4">
+                            <div className="col-lg-12">
+                                <div className="course-details__content" style={{ 
+                                    background: '#fff',
+                                    borderRadius: '10px',
+                                    padding: '40px',
+                                    boxShadow: '0px 10px 30px 0px rgba(0, 0, 0, 0.05)'
                                 }}>
-                                    Contenido del Contrato
-                                </h3>
-                                <div
-                                    dangerouslySetInnerHTML={{ __html: contract.html_snapshot }}
-                                    style={{
-                                        color: '#838a93',
-                                        lineHeight: '1.8',
-                                        fontSize: '16px'
-                                    }}
-                                />
-                                {contract.expires_at && (
-                                    <div style={{ 
-                                        marginTop: '30px', 
-                                        paddingTop: '20px', 
-                                        borderTop: '2px solid var(--thm-gray)'
+                                    <h3 style={{ 
+                                        color: 'var(--thm-black)', 
+                                        fontSize: '24px', 
+                                        fontWeight: 'bold',
+                                        marginBottom: '30px',
+                                        paddingBottom: '20px',
+                                        borderBottom: '2px solid var(--thm-gray)'
                                     }}>
-                                        <p style={{ color: '#838a93', margin: 0, fontSize: '16px' }}>
-                                            <strong style={{ color: 'var(--thm-black)' }}>Fecha de expiración:</strong>{' '}
-                                            {new Date(contract.expires_at).toLocaleDateString('es-ES', {
-                                                year: 'numeric',
-                                                month: 'long',
-                                                day: 'numeric'
-                                            })}
-                                        </p>
-                                    </div>
-                                )}
+                                        Contenido del Contrato
+                                    </h3>
+                                    <div
+                                        dangerouslySetInnerHTML={{ __html: contract.html_snapshot }}
+                                        style={{
+                                            color: '#838a93',
+                                            lineHeight: '1.8',
+                                            fontSize: '16px'
+                                        }}
+                                    />
+                                    {contract.expires_at && (
+                                        <div style={{ 
+                                            marginTop: '30px', 
+                                            paddingTop: '20px', 
+                                            borderTop: '2px solid var(--thm-gray)'
+                                        }}>
+                                            <p style={{ color: '#838a93', margin: 0, fontSize: '16px' }}>
+                                                <strong style={{ color: 'var(--thm-black)' }}>Fecha de expiración:</strong>{' '}
+                                                {new Date(contract.expires_at).toLocaleDateString('es-ES', {
+                                                    year: 'numeric',
+                                                    month: 'long',
+                                                    day: 'numeric'
+                                                })}
+                                            </p>
+                                        </div>
+                                    )}
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    )}
 
                     {/* Sign Form (only if not signed) */}
                     {!isSigned && !isExpired && (
