@@ -38,7 +38,7 @@ export const BodyCourse = ({ courses }: BodyCourseProps) => {
                             Por favor, selecciona otra categoría o revisa todos nuestros cursos disponibles.
                         </p>
                         <Link 
-                            href="/courses" 
+                            href="/cursos" 
                             style={{
                                 display: 'inline-block',
                                 padding: '12px 24px',
@@ -84,7 +84,7 @@ export const BodyCourse = ({ courses }: BodyCourseProps) => {
                             Cursos de: {selectedCategory}
                         </h2>
                         <Link 
-                            href="/courses" 
+                            href="/cursos" 
                             style={{
                                 color: '#87CEEB',
                                 textDecoration: 'none',

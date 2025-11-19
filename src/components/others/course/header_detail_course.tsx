@@ -14,7 +14,7 @@ export const HeaderDetailCourse = ({ category, courseName }: HeaderDetailCourseP
                 <div className="container">
                     <ul className="list-unstyled thm-breadcrumb">
                         <li><Link href="/">Home</Link></li>
-                        <li><Link href={category ? `/courses?category=${encodeURIComponent(category)}` : '/courses'}>Cursos</Link></li>
+                        <li><Link href={category ? `/cursos?category=${encodeURIComponent(category)}` : '/cursos'}>Cursos</Link></li>
                         {category && (
                             <li className="active"><a href="#">{category}</a></li>
                         )}

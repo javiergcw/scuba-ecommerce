@@ -8,37 +8,80 @@ import { ProductService } from '@/core/service/product/product_service';
 import { ProductDto } from '@/core/dto/receive/product/receive_products_dto';
 
 const CourseDetailPage = () => {
-    const { id } = useParams();
+    const params = useParams();
+    const skuParam = params?.sku;   
     const [course, setCourse] = useState<ProductDto | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
+        // Obtener el SKU del parámetro
+        let skuValue: string = '';
+        if (Array.isArray(skuParam)) {
+            skuValue = skuParam[0] || '';
+        } else if (typeof skuParam === 'string') {
+            skuValue = skuParam;
+        } else {
+            skuValue = String(skuParam || '');
+        }
+
+        if (!skuValue) {
+            setError('SKU no proporcionado');
+            setLoading(false);
+            return;
+        }
+
         const fetchCourse = async () => {
             try {
                 setLoading(true);
-                console.log('🔍 Buscando curso con ID:', id);
-                const courseData = await ProductService.getProductById(id as string);
+                setError(null);
+                
+                // El SKU ya viene sin codificar de Next.js, usarlo directamente
+                // Solo decodificar si es necesario (evitar errores si ya está decodificado)
+                let decodedSku = skuValue;
+                try {
+                    // Intentar decodificar solo si parece estar codificado
+                    if (skuValue.includes('%')) {
+                        decodedSku = decodeURIComponent(skuValue);
+                    }
+                } catch (e) {
+                    // Si falla la decodificación, usar el valor original
+                    decodedSku = skuValue;
+                }
+                
+                console.log('🔍 Buscando curso con SKU:', decodedSku);
+                console.log('📋 SKU original (params):', skuParam);
+                console.log('📋 SKU procesado:', skuValue);
+                
+                const courseData = await ProductService.getProductBySku(decodedSku);
+                
                 if (courseData) {
                     console.log('✅ Curso encontrado:', courseData.name);
+                    console.log('📦 Datos del curso:', {
+                        id: courseData.id,
+                        sku: courseData.sku,
+                        name: courseData.name,
+                        price: courseData.price
+                    });
                     setCourse(courseData);
                     setError(null);
                 } else {
-                    console.error('❌ Curso no encontrado con ID:', id);
-                    setError('Curso no encontrado');
+                    console.error('❌ Curso no encontrado con SKU:', decodedSku);
+                    setError(`Curso no encontrado con SKU: ${decodedSku}`);
+                    // No hacer recarga automática, solo mostrar error
                 }
             } catch (err) {
                 console.error('❌ Error al cargar el curso:', err);
-                setError('Error al cargar el curso');
+                const errorMessage = err instanceof Error ? err.message : 'Error desconocido';
+                setError(`Error al cargar el curso: ${errorMessage}`);
+                // No hacer recarga automática
             } finally {
                 setLoading(false);
             }
         };
 
-        if (id) {
-            fetchCourse();
-        }
-    }, [id]);
+        fetchCourse();
+    }, [skuParam]);
 
     if (loading) {
         return (
@@ -54,7 +97,7 @@ const CourseDetailPage = () => {
         );
     }
 
-    if (error || !course) {
+    if (error || (!course && !loading)) {
         return (
             <Box sx={{ 
                 width: '100%',
@@ -66,14 +109,17 @@ const CourseDetailPage = () => {
                 padding: 4
             }}>
                 <Typography variant="h4" sx={{ mb: 2, color: '#051b35', fontWeight: 'bold' }}>
-                    Curso no encontrado
+                    {error ? 'Error al cargar el curso' : 'Curso no encontrado'}
                 </Typography>
-                <Typography variant="body1" sx={{ mb: 3, color: '#666', textAlign: 'center' }}>
+                <Typography variant="body1" sx={{ mb: 3, color: '#666', textAlign: 'center', maxWidth: '600px' }}>
                     {error || 'El curso que buscas no existe o ha sido eliminado.'}
                 </Typography>
                 <Button 
                     variant="contained" 
-                    onClick={() => window.location.href = '/courses'}
+                    onClick={() => {
+                        // Usar router en lugar de window.location para evitar recargas completas
+                        window.location.href = '/cursos';
+                    }}
                     sx={{
                         backgroundColor: '#87CEEB',
                         '&:hover': { backgroundColor: '#6ab5d8' }
@@ -83,6 +129,11 @@ const CourseDetailPage = () => {
                 </Button>
             </Box>
         );
+    }
+
+    // Type guard: asegurar que course no es null
+    if (!course) {
+        return null;
     }
 
     const courseDetailData = {
@@ -95,15 +146,15 @@ const CourseDetailPage = () => {
         tips: '',
         additionalInfo: '',
         features: {},
-        courseId: course.id,
+        courseId: course.sku,
         subcategory_name: course.subcategory_name
     };
 
     return (
         <>
             <HeaderDetailCourse 
-                category={course.subcategory_name || course.category_name}
-                courseName={course.name}
+                category={course.category_name} 
+                courseName={course.name} 
             />
             <BodyDetailCourse {...courseDetailData} />
         </>
@@ -111,3 +162,4 @@ const CourseDetailPage = () => {
 }
 
 export default CourseDetailPage;
+

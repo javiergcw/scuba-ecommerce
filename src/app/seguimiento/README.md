@@ -122,7 +122,7 @@ GET {{base_url}}/api/v2/orders/tracking/{{tracking_code}}
 
 ### Navegación
 1. Acceder desde el navbar: "Seguimiento"
-2. URL directa: `/tracking`
+2. URL directa: `/seguimiento`
 
 ### Búsqueda
 1. Ingresar código de tracking en el campo de búsqueda

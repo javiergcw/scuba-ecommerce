@@ -1,5 +1,6 @@
 "use client";
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useParams } from 'next/navigation';
 import InformacionGeneral from '@/components/contrato/InformacionGeneral';
 import ContactoEmergencia from '@/components/contrato/ContactoEmergencia';
 import Accordion from '@/components/contrato/Accordion';
@@ -7,9 +8,18 @@ import FormularioMedico from '@/components/contrato/FormularioMedico';
 import Politicas from '@/components/contrato/Politicas';
 
 const ContratoPage = () => {
+  const params = useParams();
+  const [contractId, setContractId] = useState<string>('');
   const [formData, setFormData] = useState({});
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
+  const [downloadingPdf, setDownloadingPdf] = useState(false);
+
+  useEffect(() => {
+    if (params?.id) {
+      setContractId(params.id as string);
+    }
+  }, [params]);
 
   const validateEmail = (email: string) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -179,6 +189,37 @@ const ContratoPage = () => {
     console.log('Datos del formulario:', data);
   };
 
+  const handleDownloadPdf = async () => {
+    if (!contractId) {
+      alert('No se ha cargado el ID del contrato');
+      return;
+    }
+
+    try {
+      setDownloadingPdf(true);
+      const response = await fetch(`/api/contracts/${contractId}/pdf`);
+      
+      if (!response.ok) {
+        throw new Error('Error al descargar el PDF');
+      }
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `contrato-servicio-${contractId}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+    } catch (error) {
+      console.error('Error al descargar PDF:', error);
+      alert('Error al descargar el PDF. Por favor, intente nuevamente.');
+    } finally {
+      setDownloadingPdf(false);
+    }
+  };
+
   return (
     <form onSubmit={handleSubmit}>
       <div className="container mx-auto p-4 mt-20 mb-20">
@@ -217,12 +258,23 @@ const ContratoPage = () => {
           </div>
         )}
         
-        <button
-          type="submit"
-          className="mt-8 w-full bg-[#ffd900] hover:bg-[#e6c300] text-black font-bold py-3 px-6 shadow transition-colors duration-200"
-        >
-          Enviar Formulario
-        </button>
+        <div className="mt-8 flex flex-col sm:flex-row gap-4">
+          <button
+            type="submit"
+            className="flex-1 bg-[#ffd900] hover:bg-[#e6c300] text-black font-bold py-3 px-6 shadow transition-colors duration-200"
+          >
+            Enviar Formulario
+          </button>
+          
+          <button
+            type="button"
+            onClick={handleDownloadPdf}
+            disabled={downloadingPdf}
+            className="flex-1 bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white font-bold py-3 px-6 shadow transition-colors duration-200"
+          >
+            {downloadingPdf ? 'Descargando...' : '📄 Descargar PDF'}
+          </button>
+        </div>
       </div>
     </form>
   );

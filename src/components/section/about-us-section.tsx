@@ -16,7 +16,7 @@ const featuresDataFallback: FeatureCard[] = [
         id: 1,
         image: "/assets/images/background/banner6.jpeg",
         title: "Ya soy buzo",
-        link: "/courses",
+        link: "/cursos",
         description: "Contamos con experiencias únicas de buceo y cursos para todos los niveles, desde principiantes hasta profesionales.",
         delay: "000ms"
     },
@@ -24,7 +24,7 @@ const featuresDataFallback: FeatureCard[] = [
         id: 2,
         image: "/assets/images/background/banner5.jpeg",
         title: "Nuestros beneficios",
-        link: "/payments",
+        link: "/pagos",
         description: "Formación certificada, equipo de alta calidad y un equipo humano comprometido con tu seguridad y diversión.",
         delay: "100ms"
     },
@@ -41,7 +41,7 @@ const featuresDataFallback: FeatureCard[] = [
         id: 4,
         image: "/assets/images/background/slide-bg-1-1.jpg",
         title: "Experiencia y Confianza",
-        link: "/about-us",
+        link: "/sobre-nosotros",
         description: "Experiencia en el Parque Tayrona, certificación PADI 5 Estrellas y miles de estudiantes satisfechos.",
         delay: "300ms"
     },
@@ -49,7 +49,7 @@ const featuresDataFallback: FeatureCard[] = [
         id: 5,
         image: "/assets/images/background/banner9.jpg",
         title: "Instalaciones y Equipo",
-        link: "/contact",
+        link: "/contacto",
         description: "Contamos con equipos de última generación, embarcaciones modernas y un centro de buceo totalmente equipado para tu seguridad.",
         delay: "400ms"
     },
@@ -57,7 +57,7 @@ const featuresDataFallback: FeatureCard[] = [
         id: 6,
         image: "/assets/images/background/banner10.jpg",
         title: "Ubicación Privilegiada",
-        link: "/contact",
+        link: "/contacto",
         description: "Estamos ubicados en Taganga, puerta de entrada al Parque Nacional Natural Tayrona, con acceso directo a los mejores sitios de buceo del Caribe.",
         delay: "500ms"
     }

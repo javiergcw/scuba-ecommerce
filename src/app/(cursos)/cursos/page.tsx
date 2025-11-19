@@ -79,7 +79,7 @@ const CoursesContent = () => {
         image: product.photo,
         title: product.name,
         description: product.short_description || 'Descripción no disponible',
-        link: `/courses/${product.id}`
+        link: `/cursos/${product.sku}`
     }));
 
     return (

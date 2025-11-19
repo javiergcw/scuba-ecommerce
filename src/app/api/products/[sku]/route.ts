@@ -3,12 +3,16 @@ import { API_CONFIG } from '@/core/const/api_const';
 
 export async function GET(
   request: Request,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ sku: string }> }
 ) {
   try {
-    const { id } = await params;
-    const fullUrl = `${API_CONFIG.BASE_URL}/api/v1/public/products/${id}`;
-    console.log('🔍 Intentando obtener producto:', fullUrl);
+    const { sku } = await params;
+    // Usar el SKU directamente sin codificar
+    // Los guiones y caracteres alfanuméricos son seguros en URLs
+    const fullUrl = `${API_CONFIG.BASE_URL}/api/v1/public/products/sku/${sku}`;
+    console.log('🔍 Intentando obtener producto por SKU:', fullUrl);
+    console.log('🔑 Licencia Key:', API_CONFIG.LICENSE_KEY.substring(0, 20) + '...');
+    console.log('📋 SKU recibido:', sku);
     
     const response = await fetch(fullUrl, {
       method: 'GET',
@@ -32,6 +36,7 @@ export async function GET(
 
     const data = await response.json();
     console.log('✅ Producto obtenido exitosamente');
+    console.log('📦 Datos recibidos:', JSON.stringify(data).substring(0, 200));
     return NextResponse.json(data);
   } catch (error) {
     console.error('❌ Error en API route de producto:', error);
