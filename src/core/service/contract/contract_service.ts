@@ -68,20 +68,48 @@ export class ContractService {
      */
     public static async signContract(token: string, signData: SendSignContractDto): Promise<SignContractResponseDto | null> {
         try {
+            console.log('📤 Enviando firma al backend:', {
+                hasSignature: !!signData.fields.signature,
+                signatureLength: signData.fields.signature?.length || 0,
+                signatureStart: signData.fields.signature?.substring(0, 50) || 'N/A',
+                allFields: Object.keys(signData.fields)
+            });
+
+            const jsonBody = JSON.stringify(signData);
+            console.log('📦 Tamaño del JSON:', jsonBody.length, 'caracteres');
+
             const response = await fetch(API_ENDPOINTS.CONTRACT_SIGN(token), {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(signData),
+                body: jsonBody,
                 cache: 'no-store'
             });
 
+            if (!response.ok) {
+                const errorText = await response.text();
+                console.error('❌ Error en respuesta del servidor:', response.status, response.statusText, errorText);
+                return {
+                    success: false,
+                    error: `Error ${response.status}: ${response.statusText}`
+                };
+            }
+
             const data: SignContractResponseDto = await response.json();
+            console.log('✅ Respuesta del backend:', {
+                success: data.success,
+                hasSignature: !!data.data,
+                signature: data.data ? (data.data as any).signature : 'N/A'
+            });
+            
             return data;
         } catch (error) {
             console.error('❌ Error al firmar contrato:', error);
-            return null;
+            return {
+                success: false,
+                error: error instanceof Error ? error.message : 'Error desconocido'
+            };
         }
     }
 }

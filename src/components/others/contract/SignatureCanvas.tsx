@@ -85,8 +85,21 @@ export const SignatureCanvas: React.FC<SignatureCanvasProps> = ({
     const canvas = canvasRef.current;
     if (!canvas) return;
 
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    // SIMPLE: Solo capturar la firma y enviarla
     const dataURL = canvas.toDataURL('image/png');
-    onSignatureChange(dataURL);
+    
+    // Verificar que tenga contenido real
+    if (dataURL && dataURL.length > 100) {
+      setHasSignature(true);
+      onSignatureChange(dataURL);
+      console.log('✅ Firma capturada, longitud:', dataURL.length);
+    } else {
+      setHasSignature(false);
+      onSignatureChange('');
+    }
   };
 
   const clearCanvas = () => {
