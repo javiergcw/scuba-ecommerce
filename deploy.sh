@@ -1,5 +1,19 @@
 #!/bin/bash
 
+# Instalar librerías del sistema si estamos en Debian/Ubuntu
+if grep -qi 'debian\|ubuntu' /etc/os-release 2>/dev/null; then
+    echo "Instalando librerías del sistema para canvas..."
+    sudo apt-get update
+    sudo apt-get install -y \
+        build-essential \
+        libcairo2-dev \
+        libpango1.0-dev \
+        libjpeg-dev \
+        libgif-dev \
+        librsvg2-dev
+fi
+
+# Verifica si existe docker-compose.yml
 if [ -f docker-compose.yml ]; then
     echo "Usando docker-compose para el despliegue..."
     docker-compose down
@@ -7,9 +21,11 @@ if [ -f docker-compose.yml ]; then
 else
     echo "Construyendo la imagen Docker..."
     docker build -t select-tms:latest .
+
     echo "Deteniendo contenedores anteriores..."
     docker stop select-tms || true
-    docker rm scuba-ecommerce || true
+    docker rm select-tms || true
+
     echo "Ejecutando el contenedor..."
     docker run -d --name select-tms -p 9020:9020 --restart unless-stopped select-tms:latest
 fi
