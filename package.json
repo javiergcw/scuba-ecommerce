@@ -27,7 +27,7 @@
     "lottie-web": "^5.12.2",
     "lucide-react": "^0.486.0",
     "monolite-saas": "github:javiergcw/monolite-saas#makers",
-    "next": "15.2.4",
+    "next": "16.0.8",
     "owl.carousel": "^2.3.4",
     "react": "^19.0.0",
     "react-countup": "^6.5.3",
