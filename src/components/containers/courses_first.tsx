@@ -11,6 +11,7 @@ import Link from "next/link";
 import SwiperNavigationButtons from "./SwiperNavigationButtons";
 import { ProductService } from "@/core/service/product/product_service";
 import { ProductDto } from "@/core/dto/receive/product/receive_products_dto";
+import { getProxiedImageUrl } from "@/utils/imageProxy";
 
 const CoursesFirst = () => {
   const pathname = usePathname();
@@ -146,7 +147,7 @@ const CoursesFirst = () => {
                     <div className="course-one__image-inner w-full">
                       {product.photo ? (
                         <img
-                          src={product.photo}
+                          src={getProxiedImageUrl(product.photo)}
                           alt={product.name}
                           style={{
                             width: "100%",
