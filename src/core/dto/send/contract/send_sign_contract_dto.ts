@@ -1,9 +1,12 @@
 export interface SendSignContractDto {
-  signed_by_name: string;
-  signed_by_email: string;
-  signature_image: string; // base64 image
-  fields?: {
-    [key: string]: string;
+  fields: {
+    email: string;
+    signer_name: string;
+    identity_type: string;
+    identity_number: string;
+    company: string;
+    signature: string; // base64 image
+    [key: string]: string; // Allow other dynamic fields if needed
   };
 }
 

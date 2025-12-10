@@ -11,7 +11,7 @@ import { SendSignContractDto } from '@/core/dto/send/contract/send_sign_contract
 const ConsultarContratoPage = () => {
     const params = useParams();
     const tokenParam = params?.token;
-    
+
     const [contract, setContract] = useState<ContractDto | null>(null);
     const [contractStatus, setContractStatus] = useState<ContractStatusDto | null>(null);
     const [loading, setLoading] = useState(true);
@@ -19,11 +19,14 @@ const ConsultarContratoPage = () => {
     const [signing, setSigning] = useState(false);
     const [signSuccess, setSignSuccess] = useState(false);
     const [signError, setSignError] = useState<string | null>(null);
-    
+
     // Formulario de firma
     const [signature, setSignature] = useState('');
     const [signedByName, setSignedByName] = useState('');
     const [signedByEmail, setSignedByEmail] = useState('');
+    const [identityType, setIdentityType] = useState('');
+    const [identityNumber, setIdentityNumber] = useState('');
+    const [company, setCompany] = useState('');
 
     useEffect(() => {
         const fetchContract = async () => {
@@ -45,15 +48,15 @@ const ConsultarContratoPage = () => {
             try {
                 setLoading(true);
                 setError(null);
-                
+
                 // Obtener el contrato
                 console.log('🔍 Buscando contrato con token:', tokenValue);
                 const contractResponse = await ContractService.getContractByToken(tokenValue);
-                
+
                 if (contractResponse && contractResponse.success && contractResponse.data) {
                     console.log('✅ Contrato encontrado:', contractResponse.data.code);
                     setContract(contractResponse.data);
-                    
+
                     // Consultar el status internamente
                     const statusResponse = await ContractService.getContractStatus(tokenValue);
                     if (statusResponse && statusResponse.success && statusResponse.data) {
@@ -77,8 +80,8 @@ const ConsultarContratoPage = () => {
     }, [tokenParam]);
 
     const handleSignContract = async () => {
-        if (!signature || !signedByName || !signedByEmail) {
-            setSignError('Por favor, completa todos los campos y proporciona una firma');
+        if (!signature || !signedByName || !signedByEmail || !identityType || !identityNumber) {
+            setSignError('Por favor, completa todos los campos requeridos y proporciona una firma');
             return;
         }
 
@@ -89,10 +92,10 @@ const ConsultarContratoPage = () => {
             return;
         }
 
-        const tokenValue = Array.isArray(tokenParam) 
-            ? tokenParam[0] || '' 
-            : typeof tokenParam === 'string' 
-                ? tokenParam 
+        const tokenValue = Array.isArray(tokenParam)
+            ? tokenParam[0] || ''
+            : typeof tokenParam === 'string'
+                ? tokenParam
                 : String(tokenParam || '');
 
         if (!tokenValue) {
@@ -106,10 +109,14 @@ const ConsultarContratoPage = () => {
             setSignSuccess(false);
 
             const signData: SendSignContractDto = {
-                signed_by_name: signedByName,
-                signed_by_email: signedByEmail,
-                signature_image: signature,
-                fields: {}
+                fields: {
+                    email: signedByEmail,
+                    signer_name: signedByName,
+                    identity_type: identityType,
+                    identity_number: identityNumber,
+                    company: company || '',
+                    signature: signature
+                }
             };
 
             const response = await ContractService.signContract(tokenValue, signData);
@@ -129,6 +136,9 @@ const ConsultarContratoPage = () => {
                 setSignature('');
                 setSignedByName('');
                 setSignedByEmail('');
+                setIdentityType('');
+                setIdentityNumber('');
+                setCompany('');
             } else {
                 setSignError(response?.error || 'Error al firmar el contrato');
             }
@@ -212,7 +222,8 @@ const ConsultarContratoPage = () => {
     }
 
     const isSigned = contractStatus?.status === 'SIGNED' || contract.status === 'SIGNED';
-    const isExpired = contractStatus?.expires_at 
+    const isCancelled = contractStatus?.status === 'CANCELLED' || contract.status === 'CANCELLED';
+    const isExpired = contractStatus?.expires_at
         ? new Date(contractStatus.expires_at) < new Date()
         : false;
 
@@ -236,7 +247,7 @@ const ConsultarContratoPage = () => {
                     {/* Status Card */}
                     <div className="row mb-4">
                         <div className="col-lg-12">
-                            <div className="course-details__content" style={{ 
+                            <div className="course-details__content" style={{
                                 background: '#fff',
                                 borderRadius: '10px',
                                 padding: '40px',
@@ -245,9 +256,9 @@ const ConsultarContratoPage = () => {
                             }}>
                                 <div className="d-flex justify-content-between align-items-center flex-wrap">
                                     <div>
-                                        <h3 style={{ 
-                                            color: 'var(--thm-black)', 
-                                            fontSize: '28px', 
+                                        <h3 style={{
+                                            color: 'var(--thm-black)',
+                                            fontSize: '28px',
                                             fontWeight: 'bold',
                                             marginBottom: '10px'
                                         }}>
@@ -266,9 +277,9 @@ const ConsultarContratoPage = () => {
                                                 padding: '15px 25px',
                                                 display: 'inline-block'
                                             }}>
-                                                <div style={{ 
-                                                    color: '#28a745', 
-                                                    fontWeight: 'bold', 
+                                                <div style={{
+                                                    color: '#28a745',
+                                                    fontWeight: 'bold',
                                                     fontSize: '18px',
                                                     marginBottom: '5px'
                                                 }}>
@@ -291,6 +302,19 @@ const ConsultarContratoPage = () => {
                                                         Por: {contract.signed_by_name}
                                                     </div>
                                                 )}
+                                            </div>
+                                        ) : isCancelled ? (
+                                            <div style={{
+                                                background: 'rgba(108, 117, 125, 0.1)',
+                                                border: '2px solid #6c757d',
+                                                borderRadius: '10px',
+                                                padding: '15px 25px',
+                                                display: 'inline-block'
+                                            }}>
+                                                <div style={{ color: '#6c757d', fontWeight: 'bold', fontSize: '18px' }}>
+                                                    <i className="fas fa-ban me-2"></i>
+                                                    Contrato Cancelado
+                                                </div>
                                             </div>
                                         ) : isExpired ? (
                                             <div style={{
@@ -326,65 +350,67 @@ const ConsultarContratoPage = () => {
                     </div>
 
                     {/* Contract Content */}
-                    <div className="row mb-4">
-                        <div className="col-lg-12">
-                            <div className="course-details__content" style={{ 
-                                background: '#fff',
-                                borderRadius: '10px',
-                                padding: '40px',
-                                boxShadow: '0px 10px 30px 0px rgba(0, 0, 0, 0.05)'
-                            }}>
-                                <h3 style={{ 
-                                    color: 'var(--thm-black)', 
-                                    fontSize: '24px', 
-                                    fontWeight: 'bold',
-                                    marginBottom: '30px',
-                                    paddingBottom: '20px',
-                                    borderBottom: '2px solid var(--thm-gray)'
-                                }}>
-                                    Contenido del Contrato
-                                </h3>
-                                <div
-                                    dangerouslySetInnerHTML={{ __html: contract.html_snapshot }}
-                                    style={{
-                                        color: '#838a93',
-                                        lineHeight: '1.8',
-                                        fontSize: '16px'
-                                    }}
-                                />
-                                {contract.expires_at && (
-                                    <div style={{ 
-                                        marginTop: '30px', 
-                                        paddingTop: '20px', 
-                                        borderTop: '2px solid var(--thm-gray)'
-                                    }}>
-                                        <p style={{ color: '#838a93', margin: 0, fontSize: '16px' }}>
-                                            <strong style={{ color: 'var(--thm-black)' }}>Fecha de expiración:</strong>{' '}
-                                            {new Date(contract.expires_at).toLocaleDateString('es-ES', {
-                                                year: 'numeric',
-                                                month: 'long',
-                                                day: 'numeric'
-                                            })}
-                                        </p>
-                                    </div>
-                                )}
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Sign Form (only if not signed) */}
-                    {!isSigned && !isExpired && (
-                        <div className="row">
+                    {!isSigned && !isCancelled && (
+                        <div className="row mb-4">
                             <div className="col-lg-12">
-                                <div className="course-details__content" style={{ 
+                                <div className="course-details__content" style={{
                                     background: '#fff',
                                     borderRadius: '10px',
                                     padding: '40px',
                                     boxShadow: '0px 10px 30px 0px rgba(0, 0, 0, 0.05)'
                                 }}>
-                                    <h3 style={{ 
-                                        color: 'var(--thm-black)', 
-                                        fontSize: '24px', 
+                                    <h3 style={{
+                                        color: 'var(--thm-black)',
+                                        fontSize: '24px',
+                                        fontWeight: 'bold',
+                                        marginBottom: '30px',
+                                        paddingBottom: '20px',
+                                        borderBottom: '2px solid var(--thm-gray)'
+                                    }}>
+                                        Contenido del Contrato
+                                    </h3>
+                                    <div
+                                        dangerouslySetInnerHTML={{ __html: contract.html_snapshot }}
+                                        style={{
+                                            color: '#838a93',
+                                            lineHeight: '1.8',
+                                            fontSize: '16px'
+                                        }}
+                                    />
+                                    {contract.expires_at && (
+                                        <div style={{
+                                            marginTop: '30px',
+                                            paddingTop: '20px',
+                                            borderTop: '2px solid var(--thm-gray)'
+                                        }}>
+                                            <p style={{ color: '#838a93', margin: 0, fontSize: '16px' }}>
+                                                <strong style={{ color: 'var(--thm-black)' }}>Fecha de expiración:</strong>{' '}
+                                                {new Date(contract.expires_at).toLocaleDateString('es-ES', {
+                                                    year: 'numeric',
+                                                    month: 'long',
+                                                    day: 'numeric'
+                                                })}
+                                            </p>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Sign Form (only if not signed) */}
+                    {!isSigned && !isExpired && !isCancelled && (
+                        <div className="row">
+                            <div className="col-lg-12">
+                                <div className="course-details__content" style={{
+                                    background: '#fff',
+                                    borderRadius: '10px',
+                                    padding: '40px',
+                                    boxShadow: '0px 10px 30px 0px rgba(0, 0, 0, 0.05)'
+                                }}>
+                                    <h3 style={{
+                                        color: 'var(--thm-black)',
+                                        fontSize: '24px',
                                         fontWeight: 'bold',
                                         marginBottom: '30px',
                                         paddingBottom: '20px',
@@ -394,7 +420,7 @@ const ConsultarContratoPage = () => {
                                     </h3>
 
                                     {signSuccess && (
-                                        <div className="alert alert-success" role="alert" style={{ 
+                                        <div className="alert alert-success" role="alert" style={{
                                             borderRadius: '10px',
                                             padding: '20px',
                                             marginBottom: '30px',
@@ -408,7 +434,7 @@ const ConsultarContratoPage = () => {
                                     )}
 
                                     {signError && (
-                                        <div className="alert alert-danger" role="alert" style={{ 
+                                        <div className="alert alert-danger" role="alert" style={{
                                             borderRadius: '10px',
                                             padding: '20px',
                                             marginBottom: '30px',
@@ -423,8 +449,8 @@ const ConsultarContratoPage = () => {
 
                                     <div className="row">
                                         <div className="col-lg-6 mb-3">
-                                            <label style={{ 
-                                                color: 'var(--thm-black)', 
+                                            <label style={{
+                                                color: 'var(--thm-black)',
                                                 fontWeight: '600',
                                                 marginBottom: '10px',
                                                 display: 'block'
@@ -447,8 +473,8 @@ const ConsultarContratoPage = () => {
                                         </div>
 
                                         <div className="col-lg-6 mb-3">
-                                            <label style={{ 
-                                                color: 'var(--thm-black)', 
+                                            <label style={{
+                                                color: 'var(--thm-black)',
                                                 fontWeight: '600',
                                                 marginBottom: '10px',
                                                 display: 'block'
@@ -470,6 +496,79 @@ const ConsultarContratoPage = () => {
                                             />
                                         </div>
 
+                                        <div className="col-lg-12 mb-3">
+                                            <label style={{
+                                                color: 'var(--thm-black)',
+                                                fontWeight: '600',
+                                                marginBottom: '10px',
+                                                display: 'block'
+                                            }}>
+                                                Documento de Identidad <span style={{ color: '#dc3545' }}>*</span>
+                                            </label>
+                                            <div className="input-group" style={{ display: 'flex' }}>
+                                                <select
+                                                    className="form-control"
+                                                    value={identityType}
+                                                    onChange={(e) => setIdentityType(e.target.value)}
+                                                    required
+                                                    style={{
+                                                        padding: '15px',
+                                                        borderRadius: '5px 0 0 5px',
+                                                        border: '1px solid #e0e0e0',
+                                                        fontSize: '16px',
+                                                        backgroundColor: '#f8f9fa',
+                                                        maxWidth: '150px',
+                                                        borderRight: 'none'
+                                                    }}
+                                                >
+                                                    <option value="">Tipo...</option>
+                                                    <option value="CC">CC</option>
+                                                    <option value="CE">CE</option>
+                                                    <option value="NIT">NIT</option>
+                                                    <option value="PASSPORT">Pasaporte</option>
+                                                </select>
+                                                <input
+                                                    type="text"
+                                                    className="form-control"
+                                                    value={identityNumber}
+                                                    onChange={(e) => setIdentityNumber(e.target.value)}
+                                                    required
+                                                    placeholder="Número de documento"
+                                                    style={{
+                                                        padding: '15px',
+                                                        borderRadius: '0 5px 5px 0',
+                                                        border: '1px solid #e0e0e0',
+                                                        fontSize: '16px',
+                                                        flex: 1
+                                                    }}
+                                                />
+                                            </div>
+                                        </div>
+
+                                        <div className="col-lg-12 mb-3">
+                                            <label style={{
+                                                color: 'var(--thm-black)',
+                                                fontWeight: '600',
+                                                marginBottom: '10px',
+                                                display: 'block'
+                                            }}>
+                                                Empresa <span style={{ color: '#838a93', fontWeight: 'normal', fontSize: '14px' }}>(Opcional)</span>
+                                            </label>
+                                            <input
+                                                type="text"
+                                                className="form-control"
+                                                value={company}
+                                                onChange={(e) => setCompany(e.target.value)}
+                                                placeholder="Ej: Mi Empresa S.A.S"
+                                                style={{
+                                                    padding: '15px',
+                                                    borderRadius: '5px',
+                                                    border: '1px solid #e0e0e0',
+                                                    fontSize: '16px'
+                                                }}
+                                            />
+                                        </div>
+
                                         <div className="col-lg-12 mb-4">
                                             <SignatureCanvas
                                                 onSignatureChange={setSignature}
@@ -481,10 +580,10 @@ const ConsultarContratoPage = () => {
                                                 type="button"
                                                 className="thm-btn"
                                                 onClick={handleSignContract}
-                                                disabled={signing || !signature || !signedByName || !signedByEmail}
+                                                disabled={signing || !signature || !signedByName || !signedByEmail || !identityType || !identityNumber}
                                                 style={{
-                                                    opacity: (signing || !signature || !signedByName || !signedByEmail) ? 0.6 : 1,
-                                                    cursor: (signing || !signature || !signedByName || !signedByEmail) ? 'not-allowed' : 'pointer'
+                                                    opacity: (signing || !signature || !signedByName || !signedByEmail || !identityType || !identityNumber) ? 0.6 : 1,
+                                                    cursor: (signing || !signature || !signedByName || !signedByEmail || !identityType || !identityNumber) ? 'not-allowed' : 'pointer'
                                                 }}
                                             >
                                                 <span>{signing ? 'Firmando...' : 'Firmar Contrato'}</span>
