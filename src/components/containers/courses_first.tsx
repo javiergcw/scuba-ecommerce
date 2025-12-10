@@ -131,14 +131,14 @@ const CoursesFirst = () => {
             }}
           >
             {products.map((product) => (
-              <SwiperSlide key={product.id}>
+              <SwiperSlide key={product.sku}>
                 <div
                   className="course-one__single w-full flex flex-col justify-between"
                   style={{ height: "100%", minHeight: 520, background: "#fff" }}
                 >
                   <div className="course-one__image w-full">
                     <Link
-                      href={`/courses/${product.id}`}
+                      href={`/cursos/${product.sku}`}
                       className="course-one__cat"
                     >
                       {product.category_name}
@@ -169,7 +169,7 @@ const CoursesFirst = () => {
                           <span>Imagen no disponible</span>
                         </div>
                       )}
-                      <Link href={`/courses/${product.id}`}>
+                      <Link href={`/cursos/${product.sku}`}>
                         <i className="scubo-icon-plus-symbol"></i>
                       </Link>
                     </div>
@@ -180,7 +180,7 @@ const CoursesFirst = () => {
                     style={{ backgroundColor: "#fff" }}
                   >
                     <h3 className="text-base font-bold leading-tight text-center">
-                      <Link href={`/courses/${product.id}`}>{product.name}</Link>
+                      <Link href={`/cursos/${product.sku}`}>{product.name}</Link>
                     </h3>
                     <p className="text-sm text-gray-600 text-center mt-2">
                       {product.short_description || "Descripción no disponible"}
@@ -188,7 +188,7 @@ const CoursesFirst = () => {
                   </div>
 
                   <Link
-                    href={`/courses/${product.id}`}
+                    href={`/cursos/${product.sku}`}
                     className={`course-one__book-link block w-full text-center mt-auto py-2 transition-colors duration-200 hover:text-blue-500 ${isActive(
                       ROUTES.COURSES
                     )}`}

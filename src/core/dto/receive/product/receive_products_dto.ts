@@ -13,6 +13,7 @@ export interface CategoryDto {
 
 export interface ProductDto {
   id: string;
+  sku: string;
   name: string;
   short_description: string;
   long_description: string;

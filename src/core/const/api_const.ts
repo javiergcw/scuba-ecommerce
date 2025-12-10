@@ -1,15 +1,15 @@
 // Configuración de API
 export const API_CONFIG = {
   BASE_URL: process.env.NEXT_PUBLIC_API_URL || 'https://api.oceanoscuba.com.co',
-  LICENSE_KEY: process.env.NEXT_PUBLIC_LICENSE_KEY || '19289217e1caffd627fdaaca08ebd61d18ac1869b98df527803d972681917a3f',
+  LICENSE_KEY: process.env.NEXT_PUBLIC_LICENSE_KEY || 'bee0f6a4642a2864d688a660fe897dbfc74962704a69d52d2c7d33eaffe78554',
 } as const;
 
 export const API_ENDPOINTS = {
   // Productos - Obtener todos los productos públicos (a través de API Route para evitar CORS)
   PRODUCTS: '/api/products',
   
-  // Productos - Obtener producto por ID (a través de API Route para evitar CORS)
-  PRODUCT_BY_ID: (id: string) => `/api/products/${id}`,
+  // Productos - Obtener producto por SKU (a través de API Route para evitar CORS)
+  PRODUCT_BY_SKU: (sku: string) => `/api/products/${sku}`,
   
   // Órdenes - Información de producto
   ORDERS_PRODUCT_INFO: '/api/v2/orders/product-info',
@@ -25,4 +25,16 @@ export const API_ENDPOINTS = {
   
   // Zonas - Obtener zonas con banners (a través de API Route para evitar CORS)
   ZONES: '/api/zones',
+  
+  // Contratos - Descargar PDF de contrato por token
+  CONTRACT_PDF: (token: string) => `/api/contracts/${token}/pdf`,
+  
+  // Contratos - Obtener contrato por token (a través de API Route para evitar CORS)
+  CONTRACT_BY_TOKEN: (token: string) => `/api/contracts/${token}`,
+  
+  // Contratos - Obtener status del contrato por token
+  CONTRACT_STATUS: (token: string) => `/api/contracts/${token}/status`,
+  
+  // Contratos - Firmar contrato por token
+  CONTRACT_SIGN: (token: string) => `/api/contracts/${token}/sign`,
 } as const;

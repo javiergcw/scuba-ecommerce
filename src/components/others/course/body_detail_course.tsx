@@ -54,7 +54,7 @@ const BodyDetailCourse = ({
         
         // Redirigir a checkout después de un breve delay para mostrar el mensaje
         setTimeout(() => {
-            router.push('/checkout');
+            router.push('/finalizar-compra');
         }, 1000);
     };
 
@@ -191,7 +191,7 @@ const BodyDetailCourse = ({
                                 Comprar Curso
                             </button>
                             
-                            <a href="/contact" className="thm-btn course-details__btn">
+                            <a href="/contacto" className="thm-btn course-details__btn">
                                 Contactar para más detalles
                             </a>
                         </div>

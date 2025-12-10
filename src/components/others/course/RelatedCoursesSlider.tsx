@@ -76,7 +76,7 @@ export default function RelatedCoursesSlider({
         // PASO 2: Filtrar productos del backend que tengan las mismas subcategorías
         const related = allProducts.filter(product => {
           const productSubcategory = product.subcategory_name || 'General';
-          const isInCart = cartItems.some(cartItem => cartItem.id === product.id);
+          const isInCart = cartItems.some(cartItem => cartItem.id === product.sku);
           const hasMatchingSubcategory = uniqueCartSubcategories.includes(productSubcategory);
           
           // Solo incluir si tiene la misma subcategoría Y no está en el carrito
@@ -107,7 +107,7 @@ export default function RelatedCoursesSlider({
           // Mostrar productos que coinciden con las subcategorías pero están en el carrito
           const matchingButInCart = allProducts.filter(product => {
             const productSubcategory = product.subcategory_name || 'General';
-            const isInCart = cartItems.some(cartItem => cartItem.id === product.id.toString());
+            const isInCart = cartItems.some(cartItem => cartItem.id === product.sku);
             return uniqueCartSubcategories.includes(productSubcategory) && isInCart;
           });
           
@@ -146,7 +146,7 @@ export default function RelatedCoursesSlider({
 
   const handleAddToCart = (product: ProductDto) => {
     const courseItem = {
-      id: product.id,
+      id: product.sku,
       name: product.name,
       price: product.price,
       quantity: 1,
@@ -161,7 +161,7 @@ export default function RelatedCoursesSlider({
 
     // Redirigir a checkout después de un breve delay
     setTimeout(() => {
-      router.push('/checkout');
+      router.push('/finalizar-compra');
     }, 1000);
   };
 
@@ -256,13 +256,13 @@ export default function RelatedCoursesSlider({
               }}
             >
               {relatedProducts.map((product) => (
-                <SwiperSlide key={product.id}>
+                <SwiperSlide key={product.sku}>
                   <div
                     className="course-one__single w-full flex flex-col justify-between"
                     style={{ height: "100%", minHeight: 520, background: "#fff" }}
                   >
                     <div className="course-one__image w-full">
-                      <Link href={`/courses/${product.id}`} className="course-one__cat">
+                      <Link href={`/cursos/${product.sku}`} className="course-one__cat">
                         {product.subcategory_name || 'General'}
                       </Link>
                       <div className="course-one__image-inner w-full">
@@ -291,7 +291,7 @@ export default function RelatedCoursesSlider({
                             <span>Imagen no disponible</span>
                           </div>
                         )}
-                        <Link href={`/courses/${product.id}`}>
+                        <Link href={`/cursos/${product.sku}`}>
                           <i className="scubo-icon-plus-symbol"></i>
                         </Link>
                       </div>
@@ -302,7 +302,7 @@ export default function RelatedCoursesSlider({
                       style={{ backgroundColor: "#fff" }}
                     >
                       <h3 className="text-base font-bold leading-tight text-center">
-                        <Link href={`/courses/${product.id}`}>{product.name}</Link>
+                        <Link href={`/cursos/${product.sku}`}>{product.name}</Link>
                       </h3>
                       <p className="text-sm text-gray-600 text-center mt-2">
                         {product.short_description || "Descripción no disponible"}
@@ -311,7 +311,7 @@ export default function RelatedCoursesSlider({
 
                     <div className="flex flex-col gap-2 p-4" style={{ borderTop: "1px solid #f0f0f0" }}>
                       <Link
-                        href={`/courses/${product.id}`}
+                        href={`/cursos/${product.sku}`}
                         className="course-one__book-link block w-full text-center py-2 transition-colors duration-200 hover:text-blue-500"
                       >
                         Ver detalles
@@ -359,7 +359,7 @@ export default function RelatedCoursesSlider({
           </Typography>
           <Button
             variant="contained"
-            onClick={() => router.push('/courses')}
+            onClick={() => router.push('/cursos')}
             sx={{
               backgroundColor: '#ffd701',
               color: '#051b35',

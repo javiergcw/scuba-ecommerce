@@ -22,7 +22,7 @@ export default function FloatingCartButton() {
 
   const handleCheckout = () => {
     setIsOpen(false);
-    router.push('/checkout');
+    router.push('/finalizar-compra');
   };
 
   const formatPrice = (price: number) => {

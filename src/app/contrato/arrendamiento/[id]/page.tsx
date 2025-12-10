@@ -20,6 +20,7 @@ export default function ArrendamientoPage({ params, searchParams }: PageProps) {
   const [formData, setFormData] = useState<any>({});
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
+  const [downloadingPdf, setDownloadingPdf] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -105,6 +106,37 @@ export default function ArrendamientoPage({ params, searchParams }: PageProps) {
 
   };
 
+  const handleDownloadPdf = async () => {
+    if (!id) {
+      alert('No se ha cargado el ID del contrato');
+      return;
+    }
+
+    try {
+      setDownloadingPdf(true);
+      const response = await fetch(`/api/contracts/${id}/pdf`);
+      
+      if (!response.ok) {
+        throw new Error('Error al descargar el PDF');
+      }
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `contrato-alquiler-${id}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+    } catch (error) {
+      console.error('Error al descargar PDF:', error);
+      alert('Error al descargar el PDF. Por favor, intente nuevamente.');
+    } finally {
+      setDownloadingPdf(false);
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -182,6 +214,15 @@ export default function ArrendamientoPage({ params, searchParams }: PageProps) {
                 className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-8 transition-colors duration-200"
               >
                 Enviar Contrato
+              </button>
+              
+              <button
+                type="button"
+                onClick={handleDownloadPdf}
+                disabled={downloadingPdf}
+                className="bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white font-medium py-3 px-8 transition-colors duration-200"
+              >
+                {downloadingPdf ? 'Descargando...' : '📄 Descargar PDF'}
               </button>
               
               <button

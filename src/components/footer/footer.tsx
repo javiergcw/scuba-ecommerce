@@ -79,10 +79,10 @@ const Footer = () => {
                 <h3 className="footer-widget__title">Compañía</h3>
                 <ul className="footer-widget__links-list list-unstyled">
                   <li>
-                    <a href="/about-us">Sobre Nosotros</a>
+                    <a href="/sobre-nosotros">Sobre Nosotros</a>
                   </li>
                   <li>
-                    <a href="/contact">Contacto</a>
+                    <a href="/contacto">Contacto</a>
                   </li>
                 </ul>
               </div>
@@ -92,10 +92,10 @@ const Footer = () => {
                 <h3 className="footer-widget__title">Explora</h3>
                 <ul className="footer-widget__links-list list-unstyled">
                   <li>
-                    <a href="/courses">Ya soy buzo</a>
+                    <a href="/cursos">Ya soy buzo</a>
                   </li>
                   <li>
-                    <a href="/contact">Centro de Ayuda</a>
+                    <a href="/contacto">Centro de Ayuda</a>
                   </li>
                 </ul>
               </div>
@@ -105,13 +105,13 @@ const Footer = () => {
                 <h3 className="footer-widget__title">Enlaces</h3>
                 <ul className="footer-widget__links-list list-unstyled">
                   <li>
-                    <a href="/padi-document">Documento Padi</a>
+                    <a href="/documento-padi">Documento Padi</a>
                   </li>
                   <li>
-                    <a href="/privacy-policy">Política de Privacidad</a>
+                    <a href="/politica-privacidad">Política de Privacidad</a>
                   </li>
                   <li>
-                    <a href="/terms-conditions">Términos y Condiciones</a>
+                    <a href="/terminos-condiciones">Términos y Condiciones</a>
                   </li>
                 </ul>
               </div>

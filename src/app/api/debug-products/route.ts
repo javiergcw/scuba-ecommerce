@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { API_CONFIG } from '@/core/const/api_const';
 
 /**
- * Debug endpoint para verificar los productos y sus IDs
+ * Debug endpoint para verificar los productos y sus SKUs
  * Accede a: http://localhost:3000/api/debug-products
  */
 export async function GET() {
@@ -32,9 +32,10 @@ export async function GET() {
       totalProducts: data.data?.length || 0,
       products: data.data?.map((product: any) => ({
         id: product.id,
+        sku: product.sku,
         name: product.name,
-        detailUrl: `/courses/${product.id}`,
-        apiUrl: `/api/products/${product.id}`,
+        detailUrl: `/cursos/${product.sku}`,
+        apiUrl: `/api/products/${product.sku}`,
         category: product.category_name,
         subcategory: product.subcategory_name,
         price: product.price

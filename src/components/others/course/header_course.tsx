@@ -13,7 +13,7 @@ export const HeaderCourse = () => {
                 <div className="container">
                     <ul className="list-unstyled thm-breadcrumb">
                         <li><Link href="/">Home</Link></li>
-                        <li><Link href="/courses">Cursos</Link></li>
+                        <li><Link href="/cursos">Cursos</Link></li>
                         {selectedCategory && (
                             <li className="active"><a href="#">{selectedCategory}</a></li>
                         )}
