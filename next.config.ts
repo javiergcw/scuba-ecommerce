@@ -2,7 +2,24 @@
 const nextConfig = {
   reactStrictMode: true,
   images: {
-    domains: ['gateway.makerstech.co', 's3.makerstech.co'],
+    remotePatterns: [
+      {
+        protocol: 'http',
+        hostname: '154.38.181.22',
+        port: '9000',
+        pathname: '/oceanoscuba/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'gateway.makerstech.co',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 's3.makerstech.co',
+        pathname: '/**',
+      },
+    ],
   },
   env: {
     NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
