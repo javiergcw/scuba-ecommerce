@@ -3,7 +3,7 @@ export const CONTACT_INFO = {
   LOCATION: {
     LATITUDE: 11.2662911, // Ejemplo: Ciudad de México
     LONGITUDE: -74.1901212,
-    ADDRESS: "Carrera 2 # 17 - 46 Esquina, Taganga, Santa Marta, Magdalena",
+    ADDRESS: "Carrera 2 # 17 - 46 Esquina, Taganga, Santa Marta, Magdalena.",
   },
 
   // Información de contacto
