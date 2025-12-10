@@ -1,17 +1,15 @@
 export const ZONE_IDS = {
-  // Zona principal de playa con banners del home
-  ZONA_PLAYA: '9fbeb873-4161-4a88-af64-b88db5aaaf13',
   
   // Zona de "por qué nosotros"
-  ZONA_POR_QUE_NOSOTROS: '57d9aca3-943d-4a5a-b7c7-a19a24c47a50',
+  ZONA_POR_QUE_NOSOTROS: 'cc3452e1-bbb2-4d13-b405-ab86ad9bed24',
   
   // Zona de banner home
-  ZONA_BANNER_HOME: '3116ba90-be28-46ef-bebc-d3813fec899e',
+  ZONA_BANNER_HOME: 'a7155267-b5ab-4ea4-9f29-b7c0aa11bc74',
   
   // Zona de cómo bucear
-  ZONA_COMO_BUCEAR: 'c0d81392-1c43-4fd5-aa36-187e9a7b1c8f',
+  ZONA_COMO_BUCEAR: '3ac3c0a8-9906-46ab-978a-24fb13ad04d5',
   
   // Zona de testimonios
-  ZONA_TESTIMONIOS: '5b5714c6-1bcd-4be9-915a-7083671f5092',
+  ZONA_TESTIMONIOS: 'd5af7c8a-8b3e-4e7d-80fa-d052e9da0c18',
 } as const;
 

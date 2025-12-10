@@ -152,7 +152,7 @@ export default function CheckoutPage() {
         // Filtrar productos relacionados (misma categoría pero no en el carrito)
         const related = allProducts.filter(product => {
           const productCategory = product.category_name || 'General';
-          const isInCart = cartItems.some(cartItem => cartItem.id === product.id);
+          const isInCart = cartItems.some(cartItem => cartItem.id === product.sku);
           const isRelated = cartCategories.includes(productCategory) && !isInCart;
 
           return isRelated;
@@ -161,7 +161,7 @@ export default function CheckoutPage() {
         // Si no hay productos relacionados por categoría, mostrar productos aleatorios
         if (related.length === 0) {
           const randomProducts = allProducts
-            .filter(product => !cartItems.some(cartItem => cartItem.id === product.id))
+            .filter(product => !cartItems.some(cartItem => cartItem.id === product.sku))
             .sort(() => Math.random() - 0.5)
             .slice(0, 6);
           setRelatedProducts(randomProducts);
@@ -172,7 +172,6 @@ export default function CheckoutPage() {
       } catch (error) {
         console.error('❌ Error al cargar productos relacionados:', error);
         setRelatedProducts([]);
-      }
       } finally {
         setLoadingRelated(false);
       }
@@ -278,7 +277,7 @@ export default function CheckoutPage() {
 
   const handleAddToCart = (product: ProductDto) => {
     const courseItem = {
-      id: product.id,
+      id: product.sku,
       name: product.name,
       price: product.price,
       quantity: 1,
@@ -293,7 +292,7 @@ export default function CheckoutPage() {
 
     // Redirigir a checkout después de un breve delay
     setTimeout(() => {
-      router.push('/checkout');
+      router.push('/finalizar-compra');
     }, 1000);
   };
 
@@ -1355,7 +1354,7 @@ export default function CheckoutPage() {
             <Button
               variant="contained"
               size="large"
-              onClick={() => router.push('/courses')}
+              onClick={() => router.push('/cursos')}
               sx={{
                 backgroundColor: '#ffd701',
                 color: '#051b35',
@@ -1607,13 +1606,13 @@ export default function CheckoutPage() {
                   }}
                 >
                   {relatedProducts.map((product) => (
-                    <SwiperSlide key={product.id}>
+                    <SwiperSlide key={product.sku}>
                       <div
                         className="course-one__single w-full flex flex-col justify-between"
                         style={{ height: "100%", minHeight: 520, background: "#fff" }}
                       >
                         <div className="course-one__image w-full">
-                          <Link href={`/courses/${product.id}`} className="course-one__cat">
+                          <Link href={`/cursos/${product.sku}`} className="course-one__cat">
                             {product.category_name}
                           </Link>
                           <div className="course-one__image-inner w-full">
@@ -1642,7 +1641,7 @@ export default function CheckoutPage() {
                                 <span>Imagen no disponible</span>
                               </div>
                             )}
-                            <Link href={`/courses/${product.id}`}>
+                            <Link href={`/cursos/${product.sku}`}>
                               <i className="scubo-icon-plus-symbol"></i>
                             </Link>
                           </div>
@@ -1653,7 +1652,7 @@ export default function CheckoutPage() {
                           style={{ backgroundColor: "#fff" }}
                         >
                           <h3 className="text-base font-bold leading-tight text-center">
-                            <Link href={`/courses/${product.id}`}>{product.name}</Link>
+                            <Link href={`/cursos/${product.sku}`}>{product.name}</Link>
                           </h3>
                           <p className="text-sm text-gray-600 text-center mt-2">
                             {product.short_description || "Descripción no disponible"}
@@ -1692,7 +1691,7 @@ export default function CheckoutPage() {
                 </Typography>
                 <Button
                   variant="contained"
-                  onClick={() => router.push('/courses')}
+                  onClick={() => router.push('/cursos')}
                   sx={{
                     mt: 2,
                     backgroundColor: '#ffd701',

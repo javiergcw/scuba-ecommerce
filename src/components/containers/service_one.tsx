@@ -35,7 +35,7 @@ const ServiceOne = () => {
             <div className="service-one__single">
               <i className="scubo-icon-scuba-diving"></i>
               <h3>
-                <a href="courses.html">
+                <a href="/cursos">
                   Bucear en el <br />
                   Parque Tayrona
                 </a>
@@ -51,7 +51,7 @@ const ServiceOne = () => {
             <div className="service-one__single">
               <i className="scubo-icon-aqualung"></i>
               <h3>
-                <a href="courses.html">
+                <a href="/cursos">
                   Entrenamiento <br /> Recreativo
                 </a>
               </h3>
@@ -66,7 +66,7 @@ const ServiceOne = () => {
             <div className="service-one__single">
               <i className="scubo-icon-swimming"></i>
               <h3>
-                <a href="courses.html">
+                <a href="/cursos">
                   Entrenamiento <br /> Profesional
                 </a>
               </h3>

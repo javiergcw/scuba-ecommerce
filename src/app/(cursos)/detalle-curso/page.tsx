@@ -17,14 +17,14 @@ const CourseDetailPage = () => {
         const fetchCourse = async () => {
             try {
                 setLoading(true);
-                console.log('🔍 Buscando curso con ID:', id);
-                const courseData = await ProductService.getProductById(id as string);
+                console.log('🔍 Buscando curso con SKU:', id);
+                const courseData = await ProductService.getProductBySku(id as string);
                 if (courseData) {
                     console.log('✅ Curso encontrado:', courseData.name);
                     setCourse(courseData);
                     setError(null);
                 } else {
-                    console.error('❌ Curso no encontrado con ID:', id);
+                    console.error('❌ Curso no encontrado con SKU:', id);
                     setError('Curso no encontrado');
                 }
             } catch (err) {
@@ -73,7 +73,7 @@ const CourseDetailPage = () => {
                 </Typography>
                 <Button 
                     variant="contained" 
-                    onClick={() => window.location.href = '/courses'}
+                    onClick={() => window.location.href = '/cursos'}
                     sx={{
                         backgroundColor: '#87CEEB',
                         '&:hover': { backgroundColor: '#6ab5d8' }
@@ -102,8 +102,8 @@ const CourseDetailPage = () => {
     return (
         <>
             <HeaderDetailCourse 
-                category={course.category_name} 
-                courseName={course.name} 
+                category={course.subcategory_name || course.category_name}
+                courseName={course.name}
             />
             <BodyDetailCourse {...courseDetailData} />
         </>

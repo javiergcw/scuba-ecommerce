@@ -1,12 +1,13 @@
 import { NextResponse } from 'next/server';
+import { API_CONFIG } from '@/core/const/api_const';
 
 export async function GET() {
   try {
-    const response = await fetch('https://api.oceanoscuba.com.co/api/v1/public/zones', {
+    const response = await fetch(`${API_CONFIG.BASE_URL}/api/v1/public/zones`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        'X-License-Key': '5cef21be9f78ab3844598129e69f14f8f8b4a23e9dcce403a69b6e3e85d1a673'
+        'X-License-Key': API_CONFIG.LICENSE_KEY
       },
       cache: 'no-store' // Para que no cachee y siempre obtenga datos frescos
     });

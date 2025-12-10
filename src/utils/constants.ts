@@ -30,10 +30,11 @@ export const CONTACT_INFO = {
 
 export const ROUTES = {
   HOME: "/",
-  ABOUT: "/about-us",
-  COURSES: "/courses",
-  CONTACT: "/contact",
-  TRACKING: "/tracking",
+  ABOUT: "/sobre-nosotros",
+  COURSES: "/cursos",
+  CONTACT: "/contacto",
+  TRACKING: "/seguimiento",
+  CHECKOUT: "/finalizar-compra",
   LOGIN: "https://panelscuba.makerstech.co/",
   LOCATION: "https://maps.app.goo.gl/H894i4a2vrtyvnDZ6",
 } as const;

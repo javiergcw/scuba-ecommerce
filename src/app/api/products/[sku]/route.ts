@@ -1,21 +1,24 @@
 import { NextResponse } from 'next/server';
+import { API_CONFIG } from '@/core/const/api_const';
 
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ sku: string }> }
 ) {
   try {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://api.oceanoscuba.com.co';
-    const licenseKey = process.env.NEXT_PUBLIC_LICENSE_KEY || '5cef21be9f78ab3844598129e69f14f8f8b4a23e9dcce403a69b6e3e85d1a673';
-    
-    const fullUrl = `${apiUrl}/api/v1/public/products/${params.id}`;
-    console.log('🔍 Intentando obtener producto:', fullUrl);
+    const { sku } = await params;
+    // Usar el SKU directamente sin codificar
+    // Los guiones y caracteres alfanuméricos son seguros en URLs
+    const fullUrl = `${API_CONFIG.BASE_URL}/api/v1/public/products/sku/${sku}`;
+    console.log('🔍 Intentando obtener producto por SKU:', fullUrl);
+    console.log('🔑 Licencia Key:', API_CONFIG.LICENSE_KEY.substring(0, 20) + '...');
+    console.log('📋 SKU recibido:', sku);
     
     const response = await fetch(fullUrl, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        'X-License-Key': licenseKey
+        'X-License-Key': API_CONFIG.LICENSE_KEY
       },
       cache: 'no-store'
     });
@@ -33,6 +36,7 @@ export async function GET(
 
     const data = await response.json();
     console.log('✅ Producto obtenido exitosamente');
+    console.log('📦 Datos recibidos:', JSON.stringify(data).substring(0, 200));
     return NextResponse.json(data);
   } catch (error) {
     console.error('❌ Error en API route de producto:', error);
