@@ -5,7 +5,6 @@ import { ProductFeatures } from 'monolite-saas';
 import { useCart } from '@/context/CartContext';
 import { useRouter } from 'next/navigation';
 import { Snackbar, Alert } from '@mui/material';
-import { getProxiedImageUrl } from '@/utils/imageProxy';
 
 interface CourseDetailProps {
     image: string;
@@ -81,7 +80,7 @@ const BodyDetailCourse = ({
                             overflow: 'hidden'
                         }}>
                             <img 
-                                src={getProxiedImageUrl(image)} 
+                                src={image} 
                                 alt={title} 
                                 style={{
                                     width: '100%',

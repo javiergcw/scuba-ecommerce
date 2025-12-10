@@ -4,7 +4,6 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay, Pagination } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/pagination';
-import { getProxiedImageUrl } from '@/utils/imageProxy';
 
 interface TestimonialProps {
     title?: string;
@@ -136,7 +135,7 @@ const FirstTestimonials: React.FC<FirstTestimonialsProps> = ({
                                                 <div className="testimonials-one__image">
                                                     <div className="testimonials-one__image-inner">
                                                         <img 
-                                                            src={getProxiedImageUrl(testimonial.web_banner_url)} 
+                                                            src={testimonial.web_banner_url} 
                                                             alt={testimonial.title}
                                                             style={{
                                                                 width: '50px',

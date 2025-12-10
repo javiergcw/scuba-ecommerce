@@ -4,7 +4,6 @@ import React from "react";
 import { usePathname } from "next/navigation";
 import { ROUTES } from "@/utils/constants";
 import Link from "next/link";
-import { getProxiedImageUrl } from "@/utils/imageProxy";
 
 interface HowToDiveProps {
   title?: string;
@@ -70,7 +69,7 @@ const HowToDive: React.FC<HowToDiveProps> = ({
           <div className="w-full lg:w-1/2">
             <div className="relative">
               <img 
-                src={getProxiedImageUrl(web_banner_url)} 
+                src={web_banner_url} 
                 alt="" 
                 className="w-full h-auto object-cover"
               />

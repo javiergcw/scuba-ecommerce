@@ -13,7 +13,6 @@ import { ROUTES } from "@/utils/constants";
 import Link from "next/link";
 import { Banner } from 'monolite-saas';
 import { BannerDto } from '@/core/dto/receive/zone/receive_zones_dto';
-import { getProxiedImageUrl } from '@/utils/imageProxy';
 import {
   Box,
   Typography,
@@ -93,8 +92,7 @@ const SliderOne: React.FC<SliderOneProps> = ({ banners }) => {
         >
           {banners.map((banner, index) => {
             const isBannerDto = 'image_url' in banner;
-            const rawImageUrl = isBannerDto ? (banner as BannerDto).image_url : (banner as Banner).web_banner_url;
-            const imageUrl = getProxiedImageUrl(rawImageUrl);
+            const imageUrl = isBannerDto ? (banner as BannerDto).image_url : (banner as Banner).web_banner_url;
             const linkUrl = isBannerDto ? (banner as BannerDto).link_url : (banner as Banner).redirect_url;
             const subtitle = isBannerDto ? (banner as BannerDto).subtitles : (banner as Banner).subtitle;
             const bannerId = banner.id || `banner-${index}`;

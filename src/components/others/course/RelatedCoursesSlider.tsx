@@ -13,7 +13,6 @@ import Link from "next/link";
 import SwiperNavigationButtons from "@/components/containers/SwiperNavigationButtons";
 import { ProductService } from '@/core/service/product/product_service';
 import { ProductDto } from '@/core/dto/receive/product/receive_products_dto';
-import { getProxiedImageUrl } from '@/utils/imageProxy';
 
 interface RelatedCoursesSliderProps {
   title?: string;
@@ -269,7 +268,7 @@ export default function RelatedCoursesSlider({
                       <div className="course-one__image-inner w-full">
                         {product.photo ? (
                           <img
-                            src={getProxiedImageUrl(product.photo)}
+                            src={product.photo}
                             alt={product.name}
                             style={{
                               width: "100%",

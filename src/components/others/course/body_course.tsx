@@ -1,7 +1,6 @@
 import React from 'react'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation';
-import { getProxiedImageUrl } from '@/utils/imageProxy';
 
 interface Course {
     id: string
@@ -119,7 +118,7 @@ export const BodyCourse = ({ courses }: BodyCourseProps) => {
                                             <div className="course-one__image-inner w-full">
                                                 {course.image ? (
                                                     <img
-                                                        src={getProxiedImageUrl(course.image)}
+                                                        src={course.image}
                                                         alt={course.title}
                                                         style={{
                                                             width: "100%",

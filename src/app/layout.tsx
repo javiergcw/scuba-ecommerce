@@ -34,8 +34,8 @@ export default function RootLayout({
   return (
     <html lang="es">
       <head>
-        {/* Meta tag para permitir mixed content (HTTP en HTTPS) - NO usar upgrade-insecure-requests */}
-        <meta httpEquiv="Content-Security-Policy" content="img-src 'self' data: http://154.38.181.22:9000 https://gateway.makerstech.co https://s3.makerstech.co https: http: blob:; default-src 'self' https:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https:; style-src 'self' 'unsafe-inline' https:;" />
+        {/* Meta tag para permitir imágenes desde el servidor de almacenamiento */}
+        <meta httpEquiv="Content-Security-Policy" content="img-src 'self' data: http://154.38.181.22:9000 https://gateway.makerstech.co https://s3.makerstech.co https: http: blob:;" />
         {/* Bootstrap Icons CSS */}
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
 
