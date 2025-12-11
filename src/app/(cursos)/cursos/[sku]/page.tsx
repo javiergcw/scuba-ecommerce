@@ -9,7 +9,7 @@ import { ProductDto } from '@/core/dto/receive/product/receive_products_dto';
 
 const CourseDetailPage = () => {
     const params = useParams();
-    const skuParam = params?.sku;   
+    const skuParam = params?.sku;
     const [course, setCourse] = useState<ProductDto | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -35,7 +35,7 @@ const CourseDetailPage = () => {
             try {
                 setLoading(true);
                 setError(null);
-                
+
                 // El SKU ya viene sin codificar de Next.js, usarlo directamente
                 // Solo decodificar si es necesario (evitar errores si ya está decodificado)
                 let decodedSku = skuValue;
@@ -48,13 +48,13 @@ const CourseDetailPage = () => {
                     // Si falla la decodificación, usar el valor original
                     decodedSku = skuValue;
                 }
-                
+
                 console.log('🔍 Buscando curso con SKU:', decodedSku);
                 console.log('📋 SKU original (params):', skuParam);
                 console.log('📋 SKU procesado:', skuValue);
-                
+
                 const courseData = await ProductService.getProductBySku(decodedSku);
-                
+
                 if (courseData) {
                     console.log('✅ Curso encontrado:', courseData.name);
                     console.log('📦 Datos del curso:', {
@@ -85,7 +85,7 @@ const CourseDetailPage = () => {
 
     if (loading) {
         return (
-            <Box sx={{ 
+            <Box sx={{
                 width: '100%',
                 height: '100vh',
                 display: 'flex',
@@ -99,7 +99,7 @@ const CourseDetailPage = () => {
 
     if (error || (!course && !loading)) {
         return (
-            <Box sx={{ 
+            <Box sx={{
                 width: '100%',
                 minHeight: '50vh',
                 display: 'flex',
@@ -114,8 +114,8 @@ const CourseDetailPage = () => {
                 <Typography variant="body1" sx={{ mb: 3, color: '#666', textAlign: 'center', maxWidth: '600px' }}>
                     {error || 'El curso que buscas no existe o ha sido eliminado.'}
                 </Typography>
-                <Button 
-                    variant="contained" 
+                <Button
+                    variant="contained"
                     onClick={() => {
                         // Usar router en lugar de window.location para evitar recargas completas
                         window.location.href = '/cursos';
@@ -152,9 +152,9 @@ const CourseDetailPage = () => {
 
     return (
         <>
-            <HeaderDetailCourse 
-                category={course.category_name} 
-                courseName={course.name} 
+            <HeaderDetailCourse
+                category={course.category_name}
+                courseName={course.name}
             />
             <BodyDetailCourse {...courseDetailData} />
         </>

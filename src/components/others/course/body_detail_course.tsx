@@ -5,7 +5,7 @@ import { ProductFeatures } from 'monolite-saas';
 import { useCart } from '@/context/CartContext';
 import { useRouter } from 'next/navigation';
 import { Snackbar, Alert } from '@mui/material';
-
+import { Box, Typography } from "@mui/material";
 interface CourseDetailProps {
     image: string;
     price: number;
@@ -51,7 +51,7 @@ const BodyDetailCourse = ({
 
         addToCart(courseItem);
         setShowSuccess(true);
-        
+
         // Redirigir a checkout después de un breve delay para mostrar el mensaje
         setTimeout(() => {
             router.push('/finalizar-compra');
@@ -66,7 +66,7 @@ const BodyDetailCourse = ({
         <div>
             <section className="course-details">
                 <div className="container">
-                    <div className="course-details__image" style={{ 
+                    <div className="course-details__image" style={{
                         position: 'relative',
                         width: '100%',
                         height: '500px'
@@ -79,9 +79,9 @@ const BodyDetailCourse = ({
                             height: '100%',
                             overflow: 'hidden'
                         }}>
-                            <img 
-                                src={image} 
-                                alt={title} 
+                            <img
+                                src={image}
+                                alt={title}
                                 style={{
                                     width: '100%',
                                     height: '100%',
@@ -90,48 +90,161 @@ const BodyDetailCourse = ({
                                 }}
                             />
                         </div>
+                        <Box
+                            sx={{
+                                position: "absolute",
+                                zIndex: 10,
+                                maxWidth: { xs: "100%", md: 700 },
+                                width: "100%",
+                                display: "flex",
+                                height: { xs: 110, sm: 130, md: 150 },
+                                top: { xs: 500, md: 400 },
+                                right: 0,
+                            }}
+                        >
+                            {/* BARRA VERTICAL (DETAIL) */}
+                            <Box
+                                sx={{
+                                    width: { xs: 55, sm: 70, md: 90 },
+                                    backgroundColor: "#05142A",
+                                    color: "white",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    writingMode: "vertical-rl",
+                                    textOrientation: "upright",
+                                    letterSpacing: { xs: 3, sm: 5, md: 6 },
+                                    fontWeight: 700,
+                                    fontSize: { xs: "0.65rem", sm: "0.75rem", md: "0.9rem" },
+                                    textTransform: "uppercase",
+                                }}
+                            >
+                                Detail
+                            </Box>
 
-                        <div className="course-details__infos wow fadeInRight" data-wow-duration="1500ms" style={{
-                            position: 'absolute',
-                            zIndex: 1,
-                            maxWidth: '680px',
-                            width: '75%',
-                            paddingLeft: '70px',
-                            paddingRight: '70px'
-                        }}>
-                            <div className="course-details__infos-title">Detail</div>
-                            <div className="course-details__infos-single" style={{ marginLeft: '-20px', paddingLeft: '0' }}>
-                                <div style={{ display: 'flex', alignItems: 'flex-start', flexDirection: 'column' }}>
-                                    <span style={{ display: 'flex', alignItems: 'baseline', gap: '8px' }}>
-                                        {price && price > 0 
-                                            ? (
-                                                <>
-                                                    <span style={{ fontSize: '50px', fontWeight: 300, lineHeight: '1em', color: 'var(--thm-black)' }}>${Math.round(price)}</span>
-                                                    <span style={{ fontSize: '24px', fontWeight: 500, color: 'var(--thm-black)', opacity: 0.8 }}>USD</span>
-                                                </>
-                                            )
-                                            : 'Consultar'}
-                                    </span>
-                                </div>
-                                <p>Course <br />price</p>
-                            </div>
-                            <div className="course-details__infos-single">
-                                <span>{numberOfDives}</span>
-                                <p>Dives <br />
-                                    only</p>
-                            </div>
-                            <div className="course-details__infos-single">
-                                <span>{courseDuration}</span>
-                                <p>day <br /> course</p>
-                            </div>
-                        </div>
+                            {/* CONTENEDOR AMARILLO */}
+                            <Box
+                                sx={{
+                                    flex: 1,
+                                    backgroundColor: "rgb(255, 215, 1)",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "space-around",
+                                    px: { xs: 1.5, sm: 2.5, md: 4 },
+                                }}
+                            >
+                                {/* PRECIO */}
+                                <Box sx={{ textAlign: "center" }}>
+                                    <Box sx={{ display: "flex", alignItems: "baseline", gap: { xs: 0.5, sm: 1 } }}>
+                                        {price && price > 0 ? (
+                                            <>
+                                                <Typography
+                                                    sx={{
+                                                        fontSize: { xs: "1.8rem", sm: "2.2rem", md: "2.8rem" },
+                                                        fontWeight: 300,
+                                                        lineHeight: 1,
+                                                        color: "#0D1B2A",
+                                                    }}
+                                                >
+                                                    ${Math.round(price)}
+                                                </Typography>
+
+                                                <Typography
+                                                    sx={{
+                                                        fontSize: { xs: "0.9rem", sm: "1.1rem", md: "1.4rem" },
+                                                        fontWeight: 700,
+                                                        color: "#0D1B2A",
+                                                    }}
+                                                >
+                                                    USD
+                                                </Typography>
+                                            </>
+                                        ) : (
+                                            <Typography
+                                                sx={{
+                                                    fontSize: { xs: "1.6rem", sm: "1.8rem", md: "2.2rem" },
+                                                    fontWeight: 700,
+                                                    color: "#0D1B2A",
+                                                }}
+                                            >
+                                                Consultar
+                                            </Typography>
+                                        )}
+                                    </Box>
+
+                                    <Typography
+                                        sx={{
+                                            fontSize: { xs: "0.6rem", sm: "0.75rem", md: "0.8rem" },
+                                            color: "#0D1B2A",
+                                            opacity: 0.85,
+                                            mt: 0.5,
+                                            textTransform: "uppercase",
+                                            fontWeight: 600,
+                                        }}
+                                    >
+                                        Course price
+                                    </Typography>
+                                </Box>
+
+                                {/* DIVES */}
+                                <Box sx={{ textAlign: "center" }}>
+                                    <Typography
+                                        sx={{
+                                            fontSize: { xs: "1.5rem", sm: "1.7rem", md: "2rem" },
+                                            fontWeight: 700,
+                                            color: "#0D1B2A",
+                                        }}
+                                    >
+                                        {numberOfDives ?? "—"}
+                                    </Typography>
+
+                                    <Typography
+                                        sx={{
+                                            fontSize: { xs: "0.6rem", sm: "0.75rem", md: "0.8rem" },
+                                            color: "#0D1B2A",
+                                            opacity: 0.85,
+                                            textTransform: "uppercase",
+                                            fontWeight: 600,
+                                        }}
+                                    >
+                                        Dives only
+                                    </Typography>
+                                </Box>
+
+                                {/* COURSE DURATION */}
+                                <Box sx={{ textAlign: "center" }}>
+                                    <Typography
+                                        sx={{
+                                            fontSize: { xs: "1.5rem", sm: "1.7rem", md: "2rem" },
+                                            fontWeight: 700,
+                                            color: "#0D1B2A",
+                                        }}
+                                    >
+                                        {courseDuration ?? "—"}
+                                    </Typography>
+
+                                    <Typography
+                                        sx={{
+                                            fontSize: { xs: "0.6rem", sm: "0.75rem", md: "0.8rem" },
+                                            color: "#0D1B2A",
+                                            opacity: 0.85,
+                                            textTransform: "uppercase",
+                                            fontWeight: 600,
+                                        }}
+                                    >
+                                        Day course
+                                    </Typography>
+                                </Box>
+                            </Box>
+                        </Box>
+
                     </div>
                     <div className="course-details__content">
-                        <br/>
-                        <div 
-                            dangerouslySetInnerHTML={{ 
+                        <br />
+                        <div
+                            dangerouslySetInnerHTML={{
                                 __html: description.replace(/\n/g, '<br/>').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-                            }} 
+                            }}
                             style={{
                                 lineHeight: '1.8',
                                 fontSize: '16px',
@@ -142,7 +255,7 @@ const BodyDetailCourse = ({
                         {tips && tips !== additionalInfo && tips !== description && (
                             <div style={{ marginTop: '30px' }}>
                                 <h4 style={{ marginBottom: '15px', color: '#051b35' }}>Información Adicional</h4>
-                                <p style={{ 
+                                <p style={{
                                     lineHeight: '1.8',
                                     fontSize: '16px',
                                     color: '#666',
@@ -153,10 +266,10 @@ const BodyDetailCourse = ({
                         {additionalInfo && additionalInfo !== description && additionalInfo !== tips && (
                             <div style={{ marginTop: '30px' }}>
                                 <h4 style={{ marginBottom: '15px', color: '#051b35' }}>Detalles del Curso</h4>
-                                <div 
-                                    dangerouslySetInnerHTML={{ 
+                                <div
+                                    dangerouslySetInnerHTML={{
                                         __html: additionalInfo.replace(/\n/g, '<br/>').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-                                    }} 
+                                    }}
                                     style={{
                                         lineHeight: '1.8',
                                         fontSize: '16px',
@@ -178,10 +291,10 @@ const BodyDetailCourse = ({
                         )}
 
                         <div style={{ display: 'flex', gap: '15px', marginTop: '20px', flexWrap: 'wrap' }}>
-                            <button 
+                            <button
                                 className="thm-btn course-details__btn"
                                 onClick={handleAddToCart}
-                                style={{ 
+                                style={{
                                     backgroundColor: '#1976d2',
                                     color: 'white',
                                     border: 'none',
@@ -190,7 +303,7 @@ const BodyDetailCourse = ({
                             >
                                 Comprar Curso
                             </button>
-                            
+
                             <a href="/contacto" className="thm-btn course-details__btn">
                                 Contactar para más detalles
                             </a>
@@ -206,9 +319,9 @@ const BodyDetailCourse = ({
                 onClose={handleCloseSuccess}
                 anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
             >
-                <Alert 
-                    onClose={handleCloseSuccess} 
-                    severity="success" 
+                <Alert
+                    onClose={handleCloseSuccess}
+                    severity="success"
                     sx={{ width: '100%' }}
                 >
                     ¡Curso agregado al carrito! Redirigiendo al checkout...
