@@ -2,7 +2,7 @@
 const nextConfig = {
   reactStrictMode: true,
   images: {
-    domains: ['gateway.makerstech.co', 's3.makerstech.co', '154.38.181.22'],
+    domains: ['gateway.makerstech.co', 's3.makerstech.co', '154.38.181.22', 's3.oceanoscuba.com.co'],
     remotePatterns: [
       {
         protocol: 'http',
@@ -18,6 +18,11 @@ const nextConfig = {
       {
         protocol: 'https',
         hostname: 's3.makerstech.co',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 's3.oceanoscuba.com.co',
         pathname: '/**',
       },
     ],
