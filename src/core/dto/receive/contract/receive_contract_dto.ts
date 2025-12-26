@@ -1,3 +1,11 @@
+export interface ContractField {
+  name: string;
+  label?: string;
+  type?: string;
+  required?: boolean;
+  options?: string[];
+}
+
 export interface ContractDto {
   code: string;
   sku: string;
@@ -8,6 +16,8 @@ export interface ContractDto {
   signed_by_email?: string;
   signed_at?: string;
   template_name: string;
+  required_fields?: ContractField[];
+  fields?: ContractField[];
 }
 
 export interface ReceiveContractDto {

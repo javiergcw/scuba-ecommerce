@@ -12,7 +12,7 @@ const ContactPage = () => {
                 <TopbarContact />
                 <ContactOne />
                 <CtoOneContact />
-                <GoogleMapsContact />   
+                <GoogleMapsContact />
             </div>
         </div>
     )

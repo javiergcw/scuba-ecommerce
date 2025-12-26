@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { ContractService } from '@/core/service/contract/contract_service';
-import { ContractDto, ContractStatusDto } from '@/core/dto/receive/contract/receive_contract_dto';
+import { ContractDto, ContractStatusDto, ContractField } from '@/core/dto/receive/contract/receive_contract_dto';
 import { SignatureCanvas } from '@/components/others/contract/SignatureCanvas';
 import { SendSignContractDto } from '@/core/dto/send/contract/send_sign_contract_dto';
 
@@ -20,13 +20,10 @@ const ConsultarContratoPage = () => {
     const [signSuccess, setSignSuccess] = useState(false);
     const [signError, setSignError] = useState<string | null>(null);
 
-    // Formulario de firma
+    // Formulario dinámico basado en los campos requeridos del contrato
+    const [formFields, setFormFields] = useState<Record<string, string>>({});
     const [signature, setSignature] = useState('');
-    const [signedByName, setSignedByName] = useState('');
-    const [signedByEmail, setSignedByEmail] = useState('');
-    const [identityType, setIdentityType] = useState('');
-    const [identityNumber, setIdentityNumber] = useState('');
-    const [company, setCompany] = useState('');
+    const [requiredFields, setRequiredFields] = useState<ContractField[]>([]);
 
     useEffect(() => {
         const fetchContract = async () => {
@@ -55,7 +52,193 @@ const ConsultarContratoPage = () => {
 
                 if (contractResponse && contractResponse.success && contractResponse.data) {
                     console.log('✅ Contrato encontrado:', contractResponse.data.code);
+                    console.log('📋 Datos completos del contrato:', JSON.stringify(contractResponse.data, null, 2));
+                    console.log('📋 Keys del objeto data:', Object.keys(contractResponse.data));
+                    
                     setContract(contractResponse.data);
+
+                    // Extraer campos requeridos del HTML del contrato
+                    // Buscar todas las variables entre % (ejemplo: %email%, %signer_name%, %general_info_first_name%)
+                    const htmlContent = contractResponse.data.html_snapshot || '';
+                    
+                    console.log('📄 HTML del contrato (primeros 1000 caracteres):', htmlContent.substring(0, 1000));
+                    
+                    // Patrón principal: buscar variables en formato %variable% (puede tener espacios alrededor)
+                    // Ejemplos: %variable%, % variable %, %variable %, % variable%
+                    const fieldPattern = /%\s*([a-zA-Z][a-zA-Z0-9_]*)\s*%/g;
+                    const foundFields = new Set<string>();
+                    
+                    // Buscar todas las ocurrencias
+                    let match;
+                    while ((match = fieldPattern.exec(htmlContent)) !== null) {
+                        if (match[1]) {
+                            foundFields.add(match[1]);
+                        }
+                    }
+                    
+                    // También buscar patrones alternativos si no se encontró nada
+                    if (foundFields.size === 0) {
+                        const alternativePatterns = [
+                            /\{\{([a-zA-Z][a-zA-Z0-9_]*)\}\}/g,      // {{variable}}
+                            /\$\{([a-zA-Z][a-zA-Z0-9_]*)\}/g,        // ${variable}
+                        ];
+                        
+                        alternativePatterns.forEach(pattern => {
+                            let altMatch;
+                            while ((altMatch = pattern.exec(htmlContent)) !== null) {
+                                if (altMatch[1]) {
+                                    foundFields.add(altMatch[1]);
+                                }
+                            }
+                        });
+                    }
+                    
+                    console.log('📋 Variables encontradas en el HTML del contrato:', Array.from(foundFields));
+                    console.log('📋 Total de variables encontradas:', foundFields.size);
+                    
+                    // Si no se encontraron variables, mostrar advertencia
+                    if (foundFields.size === 0) {
+                        console.warn('⚠️ No se encontraron variables en formato %variable% en el HTML del contrato');
+                        console.log('📄 HTML completo (últimos 2000 caracteres):', htmlContent.substring(Math.max(0, htmlContent.length - 2000)));
+                    }
+                    
+                    // Mapeo de nombres de campos a etiquetas y tipos
+                    const fieldMapping: Record<string, { label: string; type: string; options?: string[] }> = {
+                        // Campos básicos de firma
+                        'email': { label: 'Email', type: 'email' },
+                        'signer_name': { label: 'Nombre completo', type: 'text' },
+                        'identity_type': { label: 'Tipo de documento', type: 'select', options: ['CC', 'CE', 'NIT', 'PASSPORT'] },
+                        'identity_number': { label: 'Número de documento', type: 'text' },
+                        'company': { label: 'Empresa', type: 'text' },
+                        'signature': { label: 'Firma', type: 'signature' }, // Se maneja por separado
+                        
+                        // Información General
+                        'general_info_first_name': { label: 'Nombre', type: 'text' },
+                        'general_info_last_name': { label: 'Apellido', type: 'text' },
+                        'general_info_nationality': { label: 'Nacionalidad', type: 'text' },
+                        'general_info_document_type': { label: 'Tipo de documento', type: 'select', options: ['CC', 'CE', 'NIT', 'PASSPORT'] },
+                        'general_info_document_number': { label: 'Número de documento', type: 'text' },
+                        'general_info_email': { label: 'Correo electrónico', type: 'email' },
+                        'general_info_phone': { label: 'Celular / WhatsApp', type: 'tel' },
+                        'general_info_address': { label: 'Dirección principal', type: 'text' },
+                        'general_info_address_additional': { label: 'Información adicional', type: 'text' },
+                        'general_info_address_city': { label: 'Ciudad', type: 'text' },
+                        'general_info_address_state': { label: 'Estado / Departamento', type: 'text' },
+                        'general_info_address_zip_code': { label: 'Código postal', type: 'text' },
+                        'general_info_address_country': { label: 'País', type: 'text' },
+                        'general_info_birth_date': { label: 'Fecha de nacimiento', type: 'date' },
+                        'general_info_certification_level': { label: 'Nivel de certificación actual', type: 'text' },
+                        'general_info_dive_count': { label: 'Cantidad de buceos / Logbook dives', type: 'number' },
+                        'general_info_how_did_you_know': { label: 'Cómo supo de nosotros', type: 'text' },
+                        'general_info_accommodation': { label: 'Lugar de hospedaje', type: 'text' },
+                        'general_info_activity': { label: 'Actividad a tomar', type: 'text' },
+                        'general_info_activity_start_date': { label: 'Fecha de inicio de la actividad', type: 'date' },
+                        'general_info_height': { label: 'Estatura (cm)', type: 'number' },
+                        'general_info_weight': { label: 'Peso (kg)', type: 'number' },
+                        'general_info_shoe_size': { label: 'Talla de calzado', type: 'text' },
+                        'general_info_special_requirements': { label: 'Requerimientos especiales', type: 'text' },
+                        
+                        // Contacto de Emergencia
+                        'emergency_contact_first_name': { label: 'Contacto de emergencia - Nombre', type: 'text' },
+                        'emergency_contact_last_name': { label: 'Contacto de emergencia - Apellido', type: 'text' },
+                        'emergency_contact_phone': { label: 'Contacto de emergencia - Teléfono', type: 'tel' },
+                        'emergency_contact_email': { label: 'Contacto de emergencia - Correo electrónico', type: 'email' },
+                    };
+                    
+                    // Generar campos del formulario basados en las variables encontradas
+                    const fields: ContractField[] = Array.from(foundFields)
+                        .filter(fieldName => {
+                            // Excluir signature ya que se maneja por separado
+                            // También excluir campos que ya están prellenados en el contrato
+                            return fieldName !== 'signature';
+                        })
+                        .map(fieldName => {
+                            const mapping = fieldMapping[fieldName];
+                            
+                            // Si hay un mapeo definido, usarlo
+                            if (mapping) {
+                            return {
+                                name: fieldName,
+                                label: mapping.label,
+                                type: mapping.type,
+                                required: fieldName !== 'company', // company es opcional
+                                options: mapping.options
+                            };
+                            }
+                            
+                            // Si no hay mapeo, generar label a partir del nombre del campo
+                            let generatedLabel = fieldName
+                                .replace(/_/g, ' ')
+                                .replace(/general info /gi, '')
+                                .replace(/emergency contact /gi, 'Contacto de emergencia - ')
+                                .split(' ')
+                                .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                                .join(' ');
+                            
+                            // Mejorar las etiquetas para campos comunes
+                            if (generatedLabel.toLowerCase().includes('first name')) {
+                                generatedLabel = generatedLabel.replace(/first name/gi, 'Nombre');
+                            }
+                            if (generatedLabel.toLowerCase().includes('last name')) {
+                                generatedLabel = generatedLabel.replace(/last name/gi, 'Apellido');
+                            }
+                            
+                            // Determinar el tipo basado en el nombre del campo
+                            let type = 'text';
+                            if (fieldName.includes('email')) type = 'email';
+                            else if (fieldName.includes('date')) type = 'date';
+                            else if (fieldName.includes('phone') || fieldName.includes('telefono')) type = 'tel';
+                            else if (fieldName.includes('type') && (fieldName.includes('identity') || fieldName.includes('document'))) type = 'select';
+                            else if (fieldName.includes('count') || fieldName.includes('height') || fieldName.includes('weight')) type = 'number';
+                            
+                            return {
+                                name: fieldName,
+                                label: generatedLabel,
+                                type,
+                                required: true,
+                                options: (fieldName.includes('identity_type') || fieldName.includes('document_type')) 
+                                    ? ['CC', 'CE', 'NIT', 'PASSPORT'] 
+                                    : undefined
+                            };
+                        });
+                    
+                    // Ordenar campos para mejor UX: primero campos básicos, luego información general, luego contacto de emergencia
+                    const sortedFields = fields.sort((a, b) => {
+                        const order = ['signer_name', 'email', 'identity_type', 'identity_number', 'company'];
+                        const aIndex = order.indexOf(a.name);
+                        const bIndex = order.indexOf(b.name);
+                        
+                        if (aIndex !== -1 && bIndex !== -1) return aIndex - bIndex;
+                        if (aIndex !== -1) return -1;
+                        if (bIndex !== -1) return 1;
+                        
+                        // Ordenar por tipo: general_info primero, luego emergency_contact
+                        if (a.name.startsWith('general_info') && b.name.startsWith('emergency_contact')) return -1;
+                        if (a.name.startsWith('emergency_contact') && b.name.startsWith('general_info')) return 1;
+                        
+                        return a.name.localeCompare(b.name);
+                    });
+                    
+                    console.log('📝 Campos generados del HTML:', sortedFields);
+                    console.log('📋 Cantidad de campos:', sortedFields.length);
+                    
+                    // Si no hay campos definidos, usar campos mínimos por defecto
+                    const finalFields = sortedFields.length === 0 ? [
+                        { name: 'signer_name', label: 'Nombre completo', type: 'text', required: true },
+                        { name: 'email', label: 'Email', type: 'email', required: true },
+                        { name: 'identity_type', label: 'Tipo de documento', type: 'select', required: true, options: ['CC', 'CE', 'NIT', 'PASSPORT'] },
+                        { name: 'identity_number', label: 'Número de documento', type: 'text', required: true },
+                        { name: 'company', label: 'Empresa', type: 'text', required: false }
+                    ] : sortedFields;
+                    
+                    setRequiredFields(finalFields);
+                    
+                    // Inicializar formulario con los campos requeridos
+                    const initialFields: Record<string, string> = {};
+                    finalFields.forEach((field: ContractField) => {
+                        initialFields[field.name] = '';
+                    });
+                    setFormFields(initialFields);
 
                     // Consultar el status internamente
                     const statusResponse = await ContractService.getContractStatus(tokenValue);
@@ -79,17 +262,40 @@ const ConsultarContratoPage = () => {
         fetchContract();
     }, [tokenParam]);
 
+    const handleFieldChange = (fieldName: string, value: string) => {
+        setFormFields(prev => ({
+            ...prev,
+            [fieldName]: value
+        }));
+    };
+
     const handleSignContract = async () => {
-        if (!signature || !signedByName || !signedByEmail || !identityType || !identityNumber) {
-            setSignError('Por favor, completa todos los campos requeridos y proporciona una firma');
+        if (!signature) {
+            setSignError('Por favor, proporciona una firma');
             return;
         }
 
-        // Validar email
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(signedByEmail)) {
-            setSignError('Por favor, ingresa un email válido');
+        // Validar campos requeridos
+        const missingFields: string[] = [];
+        requiredFields.forEach((field: ContractField) => {
+            if (field.required !== false && !formFields[field.name]?.trim()) {
+                missingFields.push(field.label || field.name);
+            }
+        });
+
+        if (missingFields.length > 0) {
+            setSignError(`Por favor, completa los siguientes campos requeridos: ${missingFields.join(', ')}`);
             return;
+        }
+
+        // Validar email si existe el campo
+        if (formFields.email || formFields.general_info_email) {
+            const email = formFields.email || formFields.general_info_email;
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                setSignError('Por favor, ingresa un email válido');
+                return;
+            }
         }
 
         const tokenValue = Array.isArray(tokenParam)
@@ -108,16 +314,17 @@ const ConsultarContratoPage = () => {
             setSignError(null);
             setSignSuccess(false);
 
-            const signData: SendSignContractDto = {
-                fields: {
-                    email: signedByEmail,
-                    signer_name: signedByName,
-                    identity_type: identityType,
-                    identity_number: identityNumber,
-                    company: company || '',
-                    signature: signature
-                }
+            // Construir el objeto fields dinámicamente
+            const fields: Record<string, string> = {
+                ...formFields,
+                signature: signature
             };
+
+            const signData: SendSignContractDto = {
+                fields: fields
+            };
+
+            console.log('📤 Enviando datos de firma:', signData);
 
             const response = await ContractService.signContract(tokenValue, signData);
 
@@ -134,11 +341,11 @@ const ConsultarContratoPage = () => {
                 }
                 // Limpiar formulario
                 setSignature('');
-                setSignedByName('');
-                setSignedByEmail('');
-                setIdentityType('');
-                setIdentityNumber('');
-                setCompany('');
+                const initialFields: Record<string, string> = {};
+                requiredFields.forEach((field: ContractField) => {
+                    initialFields[field.name] = '';
+                });
+                setFormFields(initialFields);
             } else {
                 setSignError(response?.error || 'Error al firmar el contrato');
             }
@@ -148,6 +355,140 @@ const ConsultarContratoPage = () => {
         } finally {
             setSigning(false);
         }
+    };
+
+    const renderField = (field: ContractField) => {
+        const fieldValue = formFields[field.name] || '';
+        const isRequired = field.required !== false; // Por defecto requerido si no se especifica
+
+        // Campo especial para identity_type
+        if (field.name === 'identity_type') {
+            return (
+                <div key={field.name} className="col-lg-12 mb-3">
+                    <label style={{
+                        color: 'var(--thm-black)',
+                        fontWeight: '600',
+                        marginBottom: '10px',
+                        display: 'block'
+                    }}>
+                        {field.label || 'Documento de Identidad'} {isRequired && <span style={{ color: '#dc3545' }}>*</span>}
+                    </label>
+                    <div className="input-group" style={{ display: 'flex' }}>
+                        <select
+                            className="form-control"
+                            value={fieldValue}
+                            onChange={(e) => handleFieldChange(field.name, e.target.value)}
+                            required={isRequired}
+                            style={{
+                                padding: '15px',
+                                borderRadius: '5px 0 0 5px',
+                                border: '1px solid #e0e0e0',
+                                fontSize: '16px',
+                                backgroundColor: '#f8f9fa',
+                                maxWidth: '150px',
+                                borderRight: 'none'
+                            }}
+                        >
+                            <option value="">Tipo...</option>
+                            {(field.options || ['CC', 'CE', 'NIT', 'PASSPORT']).map((option) => (
+                                <option key={option} value={option}>
+                                    {option}
+                                </option>
+                            ))}
+                        </select>
+                        {/* Input para identity_number (siempre se muestra junto con identity_type) */}
+                        <input
+                            type="text"
+                            className="form-control"
+                            value={formFields['identity_number'] || ''}
+                            onChange={(e) => handleFieldChange('identity_number', e.target.value)}
+                            required={requiredFields.find(f => f.name === 'identity_number')?.required !== false}
+                            placeholder="Número de documento"
+                            style={{
+                                padding: '15px',
+                                borderRadius: '0 5px 5px 0',
+                                border: '1px solid #e0e0e0',
+                                fontSize: '16px',
+                                flex: 1
+                            }}
+                        />
+                    </div>
+                </div>
+            );
+        }
+
+        if (field.type === 'select' && field.options && field.options.length > 0) {
+            return (
+                <div key={field.name} className="col-lg-6 mb-3">
+                    <label style={{
+                        color: 'var(--thm-black)',
+                        fontWeight: '600',
+                        marginBottom: '10px',
+                        display: 'block'
+                    }}>
+                        {field.label || field.name} {isRequired && <span style={{ color: '#dc3545' }}>*</span>}
+                    </label>
+                    <select
+                        className="form-control"
+                        value={fieldValue}
+                        onChange={(e) => handleFieldChange(field.name, e.target.value)}
+                        required={isRequired}
+                        style={{
+                            padding: '15px',
+                            borderRadius: '5px',
+                            border: '1px solid #e0e0e0',
+                            fontSize: '16px'
+                        }}
+                    >
+                        <option value="">Seleccionar...</option>
+                        {field.options.map((option) => (
+                            <option key={option} value={option}>
+                                {option}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+            );
+        }
+
+        // Campos de tipo texto por defecto
+        let inputType = 'text';
+        if (field.name.includes('email') || field.type === 'email') {
+            inputType = 'email';
+        } else if (field.name.includes('date') || field.type === 'date') {
+            inputType = 'date';
+        } else if (field.name.includes('phone') || field.name.includes('telefono') || field.type === 'tel') {
+            inputType = 'tel';
+        } else if (field.type === 'number') {
+            inputType = 'number';
+        }
+
+        return (
+            <div key={field.name} className="col-lg-6 mb-3">
+                <label style={{
+                    color: 'var(--thm-black)',
+                    fontWeight: '600',
+                    marginBottom: '10px',
+                    display: 'block'
+                }}>
+                    {field.label || field.name} {isRequired && <span style={{ color: '#dc3545' }}>*</span>}
+                </label>
+                <input
+                    type={inputType}
+                    className="form-control"
+                    value={fieldValue}
+                    onChange={(e) => handleFieldChange(field.name, e.target.value)}
+                    required={isRequired}
+                    placeholder={`Ingrese ${field.label || field.name.toLowerCase()}`}
+                    style={{
+                        padding: '15px',
+                        borderRadius: '5px',
+                        border: '1px solid #e0e0e0',
+                        fontSize: '16px'
+                    }}
+                />
+            </div>
+        );
     };
 
     if (loading) {
@@ -226,6 +567,15 @@ const ConsultarContratoPage = () => {
     const isExpired = contractStatus?.expires_at
         ? new Date(contractStatus.expires_at) < new Date()
         : false;
+
+    // Validar si todos los campos requeridos están completos (excepto la firma)
+    const isFormValid = signature && requiredFields.every((field: ContractField) => {
+        if (field.required !== false) {
+            const value = formFields[field.name];
+            return value && String(value).trim().length > 0;
+        }
+        return true;
+    });
 
     return (
         <div className="page-wrapper">
@@ -448,128 +798,40 @@ const ConsultarContratoPage = () => {
                                     )}
 
                                     <div className="row">
-                                        <div className="col-lg-6 mb-3">
-                                            <label style={{
-                                                color: 'var(--thm-black)',
-                                                fontWeight: '600',
-                                                marginBottom: '10px',
-                                                display: 'block'
-                                            }}>
-                                                Nombre completo <span style={{ color: '#dc3545' }}>*</span>
-                                            </label>
-                                            <input
-                                                type="text"
-                                                className="form-control"
-                                                value={signedByName}
-                                                onChange={(e) => setSignedByName(e.target.value)}
-                                                required
-                                                style={{
-                                                    padding: '15px',
-                                                    borderRadius: '5px',
-                                                    border: '1px solid #e0e0e0',
-                                                    fontSize: '16px'
-                                                }}
-                                            />
-                                        </div>
-
-                                        <div className="col-lg-6 mb-3">
-                                            <label style={{
-                                                color: 'var(--thm-black)',
-                                                fontWeight: '600',
-                                                marginBottom: '10px',
-                                                display: 'block'
-                                            }}>
-                                                Email <span style={{ color: '#dc3545' }}>*</span>
-                                            </label>
-                                            <input
-                                                type="email"
-                                                className="form-control"
-                                                value={signedByEmail}
-                                                onChange={(e) => setSignedByEmail(e.target.value)}
-                                                required
-                                                style={{
-                                                    padding: '15px',
-                                                    borderRadius: '5px',
-                                                    border: '1px solid #e0e0e0',
-                                                    fontSize: '16px'
-                                                }}
-                                            />
-                                        </div>
-
-                                        <div className="col-lg-12 mb-3">
-                                            <label style={{
-                                                color: 'var(--thm-black)',
-                                                fontWeight: '600',
-                                                marginBottom: '10px',
-                                                display: 'block'
-                                            }}>
-                                                Documento de Identidad <span style={{ color: '#dc3545' }}>*</span>
-                                            </label>
-                                            <div className="input-group" style={{ display: 'flex' }}>
-                                                <select
-                                                    className="form-control"
-                                                    value={identityType}
-                                                    onChange={(e) => setIdentityType(e.target.value)}
-                                                    required
-                                                    style={{
-                                                        padding: '15px',
-                                                        borderRadius: '5px 0 0 5px',
-                                                        border: '1px solid #e0e0e0',
-                                                        fontSize: '16px',
-                                                        backgroundColor: '#f8f9fa',
-                                                        maxWidth: '150px',
-                                                        borderRight: 'none'
-                                                    }}
-                                                >
-                                                    <option value="">Tipo...</option>
-                                                    <option value="CC">CC</option>
-                                                    <option value="CE">CE</option>
-                                                    <option value="NIT">NIT</option>
-                                                    <option value="PASSPORT">Pasaporte</option>
-                                                </select>
-                                                <input
-                                                    type="text"
-                                                    className="form-control"
-                                                    value={identityNumber}
-                                                    onChange={(e) => setIdentityNumber(e.target.value)}
-                                                    required
-                                                    placeholder="Número de documento"
-                                                    style={{
-                                                        padding: '15px',
-                                                        borderRadius: '0 5px 5px 0',
-                                                        border: '1px solid #e0e0e0',
-                                                        fontSize: '16px',
-                                                        flex: 1
-                                                    }}
-                                                />
+                                        {/* Renderizar campos dinámicamente */}
+                                        {requiredFields.length > 0 ? (
+                                            requiredFields.map((field: ContractField) => {
+                                                // Si identity_type está siendo renderizado, saltar identity_number ya que se renderiza junto
+                                                if (field.name === 'identity_number' && requiredFields.find(f => f.name === 'identity_type')) {
+                                                    return null;
+                                                }
+                                                return renderField(field);
+                                            })
+                                        ) : (
+                                            <div className="col-lg-12 mb-3">
+                                                <div className="alert alert-info" style={{
+                                                    borderRadius: '10px',
+                                                    padding: '20px',
+                                                    background: 'rgba(59, 145, 225, 0.1)',
+                                                    border: '2px solid #3b91e1',
+                                                    color: '#3b91e1'
+                                                }}>
+                                                    <i className="fas fa-info-circle me-2"></i>
+                                                    No hay campos adicionales requeridos para este contrato.
+                                                </div>
                                             </div>
-                                        </div>
+                                        )}
 
-                                        <div className="col-lg-12 mb-3">
+                                        {/* Campo de firma (siempre requerido) */}
+                                        <div className="col-lg-12 mb-4">
                                             <label style={{
                                                 color: 'var(--thm-black)',
                                                 fontWeight: '600',
                                                 marginBottom: '10px',
                                                 display: 'block'
                                             }}>
-                                                Empresa <span style={{ color: '#838a93', fontWeight: 'normal', fontSize: '14px' }}>(Opcional)</span>
+                                                Firma <span style={{ color: '#dc3545' }}>*</span>
                                             </label>
-                                            <input
-                                                type="text"
-                                                className="form-control"
-                                                value={company}
-                                                onChange={(e) => setCompany(e.target.value)}
-                                                placeholder="Ej: Mi Empresa S.A.S"
-                                                style={{
-                                                    padding: '15px',
-                                                    borderRadius: '5px',
-                                                    border: '1px solid #e0e0e0',
-                                                    fontSize: '16px'
-                                                }}
-                                            />
-                                        </div>
-
-                                        <div className="col-lg-12 mb-4">
                                             <SignatureCanvas
                                                 onSignatureChange={setSignature}
                                             />
@@ -580,10 +842,10 @@ const ConsultarContratoPage = () => {
                                                 type="button"
                                                 className="thm-btn"
                                                 onClick={handleSignContract}
-                                                disabled={signing || !signature || !signedByName || !signedByEmail || !identityType || !identityNumber}
+                                                disabled={signing || !isFormValid}
                                                 style={{
-                                                    opacity: (signing || !signature || !signedByName || !signedByEmail || !identityType || !identityNumber) ? 0.6 : 1,
-                                                    cursor: (signing || !signature || !signedByName || !signedByEmail || !identityType || !identityNumber) ? 'not-allowed' : 'pointer'
+                                                    opacity: (signing || !isFormValid) ? 0.6 : 1,
+                                                    cursor: (signing || !isFormValid) ? 'not-allowed' : 'pointer'
                                                 }}
                                             >
                                                 <span>{signing ? 'Firmando...' : 'Firmar Contrato'}</span>
