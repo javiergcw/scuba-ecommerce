@@ -146,7 +146,8 @@ export default function RelatedCoursesSlider({
 
   const handleAddToCart = (product: ProductDto) => {
     const courseItem = {
-      id: product.sku,
+      id: product.id, // UUID del producto (usado para crear orden)
+      sku: product.sku, // SKU del producto (para APIs que lo requieran)
       name: product.name,
       price: product.price,
       quantity: 1,

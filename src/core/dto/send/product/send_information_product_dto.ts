@@ -1,5 +1,5 @@
 export interface ProductItem {
-  product_id: number;
+  product_id: number | string; // Acepta tanto number como string (UUID)
   quantity: number;
 }
 

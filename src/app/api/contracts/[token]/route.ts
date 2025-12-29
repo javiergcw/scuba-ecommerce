@@ -32,11 +32,6 @@ export async function GET(
 
     const data = await response.json();
     console.log('✅ Contrato obtenido exitosamente');
-    console.log('📋 Estructura completa del contrato recibido:', JSON.stringify(data, null, 2));
-    console.log('📋 Keys del objeto raíz:', Object.keys(data));
-    if (data.data) {
-        console.log('📋 Keys del objeto data:', Object.keys(data.data));
-    }
     return NextResponse.json(data);
   } catch (error) {
     console.error('❌ Error en API route de contrato:', error);

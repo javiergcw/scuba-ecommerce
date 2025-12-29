@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { IconButton, Zoom, Drawer, Box, Typography, Button, Divider, Chip } from "@mui/material";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import CloseIcon from "@mui/icons-material/Close";
@@ -13,7 +13,13 @@ import Image from "next/image";
 
 export default function FloatingCartButton() {
   const [isOpen, setIsOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const { cartItems, removeFromCart, updateQuantity, totalItems, totalPrice } = useCart();
+  
+  // Evitar problemas de hidratación esperando a que el componente se monte
+  useEffect(() => {
+    setMounted(true);
+  }, []);
   const router = useRouter();
 
   const toggleDrawer = () => {
@@ -57,7 +63,7 @@ export default function FloatingCartButton() {
           aria-label="Carrito de compras"
         >
           <ShoppingCartIcon sx={{ fontSize: 28 }} />
-          {totalItems > 0 && (
+          {mounted && totalItems > 0 && (
             <Box
               sx={{
                 position: "absolute",

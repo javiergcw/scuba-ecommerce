@@ -58,57 +58,25 @@ const ConsultarContratoPage = () => {
                     setContract(contractResponse.data);
 
                     // Extraer campos requeridos del HTML del contrato
-                    // Buscar todas las variables entre % (ejemplo: %email%, %signer_name%, %general_info_first_name%)
+                    // Buscar todas las variables entre % (ejemplo: %email%, %signer_name%)
                     const htmlContent = contractResponse.data.html_snapshot || '';
-                    
-                    console.log('📄 HTML del contrato (primeros 1000 caracteres):', htmlContent.substring(0, 1000));
-                    
-                    // Patrón principal: buscar variables en formato %variable% (puede tener espacios alrededor)
-                    // Ejemplos: %variable%, % variable %, %variable %, % variable%
-                    const fieldPattern = /%\s*([a-zA-Z][a-zA-Z0-9_]*)\s*%/g;
+                    const fieldPattern = /%([a-z_]+)%/gi;
                     const foundFields = new Set<string>();
-                    
-                    // Buscar todas las ocurrencias
                     let match;
-                    while ((match = fieldPattern.exec(htmlContent)) !== null) {
-                        if (match[1]) {
-                            foundFields.add(match[1]);
-                        }
-                    }
                     
-                    // También buscar patrones alternativos si no se encontró nada
-                    if (foundFields.size === 0) {
-                        const alternativePatterns = [
-                            /\{\{([a-zA-Z][a-zA-Z0-9_]*)\}\}/g,      // {{variable}}
-                            /\$\{([a-zA-Z][a-zA-Z0-9_]*)\}/g,        // ${variable}
-                        ];
-                        
-                        alternativePatterns.forEach(pattern => {
-                            let altMatch;
-                            while ((altMatch = pattern.exec(htmlContent)) !== null) {
-                                if (altMatch[1]) {
-                                    foundFields.add(altMatch[1]);
-                                }
-                            }
-                        });
+                    while ((match = fieldPattern.exec(htmlContent)) !== null) {
+                        foundFields.add(match[1]); // match[1] es el nombre del campo sin los %
                     }
                     
                     console.log('📋 Variables encontradas en el HTML del contrato:', Array.from(foundFields));
-                    console.log('📋 Total de variables encontradas:', foundFields.size);
-                    
-                    // Si no se encontraron variables, mostrar advertencia
-                    if (foundFields.size === 0) {
-                        console.warn('⚠️ No se encontraron variables en formato %variable% en el HTML del contrato');
-                        console.log('📄 HTML completo (últimos 2000 caracteres):', htmlContent.substring(Math.max(0, htmlContent.length - 2000)));
-                    }
                     
                     // Mapeo de nombres de campos a etiquetas y tipos
                     const fieldMapping: Record<string, { label: string; type: string; options?: string[] }> = {
                         // Campos básicos de firma
                         'email': { label: 'Email', type: 'email' },
-                        'signer_name': { label: 'Nombre completo', type: 'text' },
-                        'identity_type': { label: 'Tipo de documento', type: 'select', options: ['CC', 'CE', 'NIT', 'PASSPORT'] },
-                        'identity_number': { label: 'Número de documento', type: 'text' },
+                        'signer_name': { label: 'Nombre del que firma', type: 'text' },
+                        'identity_type': { label: 'Tipo de identidad', type: 'select', options: ['CC', 'CE', 'NIT', 'PASSPORT'] },
+                        'identity_number': { label: 'Número de identidad', type: 'text' },
                         'company': { label: 'Empresa', type: 'text' },
                         'signature': { label: 'Firma', type: 'signature' }, // Se maneja por separado
                         
@@ -118,14 +86,14 @@ const ConsultarContratoPage = () => {
                         'general_info_nationality': { label: 'Nacionalidad', type: 'text' },
                         'general_info_document_type': { label: 'Tipo de documento', type: 'select', options: ['CC', 'CE', 'NIT', 'PASSPORT'] },
                         'general_info_document_number': { label: 'Número de documento', type: 'text' },
-                        'general_info_email': { label: 'Correo electrónico', type: 'email' },
-                        'general_info_phone': { label: 'Celular / WhatsApp', type: 'tel' },
-                        'general_info_address': { label: 'Dirección principal', type: 'text' },
-                        'general_info_address_additional': { label: 'Información adicional', type: 'text' },
-                        'general_info_address_city': { label: 'Ciudad', type: 'text' },
-                        'general_info_address_state': { label: 'Estado / Departamento', type: 'text' },
-                        'general_info_address_zip_code': { label: 'Código postal', type: 'text' },
-                        'general_info_address_country': { label: 'País', type: 'text' },
+                        'general_info_email': { label: 'Correo electrónico/email', type: 'email' },
+                        'general_info_phone': { label: 'Celular/WhatsApp', type: 'tel' },
+                        'general_info_address': { label: 'Dirección de correspondencia', type: 'text' },
+                        'general_info_address_additional': { label: 'Dirección - Información adicional', type: 'text' },
+                        'general_info_address_city': { label: 'Dirección - Ciudad', type: 'text' },
+                        'general_info_address_state': { label: 'Dirección - Estado', type: 'text' },
+                        'general_info_address_zip_code': { label: 'Dirección - Código postal', type: 'text' },
+                        'general_info_address_country': { label: 'Dirección - País', type: 'text' },
                         'general_info_birth_date': { label: 'Fecha de nacimiento', type: 'date' },
                         'general_info_certification_level': { label: 'Nivel de certificación actual', type: 'text' },
                         'general_info_dive_count': { label: 'Cantidad de buceos / Logbook dives', type: 'number' },
@@ -133,55 +101,37 @@ const ConsultarContratoPage = () => {
                         'general_info_accommodation': { label: 'Lugar de hospedaje', type: 'text' },
                         'general_info_activity': { label: 'Actividad a tomar', type: 'text' },
                         'general_info_activity_start_date': { label: 'Fecha de inicio de la actividad', type: 'date' },
-                        'general_info_height': { label: 'Estatura (cm)', type: 'number' },
-                        'general_info_weight': { label: 'Peso (kg)', type: 'number' },
+                        'general_info_height': { label: 'Estatura (centímetros)', type: 'number' },
+                        'general_info_weight': { label: 'Peso (kilogramos)', type: 'number' },
                         'general_info_shoe_size': { label: 'Talla de calzado', type: 'text' },
                         'general_info_special_requirements': { label: 'Requerimientos especiales', type: 'text' },
-                        
-                        // Contacto de Emergencia
-                        'emergency_contact_first_name': { label: 'Contacto de emergencia - Nombre', type: 'text' },
-                        'emergency_contact_last_name': { label: 'Contacto de emergencia - Apellido', type: 'text' },
-                        'emergency_contact_phone': { label: 'Contacto de emergencia - Teléfono', type: 'tel' },
-                        'emergency_contact_email': { label: 'Contacto de emergencia - Correo electrónico', type: 'email' },
                     };
                     
                     // Generar campos del formulario basados en las variables encontradas
                     const fields: ContractField[] = Array.from(foundFields)
-                        .filter(fieldName => {
-                            // Excluir signature ya que se maneja por separado
-                            // También excluir campos que ya están prellenados en el contrato
-                            return fieldName !== 'signature';
-                        })
+                        .filter(fieldName => fieldName !== 'signature') // La firma se maneja por separado
                         .map(fieldName => {
                             const mapping = fieldMapping[fieldName];
                             
                             // Si hay un mapeo definido, usarlo
                             if (mapping) {
-                            return {
-                                name: fieldName,
-                                label: mapping.label,
-                                type: mapping.type,
-                                required: fieldName !== 'company', // company es opcional
-                                options: mapping.options
-                            };
+                                return {
+                                    name: fieldName,
+                                    label: mapping.label,
+                                    type: mapping.type,
+                                    required: true,
+                                    options: mapping.options
+                                };
                             }
                             
                             // Si no hay mapeo, generar label a partir del nombre del campo
-                            let generatedLabel = fieldName
+                            const generatedLabel = fieldName
                                 .replace(/_/g, ' ')
                                 .replace(/general info /gi, '')
                                 .replace(/emergency contact /gi, 'Contacto de emergencia - ')
                                 .split(' ')
                                 .map(word => word.charAt(0).toUpperCase() + word.slice(1))
                                 .join(' ');
-                            
-                            // Mejorar las etiquetas para campos comunes
-                            if (generatedLabel.toLowerCase().includes('first name')) {
-                                generatedLabel = generatedLabel.replace(/first name/gi, 'Nombre');
-                            }
-                            if (generatedLabel.toLowerCase().includes('last name')) {
-                                generatedLabel = generatedLabel.replace(/last name/gi, 'Apellido');
-                            }
                             
                             // Determinar el tipo basado en el nombre del campo
                             let type = 'text';
@@ -202,34 +152,17 @@ const ConsultarContratoPage = () => {
                             };
                         });
                     
-                    // Ordenar campos para mejor UX: primero campos básicos, luego información general, luego contacto de emergencia
-                    const sortedFields = fields.sort((a, b) => {
-                        const order = ['signer_name', 'email', 'identity_type', 'identity_number', 'company'];
-                        const aIndex = order.indexOf(a.name);
-                        const bIndex = order.indexOf(b.name);
-                        
-                        if (aIndex !== -1 && bIndex !== -1) return aIndex - bIndex;
-                        if (aIndex !== -1) return -1;
-                        if (bIndex !== -1) return 1;
-                        
-                        // Ordenar por tipo: general_info primero, luego emergency_contact
-                        if (a.name.startsWith('general_info') && b.name.startsWith('emergency_contact')) return -1;
-                        if (a.name.startsWith('emergency_contact') && b.name.startsWith('general_info')) return 1;
-                        
-                        return a.name.localeCompare(b.name);
-                    });
-                    
-                    console.log('📝 Campos generados del HTML:', sortedFields);
-                    console.log('📋 Cantidad de campos:', sortedFields.length);
+                    console.log('📝 Campos generados del HTML:', fields);
+                    console.log('📋 Cantidad de campos:', fields.length);
                     
                     // Si no hay campos definidos, usar campos mínimos por defecto
-                    const finalFields = sortedFields.length === 0 ? [
+                    const finalFields = fields.length === 0 ? [
                         { name: 'signer_name', label: 'Nombre completo', type: 'text', required: true },
                         { name: 'email', label: 'Email', type: 'email', required: true },
                         { name: 'identity_type', label: 'Tipo de documento', type: 'select', required: true, options: ['CC', 'CE', 'NIT', 'PASSPORT'] },
                         { name: 'identity_number', label: 'Número de documento', type: 'text', required: true },
                         { name: 'company', label: 'Empresa', type: 'text', required: false }
-                    ] : sortedFields;
+                    ] : fields;
                     
                     setRequiredFields(finalFields);
                     
@@ -614,9 +547,11 @@ const ConsultarContratoPage = () => {
                                         }}>
                                             {contract.template_name}
                                         </h3>
-                                        <p style={{ color: '#838a93', margin: 0, fontSize: '16px' }}>
-                                            <strong>Código:</strong> {contract.code} | <strong>SKU:</strong> {contract.sku}
-                                        </p>
+                                        {!isSigned && (
+                                            <p style={{ color: '#838a93', margin: 0, fontSize: '16px' }}>
+                                                <strong>Código:</strong> {contract.code} | <strong>SKU:</strong> {contract.sku}
+                                            </p>
+                                        )}
                                     </div>
                                     <div className="text-end">
                                         {isSigned ? (

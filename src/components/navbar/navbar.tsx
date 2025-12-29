@@ -198,7 +198,7 @@ const Navbar = () => {
               position: 'fixed',
               top: 0,
               width: '100%',
-              zIndex: 1300,
+              zIndex: 50,
               transition: 'none', // Comentario: Transición eliminada
             }}
           >
@@ -234,7 +234,7 @@ const Navbar = () => {
           elevation={0}
           sx={{
             top: showTopbar ? `${TOPBAR_HEIGHT}px` : 0,
-            zIndex: 1200,
+            zIndex: 100,
             backgroundColor: '#fff',
             width: '100%',
             transition: 'none', // Comentario: Transición eliminada
@@ -276,7 +276,7 @@ const Navbar = () => {
           slotProps={{
             paper: {
               sx: {
-                zIndex: 1500,
+                zIndex: 1,
                 mt: 1,
                 boxShadow: '0 8px 16px rgba(0,0,0,0.1)',
               }
@@ -313,7 +313,7 @@ const Navbar = () => {
           slotProps={{
             paper: {
               sx: {
-                zIndex: 1500,
+                zIndex: 200,
                 mt: 1,
                 boxShadow: '0 8px 16px rgba(0,0,0,0.1)',
               }
@@ -338,7 +338,7 @@ const Navbar = () => {
           anchor="right"
           open={drawerOpen}
           onClose={() => setDrawerOpen(false)}
-          sx={{ zIndex: 1300 }}
+          sx={{ zIndex: 150 }}
         >
           <Box width={250} role="presentation">
             <List>
@@ -590,7 +590,7 @@ const Navbar = () => {
                 <li 
                     ref={entrenamientoRef}
                     className="dropdown" 
-                    style={{ position: 'relative', zIndex: 9999 }}
+                    style={{ position: 'relative', zIndex: 300 }}
                     onMouseEnter={() => {
                       setDropdownOpenEntrenamiento(true);
                       setDropdownOpenYaSoyBuzo(false);
@@ -614,7 +614,7 @@ const Navbar = () => {
                       minWidth: '250px',
                       boxShadow: '0 8px 16px rgba(0,0,0,0.1)',
                       borderRadius: '4px',
-                      zIndex: 9999,
+                      zIndex: 300,
                       padding: '8px 0',
                       marginTop: '5px',
                       listStyle: 'none',
@@ -684,7 +684,7 @@ const Navbar = () => {
                 <li 
                     ref={yaSoyBuzoRef}
                     className="dropdown" 
-                    style={{ position: 'relative', zIndex: 9999 }}
+                    style={{ position: 'relative', zIndex: 300 }}
                     onMouseEnter={() => {
                       setDropdownOpenYaSoyBuzo(true);
                       setDropdownOpenEntrenamiento(false);
@@ -708,7 +708,7 @@ const Navbar = () => {
                       minWidth: '250px',
                       boxShadow: '0 8px 16px rgba(0,0,0,0.1)',
                       borderRadius: '4px',
-                      zIndex: 9999,
+                      zIndex: 300,
                       padding: '8px 0',
                       marginTop: '5px',
                       listStyle: 'none',

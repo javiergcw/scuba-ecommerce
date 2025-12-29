@@ -29,8 +29,6 @@ import {
 } from '@mui/material';
 import {
   ShoppingCart as ShoppingCartIcon,
-  CheckCircle as CheckCircleIcon,
-  Cancel as CancelIcon,
   AddShoppingCart as AddShoppingCartIcon
 } from '@mui/icons-material';
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -43,32 +41,28 @@ import SwiperNavigationButtons from "@/components/containers/SwiperNavigationBut
 import { ProductService } from "@/core/service/product/product_service";
 import { ProductDto } from "@/core/dto/receive/product/receive_products_dto";
 import { ProductUseCase } from "@/core/use-case/product/product_use_case";
-import { OrderUseCase } from "@/core/use-case/order/order_use_case";
 import { SendInformationProductDto } from "@/core/dto/send/product/send_information_product_dto";
 import { ReceiveInformationProductDto } from "@/core/dto/receive/product/receive_information_product_dto";
-import { SendCreateOrderDto } from "@/core/dto/send/order/send_create_order_dto";
-import { ReceiveCreateOrderDto } from "@/core/dto/receive/order/receive_create_order_dto";
+import { BookingService } from '@/core/service/booking/booking_service';
+import { BookingCapacityDto } from '@/core/dto/receive/booking/receive_booking_capacity_dto';
+import { ReceiveCreateSaleDto } from '@/core/dto/receive/order/receive_create_sale_dto';
 
 const steps = ['Resumen de Compra', 'Información Personal', 'URL de Pago'];
 
 // Variable para controlar si estamos en producción o desarrollo
-const isProduction = false; // Cambiar a true cuando esté en producción
+const isProduction = true; // Habilitado para producción
 
 export default function CheckoutPage() {
   const { cartItems, totalPrice, clearCart, addToCart } = useCart();
   const router = useRouter();
+  const [mounted, setMounted] = useState(false);
   const [activeStep, setActiveStep] = useState(0);
   const [showSuccess, setShowSuccess] = useState(false);
   const [paymentResult, setPaymentResult] = useState<'success' | 'failed' | null>(null);
-  const [isProcessing, setIsProcessing] = useState(false);
   const [relatedProducts, setRelatedProducts] = useState<ProductDto[]>([]);
   const [loadingRelated, setLoadingRelated] = useState(true);
-  const [showDevPopup, setShowDevPopup] = useState(false);
   const [realTotalPrice, setRealTotalPrice] = useState<number>(0);
   const [loadingRealPrice, setLoadingRealPrice] = useState(false);
-  const [orderResult, setOrderResult] = useState<ReceiveCreateOrderDto | null>(null);
-  const [orderError, setOrderError] = useState<string | null>(null);
-  const [orderTotalAmount, setOrderTotalAmount] = useState<number>(0);
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -77,8 +71,22 @@ export default function CheckoutPage() {
     address: '',
     city: '',
     country: 'Colombia',
-    zipCode: ''
+    zipCode: '',
+    operationDate: '',
+    documentNumber: ''
   });
+  
+  // Estado para capacidad de reserva
+  const [bookingCapacity, setBookingCapacity] = useState<BookingCapacityDto | null>(null);
+  const [checkingCapacity, setCheckingCapacity] = useState(false);
+  const [capacityError, setCapacityError] = useState<string | null>(null);
+  
+  // Estado para el proceso de pago
+  const [processingPayment, setProcessingPayment] = useState(false);
+  const [wompiError, setWompiError] = useState<string | null>(null);
+  
+  // Company ID - debe venir de configuración o productos
+  const COMPANY_ID = 'e62af0c2-92e1-45b1-bb7b-0b3e6a386cc3';
 
   // Referencias para el Swiper
   const swiperRef = useRef<any>(null);
@@ -98,7 +106,7 @@ export default function CheckoutPage() {
         // Convertir items del carrito al formato requerido por el caso de uso
         const productData: SendInformationProductDto = {
           items: cartItems.map(item => ({
-            product_id: parseInt(item.id),
+            product_id: item.id, // item.id es UUID (string)
             quantity: item.quantity
           }))
         };
@@ -152,7 +160,7 @@ export default function CheckoutPage() {
         // Filtrar productos relacionados (misma categoría pero no en el carrito)
         const related = allProducts.filter(product => {
           const productCategory = product.category_name || 'General';
-          const isInCart = cartItems.some(cartItem => cartItem.id === product.sku);
+          const isInCart = cartItems.some(cartItem => cartItem.id === product.id || cartItem.sku === product.sku);
           const isRelated = cartCategories.includes(productCategory) && !isInCart;
 
           return isRelated;
@@ -161,7 +169,7 @@ export default function CheckoutPage() {
         // Si no hay productos relacionados por categoría, mostrar productos aleatorios
         if (related.length === 0) {
           const randomProducts = allProducts
-            .filter(product => !cartItems.some(cartItem => cartItem.id === product.sku))
+            .filter(product => !cartItems.some(cartItem => cartItem.id === product.id || cartItem.sku === product.sku))
             .sort(() => Math.random() - 0.5)
             .slice(0, 6);
           setRelatedProducts(randomProducts);
@@ -183,6 +191,11 @@ export default function CheckoutPage() {
       setRelatedProducts([]);
     }
   }, [cartItems]);
+
+  // Evitar problemas de hidratación esperando a que el componente se monte
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Limpiar el Swiper cuando el componente se desmonte
   useEffect(() => {
@@ -208,59 +221,113 @@ export default function CheckoutPage() {
   };
 
   const handleNext = () => {
-    // Si no estamos en producción, mostrar popup de desarrollo
-    if (!isProduction) {
-      setShowDevPopup(true);
-      return;
-    }
-
     if (activeStep === steps.length - 1) {
-      // Crear orden usando el caso de uso
-      handleCreateOrder();
+      // Si estamos en el último paso, redirigir al pago
+      handleProceedToPayment();
     } else {
       setActiveStep(prev => prev + 1);
     }
   };
 
-  const handleCreateOrder = async () => {
+  const handleProceedToPayment = async () => {
+    // Validar que el formulario esté completo
     if (!isFormValid()) {
+      setWompiError('Por favor completa todos los campos requeridos');
       return;
     }
 
-    setIsProcessing(true);
-    setOrderError(null);
+    setProcessingPayment(true);
+    setWompiError(null);
 
     try {
-      // Preparar datos de la orden
-      const orderData: SendCreateOrderDto = {
-        customer_name: `${formData.firstName} ${formData.lastName}`,
-        customer_email: formData.email,
-        customer_phone: formData.phone,
-        items: cartItems.map(item => ({
-          product_id: parseInt(item.id),
-          quantity: item.quantity
-        })),
-        notes: `Dirección: ${formData.address}, ${formData.country}`
-      };
-      await OrderUseCase.createOrder(
-          orderData,
-          (data: ReceiveCreateOrderDto) => {
-            setOrderResult(data);
-            setOrderTotalAmount(data.data.total_amount);
-            setIsProcessing(false);
-            // Limpiar carrito solo si la orden se creó exitosamente
-            clearCart();
-          },
-        (error) => {
-          console.error('❌ Error al crear orden:', error);
-          setOrderError(error.message || 'Error al crear la orden');
-          setIsProcessing(false);
+      // Validar que todos los items tengan un UUID válido como product_id
+      // Un UUID tiene el formato: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx (36 caracteres con guiones)
+      const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+      
+      const itemsWithProductId = cartItems.map(item => {
+        // Verificar que item.id existe y es un string
+        if (!item.id || typeof item.id !== 'string') {
+          throw new Error(`El producto "${item.name}" no tiene un ID válido (UUID)`);
         }
-      );
+        
+        // Verificar que item.id es un UUID válido, no un SKU
+        if (!uuidRegex.test(item.id)) {
+          console.error(`⚠️ El producto "${item.name}" tiene un ID que no es UUID:`, item.id);
+          console.error('⚠️ SKU del producto:', item.sku);
+          throw new Error(`El producto "${item.name}" no tiene un UUID válido. ID encontrado: "${item.id}". Por favor, elimina este producto del carrito y vuelve a agregarlo.`);
+        }
+        
+        return {
+          product_id: item.id, // UUID del producto (ej: "128ae418-5a43-4a21-ae39-aa8ce3369ccd")
+          quantity: item.quantity
+        };
+      });
+
+      // Preparar datos para la venta
+      const saleData = {
+        company_id: COMPANY_ID,
+        person_name: `${formData.firstName} ${formData.lastName}`,
+        person_email: formData.email,
+        person_phone: formData.phone,
+        person_document_number: formData.documentNumber,
+        operation_date: formData.operationDate,
+        items: itemsWithProductId,
+        // Campos fijos que no cambian
+        tax: 0,
+        discount: 0,
+        notes: 'Sitio web',
+        create_wompi_transaction: true,
+        redirect_url: 'https://oceanoscuba.com.co/payment/result'
+      };
+
+      console.log('🛒 Creando venta con datos:', saleData);
+      console.log('📋 Product IDs (UUIDs):', itemsWithProductId.map(item => item.product_id));
+
+      // Llamar a la API de sales
+      const response = await fetch('/api/v1/sales', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(saleData)
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Error al crear la venta');
+      }
+
+      const result: ReceiveCreateSaleDto = await response.json();
+      console.log('✅ Respuesta de la API:', result);
+
+      // Verificar si la venta está habilitada (campo enabled o success)
+      if (result.enabled === false || (result.success === false && result.enabled !== true)) {
+        const errorMessage = result.message || 'La venta no está habilitada en este momento. Por favor contacta al soporte.';
+        console.error('❌ Venta no habilitada:', errorMessage);
+        setWompiError(errorMessage);
+        setProcessingPayment(false);
+        return;
+      }
+
+      // Verificar si hay error de Wompi (puede venir en el nivel superior)
+      if (result.wompi_error) {
+        console.error('❌ Error de Wompi:', result.wompi_error);
+        setWompiError(result.wompi_error);
+        setProcessingPayment(false);
+        return;
+      }
+
+      // Verificar si hay URL de redirección
+      if (result.data?.wompi_redirect_url) {
+        console.log('🔗 Redirigiendo a Wompi:', result.data.wompi_redirect_url);
+        window.location.href = result.data.wompi_redirect_url;
+      } else {
+        throw new Error('No se recibió la URL de redirección de Wompi. Por favor contacta al soporte.');
+      }
     } catch (error) {
-      console.error('❌ Error en handleCreateOrder:', error);
-      setOrderError('Error inesperado al crear la orden');
-      setIsProcessing(false);
+      console.error('❌ Error al procesar el pago:', error);
+      setWompiError(error instanceof Error ? error.message : 'Error al procesar el pago. Por favor intenta nuevamente.');
+      setProcessingPayment(false);
     }
   };
 
@@ -274,7 +341,8 @@ export default function CheckoutPage() {
 
   const handleAddToCart = (product: ProductDto) => {
     const courseItem = {
-      id: product.sku,
+      id: product.id, // UUID del producto (usado para crear orden)
+      sku: product.sku, // SKU del producto (para APIs que lo requieran)
       name: product.name,
       price: product.price,
       quantity: 1,
@@ -297,13 +365,65 @@ export default function CheckoutPage() {
     setShowSuccess(false);
   };
 
-  const handleCloseDevPopup = () => {
-    setShowDevPopup(false);
+
+  // Función para consultar capacidad cuando cambia la fecha
+  const handleDateChange = async (date: string) => {
+    handleInputChange('operationDate', date);
+    
+    if (!date) {
+      setBookingCapacity(null);
+      setCapacityError(null);
+      return;
+    }
+    
+    // Formatear fecha a YYYY-MM para la API
+    const dateObj = new Date(date);
+    const yearMonth = `${dateObj.getFullYear()}-${String(dateObj.getMonth() + 1).padStart(2, '0')}`;
+    
+    setCheckingCapacity(true);
+    setCapacityError(null);
+    
+    try {
+      const capacityResponse = await BookingService.getBookingCapacity(COMPANY_ID, yearMonth);
+      
+      if (capacityResponse && capacityResponse.success && capacityResponse.data) {
+        setBookingCapacity(capacityResponse.data);
+        console.log('✅ Capacidad obtenida:', capacityResponse.data);
+        
+        // Validar capacidad
+        const totalQuantity = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+        const availableSlots = capacityResponse.data.max_persons - capacityResponse.data.reserved_persons;
+        
+        if (availableSlots < totalQuantity) {
+          setCapacityError(`No hay suficiente capacidad. Disponible: ${availableSlots}, Solicitado: ${totalQuantity}`);
+        } else {
+          setCapacityError(null);
+        }
+      } else {
+        setCapacityError('Error al consultar la capacidad de reserva');
+        setBookingCapacity(null);
+      }
+    } catch (error) {
+      console.error('❌ Error al consultar capacidad:', error);
+      setCapacityError('Error al consultar la capacidad de reserva');
+      setBookingCapacity(null);
+    } finally {
+      setCheckingCapacity(false);
+    }
   };
 
   const isFormValid = () => {
-    const requiredFields = ['firstName', 'lastName', 'email', 'phone', 'address'];
-    return requiredFields.every(field => formData[field as keyof typeof formData].trim() !== '');
+    const requiredFields = ['firstName', 'lastName', 'email', 'phone', 'address', 'operationDate', 'documentNumber'];
+    const basicValid = requiredFields.every(field => formData[field as keyof typeof formData].trim() !== '');
+    
+    // Validar que haya capacidad suficiente
+    if (bookingCapacity) {
+      const totalQuantity = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+      const availableSlots = bookingCapacity.max_persons - bookingCapacity.reserved_persons;
+      return basicValid && availableSlots >= totalQuantity && !capacityError;
+    }
+    
+    return basicValid && !checkingCapacity;
   };
 
   const renderStepContent = (step: number) => {
@@ -318,7 +438,7 @@ export default function CheckoutPage() {
             }}>
               Resumen de Compra
             </Typography>
-            {cartItems.map((item) => (
+            {mounted && cartItems.map((item) => (
               <Paper
                 key={item.id}
                 sx={{
@@ -522,6 +642,76 @@ export default function CheckoutPage() {
                   }
                 }}
               />
+              <Box sx={{ 
+                display: 'flex', 
+                gap: { xs: 1, sm: 2 }, 
+                flexWrap: 'wrap',
+                flexDirection: { xs: 'column', sm: 'row' }
+              }}>
+                <TextField
+                  sx={{ 
+                    flex: { sm: 1 },
+                    minWidth: { xs: '100%', sm: '250px' },
+                    '& .MuiInputBase-root': {
+                      fontSize: { xs: '0.875rem', sm: '1rem' }
+                    }
+                  }}
+                  label="Fecha de Operación"
+                  type="date"
+                  value={formData.operationDate}
+                  onChange={(e) => handleDateChange(e.target.value)}
+                  required
+                  size="small"
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                  disabled={checkingCapacity}
+                />
+                <TextField
+                  sx={{ 
+                    flex: { sm: 1 },
+                    minWidth: { xs: '100%', sm: '250px' },
+                    '& .MuiInputBase-root': {
+                      fontSize: { xs: '0.875rem', sm: '1rem' }
+                    }
+                  }}
+                  label="Número de Documento"
+                  value={formData.documentNumber}
+                  onChange={(e) => handleInputChange('documentNumber', e.target.value)}
+                  required
+                  size="small"
+                />
+              </Box>
+              
+              {/* Mostrar información de capacidad */}
+              {checkingCapacity && (
+                <Alert severity="info" sx={{ mt: 2 }}>
+                  Consultando capacidad de reserva...
+                </Alert>
+              )}
+              
+              {bookingCapacity && !checkingCapacity && (
+                <Alert 
+                  severity={capacityError ? "error" : "success"} 
+                  sx={{ mt: 2 }}
+                >
+                  {capacityError ? (
+                    capacityError
+                  ) : (
+                    <>
+                      <Typography variant="body2" sx={{ fontWeight: 600, mb: 0.5 }}>
+                        Capacidad disponible:
+                      </Typography>
+                      <Typography variant="body2">
+                        Disponibles: {bookingCapacity.max_persons - bookingCapacity.reserved_persons} personas
+                      </Typography>
+                      <Typography variant="body2" sx={{ mt: 0.5 }}>
+                        Solicitado: {cartItems.reduce((sum, item) => sum + item.quantity, 0)} personas
+                      </Typography>
+                    </>
+                  )}
+                </Alert>
+              )}
             </Box>
           </Box>
         );
@@ -532,36 +722,68 @@ export default function CheckoutPage() {
             <Typography variant="h5" gutterBottom sx={{
               fontSize: { xs: '1.3rem', sm: '1.5rem' },
               fontWeight: 600,
-              color: '#051b35'
+              color: '#051b35',
+              mb: 3
             }}>
-              URL de Pago
-            </Typography>
-            <Typography variant="body1" sx={{ 
-              mb: 3, 
-              color: 'text.secondary',
-              fontSize: { xs: '0.9rem', sm: '1rem' },
-              lineHeight: 1.6
-            }}>
-              Al hacer clic en "Crear Orden", se generará un enlace de pago seguro que te permitirá completar tu transacción de forma segura.
+              Proceder con el Pago
             </Typography>
             
-            <Alert severity="info" sx={{ mb: 3 }}>
-              <Typography variant="body1" gutterBottom sx={{
-                fontSize: { xs: '0.95rem', sm: '1rem' },
-                fontWeight: 600
-              }}>
-                <strong>¿Cómo funciona?</strong>
-              </Typography>
-              <Typography variant="body2" sx={{
-                fontSize: { xs: '0.85rem', sm: '0.875rem' },
-                lineHeight: 1.6
-              }}>
-                • Se creará tu orden con todos los datos ingresados<br />
-                • Recibirás un enlace de pago seguro y confiable<br />
-                • Podrás pagar con tarjeta, transferencia o efectivo<br />
-                • El pago se procesará de forma segura
-              </Typography>
-            </Alert>
+            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mt: 4, gap: 2 }}>
+              {wompiError && (
+                <Alert 
+                  severity="error" 
+                  sx={{ 
+                    width: '100%',
+                    maxWidth: { xs: '100%', sm: '600px' }
+                  }}
+                  onClose={() => setWompiError(null)}
+                >
+                  <Typography variant="body2" sx={{ fontWeight: 600, mb: 0.5 }}>
+                    Error al procesar el pago:
+                  </Typography>
+                  <Typography variant="body2">
+                    {wompiError}
+                  </Typography>
+                </Alert>
+              )}
+              
+              <Button
+                variant="contained"
+                size="large"
+                onClick={handleProceedToPayment}
+                disabled={processingPayment}
+                sx={{
+                  backgroundColor: '#ffd701',
+                  color: '#051b35',
+                  fontWeight: 'bold',
+                  borderRadius: 0,
+                  minWidth: { xs: '100%', sm: '300px' },
+                  height: { xs: '50px', sm: '55px' },
+                  fontSize: { xs: '1rem', sm: '1.1rem' },
+                  '&:hover': {
+                    backgroundColor: '#3b91e1',
+                    color: '#fff'
+                  },
+                  '&:disabled': {
+                    backgroundColor: 'rgba(255, 215, 1, 0.5)',
+                    color: 'rgba(5, 27, 53, 0.5)'
+                  }
+                }}
+              >
+                {processingPayment ? (
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <img
+                      src="/assets/images/Animation - 1746715748714.gif"
+                      alt="Procesando..."
+                      style={{ width: 20, height: 20 }}
+                    />
+                    <span>Procesando pago...</span>
+                  </Box>
+                ) : (
+                  'Proceder con el Pago'
+                )}
+              </Button>
+            </Box>
 
             <Card sx={{
               borderRadius: 0,
@@ -655,26 +877,6 @@ export default function CheckoutPage() {
                       {formatPrice(realTotalPrice > 0 ? realTotalPrice : totalPrice)}
                     </Typography>
                   </Box>
-                  {orderTotalAmount > 0 && (
-                    <Box sx={{ 
-                      display: 'flex', 
-                      justifyContent: 'space-between',
-                      flexWrap: 'wrap',
-                      gap: 1
-                    }}>
-                      <Typography variant="body2" color="success.main" sx={{
-                        fontSize: { xs: '0.85rem', sm: '0.875rem' },
-                        fontWeight: 500
-                      }}>
-                        Total Confirmado:
-                      </Typography>
-                      <Typography variant="body2" fontWeight="bold" color="success.main" sx={{
-                        fontSize: { xs: '0.85rem', sm: '0.875rem' }
-                      }}>
-                        {formatPrice(orderTotalAmount)}
-                      </Typography>
-                    </Box>
-                  )}
                 </Box>
               </CardContent>
             </Card>
@@ -686,619 +888,24 @@ export default function CheckoutPage() {
     }
   };
 
-  // Pantalla de procesamiento de pago
-  if (isProcessing) {
+  // Evitar problemas de hidratación - no renderizar contenido que depende de cartItems hasta que se monte
+  if (!mounted) {
     return (
-      <Box sx={{ minHeight: '100vh', backgroundColor: '#f5f5f5', py: 4 }}>
-        <Box sx={{ maxWidth: 1200, mx: 'auto', px: 2 }}>
-          <div className="flex flex-col items-center justify-center h-[85vh] space-y-4">
-            <img
-              src="/assets/images/Animation - 1746715748714.gif"
-              alt="Procesando pago..."
-              style={{ width: 200, height: 200 }}
-            />
-            <Typography variant="h4" gutterBottom>
-              Generando tu link de pago...
-            </Typography>
-            <Typography variant="body1" color="text.secondary">
-              Por favor espera mientras procesamos tu compra
-            </Typography>
-          </div>
-        </Box>
-      </Box>
-    );
-  }
-
-  // Pantalla de resultado del pago
-  if (orderResult || orderError) {
-    return (
-      <Box sx={{ 
-        minHeight: '100vh', 
-        backgroundColor: '#f5f5f5', 
-        py: { xs: 2, md: 4 },
-        px: { xs: 1, md: 2 }
-      }}>
-        <Box sx={{ 
-          maxWidth: 1200, 
-          mx: 'auto', 
-          px: { xs: 1, sm: 2, md: 3 },
-          position: 'relative',
-          zIndex: 3
-        }}>
-          {orderResult ? (
-            // Pantalla de éxito
-            <Box sx={{
-              display: 'flex',
-              flexDirection: 'column',
-              gap: { xs: 3, md: 4 },
-              py: { xs: 2, md: 4 }
-            }}>
-              {/* Header con icono y título */}
-              <Box sx={{
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                textAlign: 'center',
-                mb: { xs: 2, md: 3 }
-              }}>
-                <CheckCircleIcon sx={{ 
-                  fontSize: { xs: 80, sm: 100, md: 120 }, 
-                  color: '#4caf50',
-                  mb: 2
-                }} />
-                
-                <Typography variant="h2" gutterBottom color="success.main" sx={{
-                  fontSize: { xs: '1.8rem', sm: '2.2rem', md: '2.8rem' },
-                  fontWeight: 700,
-                  mb: 1
-                }}>
-                  ¡Orden Creada Exitosamente!
-                </Typography>
-                
-                <Typography variant="h5" sx={{ 
-                  fontSize: { xs: '1.2rem', sm: '1.4rem', md: '1.6rem' },
-                  color: '#051b35',
-                  fontWeight: 600
-                }}>
-                  🐠 ¡Bienvenido al mundo submarino! 🐠
-                </Typography>
-              </Box>
-
-              {/* Contenido principal en dos columnas */}
-              <Box sx={{
-                display: 'grid',
-                gridTemplateColumns: { xs: '1fr', lg: '1fr 1fr' },
-                gap: { xs: 3, md: 4 },
-                alignItems: 'start'
-              }}>
-                {/* Columna izquierda - Detalles de la orden */}
-                <Box sx={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: 3
-                }}>
-                  <Card sx={{ 
-                    p: { xs: 2, sm: 3 }, 
-                    borderRadius: 0, 
-                    border: '2px solid #4caf50',
-                    backgroundColor: '#f8fff8',
-                    boxShadow: '0 4px 12px rgba(76, 175, 80, 0.15)'
-                  }}>
-                    <Typography variant="h5" gutterBottom sx={{ 
-                      fontWeight: 'bold', 
-                      color: '#051b35',
-                      fontSize: { xs: '1.3rem', sm: '1.5rem' },
-                      mb: 2
-                    }}>
-                      📋 Detalles de tu Orden
-                    </Typography>
-                    
-                    <Box sx={{ 
-                      display: 'flex', 
-                      flexDirection: 'column', 
-                      gap: 2
-                    }}>
-                      <Box sx={{ 
-                        display: 'flex', 
-                        justifyContent: 'space-between',
-                        alignItems: 'center',
-                        p: 1.5,
-                        backgroundColor: '#fff',
-                        borderRadius: 1,
-                        border: '1px solid #e0e0e0'
-                      }}>
-                        <Typography variant="body1" sx={{ fontWeight: 'bold', fontSize: '1rem' }}>
-                          ID de Orden:
-                        </Typography>
-                        <Typography variant="body1" sx={{ color: '#051b35', fontWeight: 'bold', fontSize: '1rem' }}>
-                          #{orderResult.data.order_id}
-                        </Typography>
-                      </Box>
-                      
-                      <Box sx={{ 
-                        display: 'flex', 
-                        justifyContent: 'space-between',
-                        alignItems: 'center',
-                        p: 1.5,
-                        backgroundColor: '#fff',
-                        borderRadius: 1,
-                        border: '1px solid #e0e0e0'
-                      }}>
-                        <Typography variant="body1" sx={{ fontWeight: 'bold', fontSize: '1rem' }}>
-                          Código de Tracking:
-                        </Typography>
-                        <Typography variant="body1" sx={{ color: '#051b35', fontWeight: 'bold', fontSize: '1rem' }}>
-                          {orderResult.data.tracking_code}
-                        </Typography>
-                      </Box>
-                      
-                      <Box sx={{ 
-                        display: 'flex', 
-                        justifyContent: 'space-between',
-                        alignItems: 'center',
-                        p: 1.5,
-                        backgroundColor: '#fff',
-                        borderRadius: 1,
-                        border: '1px solid #e0e0e0'
-                      }}>
-                        <Typography variant="body1" sx={{ fontWeight: 'bold', fontSize: '1rem' }}>
-                          Estado:
-                        </Typography>
-                        <Typography variant="body1" sx={{ color: '#051b35', fontSize: '1rem' }}>
-                          {orderResult.data.status}
-                        </Typography>
-                      </Box>
-                      
-                      <Box sx={{ 
-                        display: 'flex', 
-                        justifyContent: 'space-between',
-                        alignItems: 'center',
-                        p: 1.5,
-                        backgroundColor: '#fff',
-                        borderRadius: 1,
-                        border: '1px solid #e0e0e0'
-                      }}>
-                        <Typography variant="body1" sx={{ fontWeight: 'bold', fontSize: '1rem' }}>
-                          Estado de Pago:
-                        </Typography>
-                        <Typography variant="body1" sx={{ color: '#051b35', fontSize: '1rem' }}>
-                          {orderResult.data.payment_status}
-                        </Typography>
-                      </Box>
-                      
-                      <Box sx={{ 
-                        display: 'flex', 
-                        justifyContent: 'space-between',
-                        alignItems: 'center',
-                        p: 1.5,
-                        backgroundColor: '#4caf50',
-                        borderRadius: 1,
-                        border: '2px solid #2e7d32'
-                      }}>
-                        <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#fff', fontSize: '1.1rem' }}>
-                          Total Confirmado:
-                        </Typography>
-                        <Typography variant="h6" sx={{ color: '#fff', fontWeight: 'bold', fontSize: '1.3rem' }}>
-                          {formatPrice(orderResult.data.total_amount)}
-                        </Typography>
-                      </Box>
-                    </Box>
-                  </Card>
-
-                  {/* Información adicional */}
-                  <Card sx={{ 
-                    p: { xs: 2, sm: 3 }, 
-                    borderRadius: 0, 
-                    border: '1px solid #e0e0e0',
-                    backgroundColor: '#fff'
-                  }}>
-                    <Typography variant="h6" gutterBottom sx={{
-                      fontSize: { xs: '1.1rem', sm: '1.3rem' },
-                      fontWeight: 'bold',
-                      color: '#051b35',
-                      mb: 2
-                    }}>
-                      📧 Confirmación por Email
-                    </Typography>
-                    <Typography variant="body1" color="text.secondary" sx={{
-                      fontSize: { xs: '0.95rem', sm: '1rem' },
-                      lineHeight: 1.6
-                    }}>
-                      Tu orden ha sido creada exitosamente. Recibirás un email con todos los detalles de tu curso de buceo, incluyendo información importante sobre tu clase.
-                    </Typography>
-                  </Card>
-                </Box>
-
-                {/* Columna derecha - Acciones y próximos pasos */}
-                <Box sx={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: 3
-                }}>
-                  {/* Botón de pago prominente */}
-                  {orderResult.data.payment_url && (
-                    <Card sx={{ 
-                      p: { xs: 2, sm: 3 }, 
-                      borderRadius: 0, 
-                      border: '3px solid #ffd701',
-                      backgroundColor: '#fffbf0',
-                      boxShadow: '0 6px 20px rgba(255, 215, 1, 0.3)'
-                    }}>
-                      <Typography variant="h5" gutterBottom sx={{ 
-                        fontWeight: 'bold', 
-                        color: '#051b35',
-                        fontSize: { xs: '1.3rem', sm: '1.5rem' },
-                        textAlign: 'center',
-                        mb: 2
-                      }}>
-                        🔗 Enlace de Pago
-                      </Typography>
-                      <Typography variant="body1" color="text.secondary" sx={{
-                        textAlign: 'center',
-                        mb: 3,
-                        fontSize: { xs: '0.95rem', sm: '1rem' }
-                      }}>
-                        Haz clic en el botón para completar tu pago de forma segura
-                      </Typography>
-                      <Box sx={{ textAlign: 'center' }}>
-                        <Button
-                          variant="contained"
-                          size="large"
-                          onClick={() => window.open(orderResult.data.payment_url, '_blank')}
-                          sx={{
-                            backgroundColor: '#ffd701',
-                            color: '#051b35',
-                            fontWeight: 'bold',
-                            borderRadius: 0,
-                            minWidth: { xs: '200px', sm: '250px' },
-                            height: { xs: '55px', sm: '60px' },
-                            fontSize: { xs: '1rem', sm: '1.1rem' },
-                            boxShadow: '0 4px 12px rgba(255, 215, 1, 0.4)',
-                            '&:hover': {
-                              backgroundColor: '#3b91e1',
-                              color: '#fff',
-                              boxShadow: '0 6px 20px rgba(59, 145, 225, 0.4)'
-                            }
-                          }}
-                        >
-                          💳 IR AL PAGO
-                        </Button>
-                      </Box>
-                    </Card>
-                  )}
-
-                  {/* Próximos pasos */}
-                  <Card sx={{ 
-                    p: { xs: 2, sm: 3 }, 
-                    borderRadius: 0, 
-                    border: '1px solid #e0e0e0',
-                    backgroundColor: '#fff'
-                  }}>
-                    <Typography variant="h6" gutterBottom sx={{
-                      fontSize: { xs: '1.1rem', sm: '1.3rem' },
-                      fontWeight: 'bold',
-                      color: '#051b35',
-                      mb: 2
-                    }}>
-                      📋 Próximos Pasos
-                    </Typography>
-                    <Box sx={{ 
-                      display: 'flex', 
-                      flexDirection: 'column',
-                      gap: 1.5
-                    }}>
-                      <Box sx={{ 
-                        display: 'flex', 
-                        alignItems: 'center',
-                        gap: 1.5,
-                        p: 1,
-                        backgroundColor: '#f8f9fa',
-                        borderRadius: 1
-                      }}>
-                        <Typography variant="body2" sx={{ 
-                          backgroundColor: '#4caf50', 
-                          color: '#fff', 
-                          borderRadius: '50%', 
-                          width: 24, 
-                          height: 24, 
-                          display: 'flex', 
-                          alignItems: 'center', 
-                          justifyContent: 'center',
-                          fontSize: '0.8rem',
-                          fontWeight: 'bold'
-                        }}>
-                          1
-                        </Typography>
-                        <Typography variant="body1" sx={{ fontSize: { xs: '0.9rem', sm: '1rem' } }}>
-                          Completa el pago usando el enlace proporcionado
-                        </Typography>
-                      </Box>
-                      
-                      <Box sx={{ 
-                        display: 'flex', 
-                        alignItems: 'center',
-                        gap: 1.5,
-                        p: 1,
-                        backgroundColor: '#f8f9fa',
-                        borderRadius: 1
-                      }}>
-                        <Typography variant="body2" sx={{ 
-                          backgroundColor: '#4caf50', 
-                          color: '#fff', 
-                          borderRadius: '50%', 
-                          width: 24, 
-                          height: 24, 
-                          display: 'flex', 
-                          alignItems: 'center', 
-                          justifyContent: 'center',
-                          fontSize: '0.8rem',
-                          fontWeight: 'bold'
-                        }}>
-                          2
-                        </Typography>
-                        <Typography variant="body1" sx={{ fontSize: { xs: '0.9rem', sm: '1rem' } }}>
-                          Revisa tu email para confirmar los detalles
-                        </Typography>
-                      </Box>
-                      
-                      <Box sx={{ 
-                        display: 'flex', 
-                        alignItems: 'center',
-                        gap: 1.5,
-                        p: 1,
-                        backgroundColor: '#f8f9fa',
-                        borderRadius: 1
-                      }}>
-                        <Typography variant="body2" sx={{ 
-                          backgroundColor: '#4caf50', 
-                          color: '#fff', 
-                          borderRadius: '50%', 
-                          width: 24, 
-                          height: 24, 
-                          display: 'flex', 
-                          alignItems: 'center', 
-                          justifyContent: 'center',
-                          fontSize: '0.8rem',
-                          fontWeight: 'bold'
-                        }}>
-                          3
-                        </Typography>
-                        <Typography variant="body1" sx={{ fontSize: { xs: '0.9rem', sm: '1rem' } }}>
-                          Llega 15 minutos antes de tu clase
-                        </Typography>
-                      </Box>
-                      
-                      <Box sx={{ 
-                        display: 'flex', 
-                        alignItems: 'center',
-                        gap: 1.5,
-                        p: 1,
-                        backgroundColor: '#f8f9fa',
-                        borderRadius: 1
-                      }}>
-                        <Typography variant="body2" sx={{ 
-                          backgroundColor: '#4caf50', 
-                          color: '#fff', 
-                          borderRadius: '50%', 
-                          width: 24, 
-                          height: 24, 
-                          display: 'flex', 
-                          alignItems: 'center', 
-                          justifyContent: 'center',
-                          fontSize: '0.8rem',
-                          fontWeight: 'bold'
-                        }}>
-                          4
-                        </Typography>
-                        <Typography variant="body1" sx={{ fontSize: { xs: '0.9rem', sm: '1rem' } }}>
-                          Trae ropa cómoda y una toalla
-                        </Typography>
-                      </Box>
-                      
-                      <Box sx={{ 
-                        display: 'flex', 
-                        alignItems: 'center',
-                        gap: 1.5,
-                        p: 1,
-                        backgroundColor: '#f8f9fa',
-                        borderRadius: 1
-                      }}>
-                        <Typography variant="body2" sx={{ 
-                          backgroundColor: '#4caf50', 
-                          color: '#fff', 
-                          borderRadius: '50%', 
-                          width: 24, 
-                          height: 24, 
-                          display: 'flex', 
-                          alignItems: 'center', 
-                          justifyContent: 'center',
-                          fontSize: '0.8rem',
-                          fontWeight: 'bold'
-                        }}>
-                          5
-                        </Typography>
-                        <Typography variant="body1" sx={{ fontSize: { xs: '0.9rem', sm: '1rem' } }}>
-                          ¡Prepárate para una aventura increíble!
-                        </Typography>
-                      </Box>
-                    </Box>
-                  </Card>
-                </Box>
-              </Box>
-
-              {/* Botones de acción */}
-              <Box sx={{ 
-                display: 'flex', 
-                gap: { xs: 1, sm: 2 }, 
-                flexWrap: 'wrap', 
-                justifyContent: 'center',
-                mt: { xs: 2, md: 3 }
-              }}>
-                <Button
-                  variant="contained"
-                  size="large"
-                  onClick={handleReturnHome}
-                  sx={{
-                    backgroundColor: '#051b35',
-                    color: '#fff',
-                    fontWeight: 'bold',
-                    borderRadius: 0,
-                    minWidth: { xs: '180px', sm: '200px' },
-                    height: { xs: '50px', sm: '55px' },
-                    fontSize: { xs: '0.95rem', sm: '1rem' },
-                    '&:hover': {
-                      backgroundColor: '#3b91e1'
-                    }
-                  }}
-                >
-                  🏠 Volver al Inicio
-                </Button>
-              </Box>
-            </Box>
-          ) : (
-            // Pantalla de error
-            <Box sx={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'center',
-              minHeight: '85vh',
-              gap: { xs: 3, md: 4 },
-              textAlign: 'center'
-            }}>
-              <CancelIcon sx={{ 
-                fontSize: { xs: 80, sm: 100, md: 120 }, 
-                color: '#f44336' 
-              }} />
-              
-              <Typography variant="h3" gutterBottom color="error.main" sx={{
-                fontSize: { xs: '1.5rem', sm: '2rem', md: '2.5rem' },
-                fontWeight: 700
-              }}>
-                Error al Crear Orden
-              </Typography>
-              
-              <Typography variant="h5" sx={{ 
-                mb: 2,
-                fontSize: { xs: '1.1rem', sm: '1.3rem', md: '1.5rem' },
-                color: '#051b35'
-              }}>
-                🌊 No te preocupes, podemos intentarlo de nuevo 🌊
-              </Typography>
-              
-              <Card sx={{ 
-                p: { xs: 2, sm: 3 }, 
-                borderRadius: 0, 
-                border: '2px solid #f44336',
-                backgroundColor: '#fff5f5',
-                maxWidth: 600,
-                width: '100%'
-              }}>
-                <Typography variant="body1" color="text.secondary" sx={{ 
-                  mb: 3,
-                  fontSize: { xs: '0.95rem', sm: '1rem' },
-                  lineHeight: 1.6
-                }}>
-                  {orderError || 'Hubo un problema creando tu orden.'}<br />
-                  Verifica los datos ingresados e intenta nuevamente.
-                </Typography>
-                
-                <Typography variant="h6" gutterBottom sx={{
-                  fontSize: { xs: '1.1rem', sm: '1.3rem' },
-                  fontWeight: 'bold',
-                  color: '#051b35'
-                }}>
-                  Posibles causas:
-                </Typography>
-                <Box sx={{ 
-                  display: 'flex', 
-                  flexDirection: 'column',
-                  gap: 1,
-                  textAlign: 'left'
-                }}>
-                  <Typography variant="body2" color="text.secondary" sx={{
-                    fontSize: { xs: '0.9rem', sm: '1rem' },
-                    lineHeight: 1.6
-                  }}>
-                    • Datos de contacto incorrectos
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary" sx={{
-                    fontSize: { xs: '0.9rem', sm: '1rem' },
-                    lineHeight: 1.6
-                  }}>
-                    • Productos no disponibles
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary" sx={{
-                    fontSize: { xs: '0.9rem', sm: '1rem' },
-                    lineHeight: 1.6
-                  }}>
-                    • Problema temporal del sistema
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary" sx={{
-                    fontSize: { xs: '0.9rem', sm: '1rem' },
-                    lineHeight: 1.6
-                  }}>
-                    • Error de conexión
-                  </Typography>
-                </Box>
-              </Card>
-
-              <Box sx={{ 
-                display: 'flex', 
-                gap: { xs: 1, sm: 2 }, 
-                flexWrap: 'wrap', 
-                justifyContent: 'center',
-                width: '100%',
-                maxWidth: 600
-              }}>
-                <Button
-                  variant="contained"
-                  size="large"
-                  onClick={handleReturnHome}
-                  sx={{
-                    backgroundColor: '#ffd701',
-                    color: '#051b35',
-                    fontWeight: 'bold',
-                    borderRadius: 0,
-                    minWidth: { xs: '150px', sm: '180px' },
-                    height: { xs: '50px', sm: '55px' },
-                    fontSize: { xs: '0.9rem', sm: '1rem' },
-                    '&:hover': {
-                      backgroundColor: '#3b91e1',
-                      color: '#fff'
-                    }
-                  }}
-                >
-                  Volver al Inicio
-                </Button>
-                <Button
-                  variant="outlined"
-                  size="large"
-                  onClick={() => {
-                    setOrderError(null);
-                    setOrderResult(null);
-                  }}
-                  sx={{
-                    borderColor: '#ffd701',
-                    color: '#ffd701',
-                    fontWeight: 'bold',
-                    borderRadius: 0,
-                    minWidth: { xs: '150px', sm: '180px' },
-                    height: { xs: '50px', sm: '55px' },
-                    fontSize: { xs: '0.9rem', sm: '1rem' },
-                    '&:hover': {
-                      borderColor: '#3b91e1',
-                      color: '#3b91e1',
-                      backgroundColor: 'rgba(59, 145, 225, 0.1)'
-                    }
-                  }}
-                >
-                  Intentar de Nuevo
-                </Button>
-              </Box>
-            </Box>
-          )}
-        </Box>
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          minHeight: '100vh',
+          p: 4,
+          textAlign: 'center',
+          backgroundColor: '#f5f5f5'
+        }}
+      >
+        <Typography variant="h6" sx={{ color: '#051b35', mb: 2 }}>
+          Cargando...
+        </Typography>
       </Box>
     );
   }
@@ -1523,7 +1130,7 @@ export default function CheckoutPage() {
           <Button
             variant="contained"
             onClick={handleNext}
-            disabled={activeStep === 1 && !isFormValid()}
+            disabled={(activeStep === 1 && !isFormValid()) || processingPayment}
             sx={{
               backgroundColor: '#ffd701',
               color: '#051b35',
@@ -1542,12 +1149,12 @@ export default function CheckoutPage() {
               }
             }}
           >
-            {activeStep === steps.length - 1 ? (isProduction ? 'Crear Orden' : '🚧 En Desarrollo') : 'Siguiente'}
+            {activeStep === steps.length - 1 ? 'Proceder con el Pago' : 'Siguiente'}
           </Button>
         </Box>
 
         {/* Cursos relacionados dependiendo a la subcategoria que esta en el curso que se esta comprando */}
-        {cartItems.length > 0 && (
+        {mounted && cartItems.length > 0 && (
           <Box sx={{ mt: 8, position: 'relative', zIndex: 3 }}>
             <Typography variant="h4" textAlign="center" sx={{
               mb: 4,
@@ -1725,75 +1332,6 @@ export default function CheckoutPage() {
         </Alert>
       </Snackbar>
 
-      {/* Popup de desarrollo */}
-      <Dialog
-        open={showDevPopup}
-        onClose={handleCloseDevPopup}
-        maxWidth="sm"
-        fullWidth
-        PaperProps={{
-          sx: {
-            borderRadius: 0,
-            border: '2px solid #ffd701'
-          }
-        }}
-      >
-        <DialogTitle sx={{
-          backgroundColor: '#051b35',
-          color: '#fff',
-          textAlign: 'center',
-          fontWeight: 'bold',
-          fontSize: '1.5rem'
-        }}>
-          🚧 Sistema de Pagos en Desarrollo 🚧
-        </DialogTitle>
-        <DialogContent sx={{ py: 3 }}>
-          <Box sx={{ textAlign: 'center' }}>
-            <img
-              src="/assets/images/Animation - 1746715748714.gif"
-              alt="En desarrollo"
-              style={{ width: 120, height: 120, margin: '0 auto 20px' }}
-            />
-            <Typography variant="h5" gutterBottom sx={{ color: '#051b35', fontWeight: 'bold' }}>
-              ¡Pagos Temporalmente Deshabilitados!
-            </Typography>
-            <Typography variant="body1" sx={{ color: 'text.secondary', mb: 2 }}>
-              El sistema de pagos está en desarrollo y no está disponible en este momento.
-            </Typography>
-            <Typography variant="body2" sx={{ color: 'text.secondary', mb: 2 }}>
-              🌊 Mientras tanto, puedes explorar nuestros cursos de buceo disponibles 🌊
-            </Typography>
-            <Typography variant="body2" sx={{ color: '#051b35', fontWeight: 'bold' }}>
-              ¡Pronto podrás realizar tus compras de forma segura!
-            </Typography>
-          </Box>
-        </DialogContent>
-        <DialogActions sx={{
-          backgroundColor: '#f5f5f5',
-          px: 3,
-          py: 2,
-          justifyContent: 'center'
-        }}>
-          <Button
-            onClick={handleCloseDevPopup}
-            variant="contained"
-            sx={{
-              backgroundColor: '#ffd701',
-              color: '#051b35',
-              fontWeight: 'bold',
-              borderRadius: 0,
-              minWidth: '150px',
-              height: '45px',
-              '&:hover': {
-                backgroundColor: '#3b91e1',
-                color: '#fff'
-              }
-            }}
-          >
-            Entendido
-          </Button>
-        </DialogActions>
-      </Dialog>
     </Box>
   );
 }

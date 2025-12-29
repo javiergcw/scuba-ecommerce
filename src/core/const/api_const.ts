@@ -37,4 +37,7 @@ export const API_ENDPOINTS = {
   
   // Contratos - Firmar contrato por token
   CONTRACT_SIGN: (token: string) => `/api/contracts/${token}/sign`,
+  
+  // Booking - Capacidad de reserva (a través de API Route para evitar CORS)
+  BOOKING_CAPACITY: (companyId: string, date: string) => `/api/booking-capacity?company_id=${companyId}&date=${date}`,
 } as const;

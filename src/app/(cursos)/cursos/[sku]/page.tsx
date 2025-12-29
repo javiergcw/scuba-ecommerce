@@ -146,7 +146,7 @@ const CourseDetailPage = () => {
         tips: '',
         additionalInfo: '',
         features: {},
-        courseId: course.sku,
+        courseId: course.id, // UUID del producto
         subcategory_name: course.subcategory_name
     };
 
