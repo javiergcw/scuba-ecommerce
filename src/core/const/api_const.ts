@@ -35,7 +35,7 @@ export const API_ENDPOINTS = {
   // Contratos - Obtener status del contrato por token
   CONTRACT_STATUS: (token: string) => `/api/contracts/${token}/status`,
   
-  // Contratos - Firmar contrato por token
+  // Contratos - Firmar Formulario por token
   CONTRACT_SIGN: (token: string) => `/api/contracts/${token}/sign`,
   
   // Booking - Capacidad de reserva (a través de API Route para evitar CORS)

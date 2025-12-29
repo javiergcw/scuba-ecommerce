@@ -9,7 +9,7 @@ export async function POST(
     const { token } = await params;
     const body = await request.json();
     const fullUrl = `${API_CONFIG.BASE_URL}/api/v1/public/contracts/${token}/sign`;
-    console.log('🔍 Intentando firmar contrato por token:', fullUrl);
+    console.log('🔍 Intentando Firmar Formulario por token:', fullUrl);
     
     const response = await fetch(fullUrl, {
       method: 'POST',
@@ -26,7 +26,7 @@ export async function POST(
     const data = await response.json();
     
     if (!response.ok) {
-      console.error('❌ Error al firmar contrato:', response.status, response.statusText);
+      console.error('❌ Error al Firmar Formulario:', response.status, response.statusText);
       return NextResponse.json(data, { status: response.status });
     }
 

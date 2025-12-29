@@ -156,15 +156,7 @@ export const SignatureCanvas: React.FC<SignatureCanvasProps> = ({
 
   return (
     <div style={{ width: '100%' }}>
-      <label style={{ 
-        color: 'var(--thm-black)', 
-        fontWeight: '600',
-        marginBottom: '15px',
-        display: 'block',
-        fontSize: '18px'
-      }}>
-        Firma del Contrato <span style={{ color: '#dc3545' }}>*</span>
-      </label>
+
       
       {error && (
         <div className="alert alert-danger" role="alert" style={{ 

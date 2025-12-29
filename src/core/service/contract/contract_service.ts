@@ -80,7 +80,7 @@ export class ContractService {
             const data: SignContractResponseDto = await response.json();
             return data;
         } catch (error) {
-            console.error('❌ Error al firmar contrato:', error);
+            console.error('❌ Error al Firmar Formulario:', error);
             return null;
         }
     }

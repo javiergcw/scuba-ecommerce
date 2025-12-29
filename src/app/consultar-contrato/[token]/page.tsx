@@ -4,9 +4,18 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { ContractService } from '@/core/service/contract/contract_service';
-import { ContractDto, ContractStatusDto, ContractField } from '@/core/dto/receive/contract/receive_contract_dto';
+import { ContractDto, ContractStatusDto } from '@/core/dto/receive/contract/receive_contract_dto';
 import { SignatureCanvas } from '@/components/others/contract/SignatureCanvas';
 import { SendSignContractDto } from '@/core/dto/send/contract/send_sign_contract_dto';
+
+interface ContractField {
+    name: string;
+    label: string;
+    type: string;
+    required?: boolean;
+    options?: string[];
+    section?: string;
+}
 
 const ConsultarContratoPage = () => {
     const params = useParams();
@@ -24,6 +33,13 @@ const ConsultarContratoPage = () => {
     const [formFields, setFormFields] = useState<Record<string, string>>({});
     const [signature, setSignature] = useState('');
     const [requiredFields, setRequiredFields] = useState<ContractField[]>([]);
+    // Estado para controlar qué secciones están abiertas
+    const [openSections, setOpenSections] = useState<Record<string, boolean>>({
+        'basic': true,
+        'general': true,
+        'emergency': false,
+        'signature': true
+    });
 
     useEffect(() => {
         const fetchContract = async () => {
@@ -70,48 +86,82 @@ const ConsultarContratoPage = () => {
                     
                     console.log('📋 Variables encontradas en el HTML del contrato:', Array.from(foundFields));
                     
-                    // Mapeo de nombres de campos a etiquetas y tipos
-                    const fieldMapping: Record<string, { label: string; type: string; options?: string[] }> = {
+                    // Mapeo completo de todos los campos disponibles
+                    const fieldMapping: Record<string, { label: string; type: string; options?: string[]; section?: string }> = {
                         // Campos básicos de firma
-                        'email': { label: 'Email', type: 'email' },
-                        'signer_name': { label: 'Nombre del que firma', type: 'text' },
-                        'identity_type': { label: 'Tipo de identidad', type: 'select', options: ['CC', 'CE', 'NIT', 'PASSPORT'] },
-                        'identity_number': { label: 'Número de identidad', type: 'text' },
-                        'company': { label: 'Empresa', type: 'text' },
-                        'signature': { label: 'Firma', type: 'signature' }, // Se maneja por separado
+                        'email': { label: 'Email', type: 'email', section: 'basic' },
+                        'signer_name': { label: 'Nombre del que firma', type: 'text', section: 'basic' },
+                        'identity_type': { label: 'Tipo de identidad', type: 'select', options: ['CC', 'CE', 'NIT', 'PASSPORT'], section: 'basic' },
+                        'identity_number': { label: 'Número de identidad', type: 'text', section: 'basic' },
+                        'company': { label: 'Empresa', type: 'text', section: 'basic' },
+                        'signature': { label: 'Firma', type: 'signature', section: 'signature' }, // Se maneja por separado
                         
-                        // Información General
-                        'general_info_first_name': { label: 'Nombre', type: 'text' },
-                        'general_info_last_name': { label: 'Apellido', type: 'text' },
-                        'general_info_nationality': { label: 'Nacionalidad', type: 'text' },
-                        'general_info_document_type': { label: 'Tipo de documento', type: 'select', options: ['CC', 'CE', 'NIT', 'PASSPORT'] },
-                        'general_info_document_number': { label: 'Número de documento', type: 'text' },
-                        'general_info_email': { label: 'Correo electrónico/email', type: 'email' },
-                        'general_info_phone': { label: 'Celular/WhatsApp', type: 'tel' },
-                        'general_info_address': { label: 'Dirección de correspondencia', type: 'text' },
-                        'general_info_address_additional': { label: 'Dirección - Información adicional', type: 'text' },
-                        'general_info_address_city': { label: 'Dirección - Ciudad', type: 'text' },
-                        'general_info_address_state': { label: 'Dirección - Estado', type: 'text' },
-                        'general_info_address_zip_code': { label: 'Dirección - Código postal', type: 'text' },
-                        'general_info_address_country': { label: 'Dirección - País', type: 'text' },
-                        'general_info_birth_date': { label: 'Fecha de nacimiento', type: 'date' },
-                        'general_info_certification_level': { label: 'Nivel de certificación actual', type: 'text' },
-                        'general_info_dive_count': { label: 'Cantidad de buceos / Logbook dives', type: 'number' },
-                        'general_info_how_did_you_know': { label: 'Cómo supo de nosotros', type: 'text' },
-                        'general_info_accommodation': { label: 'Lugar de hospedaje', type: 'text' },
-                        'general_info_activity': { label: 'Actividad a tomar', type: 'text' },
-                        'general_info_activity_start_date': { label: 'Fecha de inicio de la actividad', type: 'date' },
-                        'general_info_height': { label: 'Estatura (centímetros)', type: 'number' },
-                        'general_info_weight': { label: 'Peso (kilogramos)', type: 'number' },
-                        'general_info_shoe_size': { label: 'Talla de calzado', type: 'text' },
-                        'general_info_special_requirements': { label: 'Requerimientos especiales', type: 'text' },
+                        // Información General - Sección 1
+                        'general_info_first_name': { label: '1.1 Nombre', type: 'text', section: 'general' },
+                        'general_info_last_name': { label: '1.2 Apellido', type: 'text', section: 'general' },
+                        'general_info_nationality': { label: '1.3 Nacionalidad', type: 'text', section: 'general' },
+                        'general_info_document_type': { label: '1.4 Tipo de documento', type: 'select', options: ['CC', 'CE', 'NIT', 'PASSPORT'], section: 'general' },
+                        'general_info_document_number': { label: '1.5 Número de documento', type: 'text', section: 'general' },
+                        'general_info_email': { label: '1.6 Correo electrónico/email', type: 'email', section: 'general' },
+                        'general_info_phone': { label: '1.7 Celular/WhatsApp', type: 'tel', section: 'general' },
+                        'general_info_address': { label: '1.8 Dirección de correspondencia', type: 'text', section: 'general' },
+                        'general_info_address_additional': { label: '1.9 Dirección - Información adicional', type: 'text', section: 'general' },
+                        'general_info_address_city': { label: '1.10 Dirección - Ciudad', type: 'text', section: 'general' },
+                        'general_info_address_state': { label: '1.11 Dirección - Estado', type: 'text', section: 'general' },
+                        'general_info_address_zip_code': { label: '1.12 Dirección - Código postal', type: 'text', section: 'general' },
+                        'general_info_address_country': { label: '1.13 Dirección - País', type: 'text', section: 'general' },
+                        'general_info_birth_date': { label: '1.14 Fecha de nacimiento', type: 'date', section: 'general' },
+                        'general_info_certification_level': { label: '1.15 Nivel de certificación actual', type: 'text', section: 'general' },
+                        'general_info_dive_count': { label: '1.15 Cantidad de buceos / Logbook dives', type: 'number', section: 'general' },
+                        'general_info_how_did_you_know': { label: '1.16 Cómo supo de nosotros', type: 'text', section: 'general' },
+                        'general_info_accommodation': { label: '1.17 Lugar de hospedaje', type: 'text', section: 'general' },
+                        'general_info_activity': { label: '1.18 Actividad a tomar', type: 'text', section: 'general' },
+                        'general_info_activity_start_date': { label: '1.19 Fecha de inicio de la actividad', type: 'date', section: 'general' },
+                        'general_info_height': { label: '1.20 Estatura (centímetros)', type: 'number', section: 'general' },
+                        'general_info_weight': { label: '1.21 Peso (kilogramos)', type: 'number', section: 'general' },
+                        'general_info_shoe_size': { label: '1.22 Talla de calzado', type: 'text', section: 'general' },
+                        'general_info_special_requirements': { label: '1.23 Requerimientos especiales', type: 'text', section: 'general' },
+                        
+                        // Contacto de Emergencia - Sección 2
+                        'emergency_contact_first_name': { label: '2.1 Nombre', type: 'text', section: 'emergency' },
+                        'emergency_contact_last_name': { label: '2.2 Apellido', type: 'text', section: 'emergency' },
+                        'emergency_contact_phone': { label: '2.3 Número de teléfono', type: 'tel', section: 'emergency' },
+                        'emergency_contact_email': { label: '2.4 Correo electrónico', type: 'email', section: 'emergency' },
                     };
                     
-                    // Generar campos del formulario basados en las variables encontradas
-                    const fields: ContractField[] = Array.from(foundFields)
-                        .filter(fieldName => fieldName !== 'signature') // La firma se maneja por separado
+                    // Incluir TODOS los campos del mapeo (excepto signature) + campos adicionales encontrados en el HTML
+                    const allFieldNames = new Set<string>();
+                    
+                    // Agregar todos los campos del mapeo (excepto signature)
+                    Object.keys(fieldMapping).forEach(key => {
+                        if (key !== 'signature') {
+                            allFieldNames.add(key);
+                        }
+                    });
+                    
+                    // Agregar campos adicionales encontrados en el HTML que no estén en el mapeo
+                    foundFields.forEach(fieldName => {
+                        if (fieldName !== 'signature') {
+                            allFieldNames.add(fieldName);
+                        }
+                    });
+                    
+                    console.log('📋 Todos los campos a incluir en el formulario:', Array.from(allFieldNames));
+                    
+                    // Generar campos del formulario basados en todos los campos disponibles
+                    const fields: (ContractField & { section?: string })[] = Array.from(allFieldNames)
                         .map(fieldName => {
                             const mapping = fieldMapping[fieldName];
+                            
+                            // Determinar la sección basada en el nombre del campo
+                            let section = 'general';
+                            if (fieldName.startsWith('emergency_contact_')) {
+                                section = 'emergency';
+                            } else if (fieldName.startsWith('general_info_')) {
+                                section = 'general';
+                            } else if (['email', 'signer_name', 'identity_type', 'identity_number', 'company'].includes(fieldName)) {
+                                section = 'basic';
+                            }
                             
                             // Si hay un mapeo definido, usarlo
                             if (mapping) {
@@ -120,7 +170,8 @@ const ConsultarContratoPage = () => {
                                     label: mapping.label,
                                     type: mapping.type,
                                     required: true,
-                                    options: mapping.options
+                                    options: mapping.options,
+                                    section: mapping.section || section
                                 };
                             }
                             
@@ -146,6 +197,7 @@ const ConsultarContratoPage = () => {
                                 label: generatedLabel,
                                 type,
                                 required: true,
+                                section,
                                 options: (fieldName.includes('identity_type') || fieldName.includes('document_type')) 
                                     ? ['CC', 'CE', 'NIT', 'PASSPORT'] 
                                     : undefined
@@ -202,6 +254,22 @@ const ConsultarContratoPage = () => {
         }));
     };
 
+    const toggleSection = (sectionKey: string) => {
+        setOpenSections(prev => ({
+            ...prev,
+            [sectionKey]: !prev[sectionKey]
+        }));
+    };
+
+    const getFieldsBySection = (section: string) => {
+        return requiredFields.filter((field: ContractField & { section?: string }) => {
+            if (section === 'basic') {
+                return ['email', 'signer_name', 'identity_type', 'identity_number', 'company'].includes(field.name);
+            }
+            return field.section === section;
+        });
+    };
+
     const handleSignContract = async () => {
         if (!signature) {
             setSignError('Por favor, proporciona una firma');
@@ -248,16 +316,30 @@ const ConsultarContratoPage = () => {
             setSignSuccess(false);
 
             // Construir el objeto fields dinámicamente
+            // Incluir todos los campos del formulario y la firma
             const fields: Record<string, string> = {
                 ...formFields,
                 signature: signature
             };
 
+            // Asegurar que los campos requeridos estén presentes
+            // Si no están en formFields, agregarlos como strings vacíos (el backend los validará)
+            const requiredFieldNames = ['signer_name', 'email', 'signature'];
+            requiredFieldNames.forEach(fieldName => {
+                if (!fields[fieldName] && fieldName !== 'signature') {
+                    // Si el campo requerido no está, intentar obtenerlo de formFields
+                    if (formFields[fieldName]) {
+                        fields[fieldName] = formFields[fieldName];
+                    }
+                }
+            });
+
             const signData: SendSignContractDto = {
-                fields: fields
+                fields: fields as SendSignContractDto['fields']
             };
 
-            console.log('📤 Enviando datos de firma:', signData);
+            console.log('📤 Enviando datos de firma:', JSON.stringify(signData, null, 2));
+            console.log('📋 Campos incluidos:', Object.keys(fields).sort());
 
             const response = await ContractService.signContract(tokenValue, signData);
 
@@ -283,7 +365,7 @@ const ConsultarContratoPage = () => {
                 setSignError(response?.error || 'Error al firmar el contrato');
             }
         } catch (err) {
-            console.error('❌ Error al firmar contrato:', err);
+            console.error('❌ Error al Firmar Formulario:', err);
             setSignError('Error al firmar el contrato. Por favor, intenta nuevamente.');
         } finally {
             setSigning(false);
@@ -323,7 +405,7 @@ const ConsultarContratoPage = () => {
                             }}
                         >
                             <option value="">Tipo...</option>
-                            {(field.options || ['CC', 'CE', 'NIT', 'PASSPORT']).map((option) => (
+                            {(field.options || ['CC', 'CE', 'NIT', 'PASSPORT']).map((option: string) => (
                                 <option key={option} value={option}>
                                     {option}
                                 </option>
@@ -374,7 +456,7 @@ const ConsultarContratoPage = () => {
                         }}
                     >
                         <option value="">Seleccionar...</option>
-                        {field.options.map((option) => (
+                        {field.options.map((option: string) => (
                             <option key={option} value={option}>
                                 {option}
                             </option>
@@ -413,6 +495,7 @@ const ConsultarContratoPage = () => {
                     onChange={(e) => handleFieldChange(field.name, e.target.value)}
                     required={isRequired}
                     placeholder={`Ingrese ${field.label || field.name.toLowerCase()}`}
+                    step={field.name.includes('weight') ? '0.01' : undefined}
                     style={{
                         padding: '15px',
                         borderRadius: '5px',
@@ -430,7 +513,7 @@ const ConsultarContratoPage = () => {
                 <section className="page-header">
                     <div className="page-header__bg" style={{ backgroundImage: "url(/assets/images/background/footer-bg-1-1.jpg)" }}></div>
                     <div className="container">
-                        <h2 className="page-header__title">Consultar Contrato</h2>
+                        <h2 className="page-header__title">Consultar Formulario</h2>
                     </div>
                 </section>
                 <section className="course-details" style={{ paddingTop: '120px', paddingBottom: '120px' }}>
@@ -464,7 +547,7 @@ const ConsultarContratoPage = () => {
                     <div className="container">
                         <ul className="list-unstyled thm-breadcrumb">
                             <li><Link href="/">Home</Link></li>
-                            <li className="active"><a href="#">Consultar Contrato</a></li>
+                            <li className="active"><a href="#">Consultar Formulario</a></li>
                         </ul>
                         <h2 className="page-header__title">{error ? 'Error al cargar el contrato' : 'Contrato no encontrado'}</h2>
                     </div>
@@ -518,9 +601,9 @@ const ConsultarContratoPage = () => {
                 <div className="container">
                     <ul className="list-unstyled thm-breadcrumb">
                         <li><Link href="/">Home</Link></li>
-                        <li className="active"><a href="#">Consultar Contrato</a></li>
+                        <li className="active"><a href="#">Consultar Formulario</a></li>
                     </ul>
-                    <h2 className="page-header__title">Consultar Contrato</h2>
+                    <h2 className="page-header__title">Consultar Formulario</h2>
                 </div>
             </section>
 
@@ -547,11 +630,7 @@ const ConsultarContratoPage = () => {
                                         }}>
                                             {contract.template_name}
                                         </h3>
-                                        {!isSigned && (
-                                            <p style={{ color: '#838a93', margin: 0, fontSize: '16px' }}>
-                                                <strong>Código:</strong> {contract.code} | <strong>SKU:</strong> {contract.sku}
-                                            </p>
-                                        )}
+                                     
                                     </div>
                                     <div className="text-end">
                                         {isSigned ? (
@@ -634,54 +713,6 @@ const ConsultarContratoPage = () => {
                         </div>
                     </div>
 
-                    {/* Contract Content */}
-                    {!isSigned && !isCancelled && (
-                        <div className="row mb-4">
-                            <div className="col-lg-12">
-                                <div className="course-details__content" style={{
-                                    background: '#fff',
-                                    borderRadius: '10px',
-                                    padding: '40px',
-                                    boxShadow: '0px 10px 30px 0px rgba(0, 0, 0, 0.05)'
-                                }}>
-                                    <h3 style={{
-                                        color: 'var(--thm-black)',
-                                        fontSize: '24px',
-                                        fontWeight: 'bold',
-                                        marginBottom: '30px',
-                                        paddingBottom: '20px',
-                                        borderBottom: '2px solid var(--thm-gray)'
-                                    }}>
-                                        Contenido del Contrato
-                                    </h3>
-                                    <div
-                                        dangerouslySetInnerHTML={{ __html: contract.html_snapshot }}
-                                        style={{
-                                            color: '#838a93',
-                                            lineHeight: '1.8',
-                                            fontSize: '16px'
-                                        }}
-                                    />
-                                    {contract.expires_at && (
-                                        <div style={{
-                                            marginTop: '30px',
-                                            paddingTop: '20px',
-                                            borderTop: '2px solid var(--thm-gray)'
-                                        }}>
-                                            <p style={{ color: '#838a93', margin: 0, fontSize: '16px' }}>
-                                                <strong style={{ color: 'var(--thm-black)' }}>Fecha de expiración:</strong>{' '}
-                                                {new Date(contract.expires_at).toLocaleDateString('es-ES', {
-                                                    year: 'numeric',
-                                                    month: 'long',
-                                                    day: 'numeric'
-                                                })}
-                                            </p>
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
-                        </div>
-                    )}
 
                     {/* Sign Form (only if not signed) */}
                     {!isSigned && !isExpired && !isCancelled && (
@@ -701,7 +732,7 @@ const ConsultarContratoPage = () => {
                                         paddingBottom: '20px',
                                         borderBottom: '2px solid var(--thm-gray)'
                                     }}>
-                                        Firmar Contrato
+                                        Firmar Formulario
                                     </h3>
 
                                     {signSuccess && (
@@ -732,60 +763,253 @@ const ConsultarContratoPage = () => {
                                         </div>
                                     )}
 
-                                    <div className="row">
-                                        {/* Renderizar campos dinámicamente */}
-                                        {requiredFields.length > 0 ? (
-                                            requiredFields.map((field: ContractField) => {
-                                                // Si identity_type está siendo renderizado, saltar identity_number ya que se renderiza junto
-                                                if (field.name === 'identity_number' && requiredFields.find(f => f.name === 'identity_type')) {
-                                                    return null;
-                                                }
-                                                return renderField(field);
-                                            })
-                                        ) : (
-                                            <div className="col-lg-12 mb-3">
-                                                <div className="alert alert-info" style={{
-                                                    borderRadius: '10px',
-                                                    padding: '20px',
-                                                    background: 'rgba(59, 145, 225, 0.1)',
-                                                    border: '2px solid #3b91e1',
-                                                    color: '#3b91e1'
-                                                }}>
-                                                    <i className="fas fa-info-circle me-2"></i>
-                                                    No hay campos adicionales requeridos para este contrato.
+                                    {/* Sección: Campos Básicos */}
+                                    <div style={{ marginBottom: '20px' }}>
+                                        <button
+                                            type="button"
+                                            onClick={() => toggleSection('basic')}
+                                            style={{
+                                                width: '100%',
+                                                padding: '15px 20px',
+                                                background: '#f8f9fa',
+                                                border: '1px solid #e0e0e0',
+                                                borderRadius: '8px',
+                                                cursor: 'pointer',
+                                                display: 'flex',
+                                                justifyContent: 'space-between',
+                                                alignItems: 'center',
+                                                marginBottom: '15px',
+                                                fontSize: '18px',
+                                                fontWeight: '600',
+                                                color: 'var(--thm-black)',
+                                                transition: 'all 0.3s ease'
+                                            }}
+                                            onMouseEnter={(e) => {
+                                                e.currentTarget.style.background = '#e9ecef';
+                                            }}
+                                            onMouseLeave={(e) => {
+                                                e.currentTarget.style.background = '#f8f9fa';
+                                            }}
+                                        >
+                                            <span>Información Básica</span>
+                                            <i 
+                                                className={`fas ${openSections.basic ? 'fa-chevron-up' : 'fa-chevron-down'}`}
+                                                style={{ fontSize: '14px', color: '#838a93' }}
+                                            ></i>
+                                        </button>
+                                        {openSections.basic && (
+                                            <div style={{
+                                                background: '#ffffff',
+                                                border: '1px solid #e0e0e0',
+                                                borderRadius: '8px',
+                                                padding: '20px',
+                                                marginBottom: '20px',
+                                                boxShadow: '0 2px 4px rgba(0, 0, 0, 0.05)'
+                                            }}>
+                                                <div className="row">
+                                                    {getFieldsBySection('basic').map((field: ContractField) => {
+                                                        if (field.name === 'identity_number' && requiredFields.find((f: ContractField) => f.name === 'identity_type')) {
+                                                            return null;
+                                                        }
+                                                        return renderField(field);
+                                                    })}
                                                 </div>
                                             </div>
                                         )}
+                                    </div>
 
-                                        {/* Campo de firma (siempre requerido) */}
-                                        <div className="col-lg-12 mb-4">
-                                            <label style={{
-                                                color: 'var(--thm-black)',
-                                                fontWeight: '600',
-                                                marginBottom: '10px',
-                                                display: 'block'
-                                            }}>
-                                                Firma <span style={{ color: '#dc3545' }}>*</span>
-                                            </label>
-                                            <SignatureCanvas
-                                                onSignatureChange={setSignature}
-                                            />
-                                        </div>
-
-                                        <div className="col-lg-12">
+                                    {/* Sección: Información General */}
+                                    {getFieldsBySection('general').length > 0 && (
+                                        <div style={{ marginBottom: '20px' }}>
                                             <button
                                                 type="button"
-                                                className="thm-btn"
-                                                onClick={handleSignContract}
-                                                disabled={signing || !isFormValid}
+                                                onClick={() => toggleSection('general')}
                                                 style={{
-                                                    opacity: (signing || !isFormValid) ? 0.6 : 1,
-                                                    cursor: (signing || !isFormValid) ? 'not-allowed' : 'pointer'
+                                                    width: '100%',
+                                                    padding: '15px 20px',
+                                                    background: '#f8f9fa',
+                                                    border: '1px solid #e0e0e0',
+                                                    borderRadius: '8px',
+                                                    cursor: 'pointer',
+                                                    display: 'flex',
+                                                    justifyContent: 'space-between',
+                                                    alignItems: 'center',
+                                                    marginBottom: '15px',
+                                                    fontSize: '18px',
+                                                    fontWeight: '600',
+                                                    color: 'var(--thm-black)',
+                                                    transition: 'all 0.3s ease'
+                                                }}
+                                                onMouseEnter={(e) => {
+                                                    e.currentTarget.style.background = '#e9ecef';
+                                                }}
+                                                onMouseLeave={(e) => {
+                                                    e.currentTarget.style.background = '#f8f9fa';
                                                 }}
                                             >
-                                                <span>{signing ? 'Firmando...' : 'Firmar Contrato'}</span>
+                                                <span>Información general</span>
+                                                <i 
+                                                    className={`fas ${openSections.general ? 'fa-chevron-up' : 'fa-chevron-down'}`}
+                                                    style={{ fontSize: '14px', color: '#838a93' }}
+                                                ></i>
                                             </button>
+                                            {openSections.general && (
+                                                <div style={{
+                                                    background: '#ffffff',
+                                                    border: '1px solid #e0e0e0',
+                                                    borderRadius: '8px',
+                                                    padding: '20px',
+                                                    marginBottom: '20px',
+                                                    boxShadow: '0 2px 4px rgba(0, 0, 0, 0.05)'
+                                                }}>
+                                                    <div className="row">
+                                                        {getFieldsBySection('general').map((field: ContractField) => renderField(field))}
+                                                    </div>
+                                                </div>
+                                            )}
                                         </div>
+                                    )}
+
+                                    {/* Sección: Contacto de Emergencia */}
+                                    {getFieldsBySection('emergency').length > 0 && (
+                                        <div style={{ marginBottom: '20px' }}>
+                                            <button
+                                                type="button"
+                                                onClick={() => toggleSection('emergency')}
+                                                style={{
+                                                    width: '100%',
+                                                    padding: '15px 20px',
+                                                    background: '#f8f9fa',
+                                                    border: '1px solid #e0e0e0',
+                                                    borderRadius: '8px',
+                                                    cursor: 'pointer',
+                                                    display: 'flex',
+                                                    justifyContent: 'space-between',
+                                                    alignItems: 'center',
+                                                    marginBottom: '15px',
+                                                    fontSize: '18px',
+                                                    fontWeight: '600',
+                                                    color: 'var(--thm-black)',
+                                                    transition: 'all 0.3s ease'
+                                                }}
+                                                onMouseEnter={(e) => {
+                                                    e.currentTarget.style.background = '#e9ecef';
+                                                }}
+                                                onMouseLeave={(e) => {
+                                                    e.currentTarget.style.background = '#f8f9fa';
+                                                }}
+                                            >
+                                                <span>Contacto de emergencia</span>
+                                                <i 
+                                                    className={`fas ${openSections.emergency ? 'fa-chevron-up' : 'fa-chevron-down'}`}
+                                                    style={{ fontSize: '14px', color: '#838a93' }}
+                                                ></i>
+                                            </button>
+                                            {openSections.emergency && (
+                                                <div style={{
+                                                    background: '#ffffff',
+                                                    border: '1px solid #e0e0e0',
+                                                    borderRadius: '8px',
+                                                    padding: '20px',
+                                                    marginBottom: '20px',
+                                                    boxShadow: '0 2px 4px rgba(0, 0, 0, 0.05)'
+                                                }}>
+                                                    <div className="row">
+                                                        {getFieldsBySection('emergency').map((field: ContractField) => renderField(field))}
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </div>
+                                    )}
+
+                                    {/* Sección: Firma */}
+                                    <div style={{ marginBottom: '20px' }}>
+                                        <button
+                                            type="button"
+                                            onClick={() => toggleSection('signature')}
+                                            style={{
+                                                width: '100%',
+                                                padding: '15px 20px',
+                                                background: '#f8f9fa',
+                                                border: '1px solid #e0e0e0',
+                                                borderRadius: '8px',
+                                                cursor: 'pointer',
+                                                display: 'flex',
+                                                justifyContent: 'space-between',
+                                                alignItems: 'center',
+                                                marginBottom: '15px',
+                                                fontSize: '18px',
+                                                fontWeight: '600',
+                                                color: 'var(--thm-black)',
+                                                transition: 'all 0.3s ease'
+                                            }}
+                                            onMouseEnter={(e) => {
+                                                e.currentTarget.style.background = '#e9ecef';
+                                            }}
+                                            onMouseLeave={(e) => {
+                                                e.currentTarget.style.background = '#f8f9fa';
+                                            }}
+                                        >
+                                            <span>Firma</span>
+                                            <i 
+                                                className={`fas ${openSections.signature ? 'fa-chevron-up' : 'fa-chevron-down'}`}
+                                                style={{ fontSize: '14px', color: '#838a93' }}
+                                            ></i>
+                                        </button>
+                                        {openSections.signature && (
+                                            <div style={{
+                                                background: '#ffffff',
+                                                border: '1px solid #e0e0e0',
+                                                borderRadius: '8px',
+                                                padding: '20px',
+                                                marginBottom: '20px',
+                                                boxShadow: '0 2px 4px rgba(0, 0, 0, 0.05)'
+                                            }}>
+                                                <div className="col-lg-12 mb-4">
+                                                    <label style={{
+                                                        color: 'var(--thm-black)',
+                                                        fontWeight: '600',
+                                                        marginBottom: '10px',
+                                                        display: 'block'
+                                                    }}>
+                                                        Firma <span style={{ color: '#dc3545' }}>*</span>
+                                                    </label>
+                                                    <SignatureCanvas
+                                                        onSignatureChange={setSignature}
+                                                    />
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    {requiredFields.length === 0 && (
+                                        <div className="col-lg-12 mb-3">
+                                            <div className="alert alert-info" style={{
+                                                borderRadius: '10px',
+                                                padding: '20px',
+                                                background: 'rgba(59, 145, 225, 0.1)',
+                                                border: '2px solid #3b91e1',
+                                                color: '#3b91e1'
+                                            }}>
+                                                <i className="fas fa-info-circle me-2"></i>
+                                                No hay campos adicionales requeridos para este contrato.
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    <div className="col-lg-12">
+                                        <button
+                                            type="button"
+                                            className="thm-btn"
+                                            onClick={handleSignContract}
+                                            disabled={signing || !isFormValid}
+                                            style={{
+                                                opacity: (signing || !isFormValid) ? 0.6 : 1,
+                                                cursor: (signing || !isFormValid) ? 'not-allowed' : 'pointer'
+                                            }}
+                                        >
+                                            <span>{signing ? 'Firmando...' : 'Firmar Formulario'}</span>
+                                        </button>
                                     </div>
                                 </div>
                             </div>

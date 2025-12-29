@@ -48,7 +48,7 @@ export default function FloatingCartButton() {
             position: "fixed",
             bottom: 24,
             right: 100,
-            zIndex: 1000,
+            zIndex: 10000,
             background: "linear-gradient(135deg, #1976d2 0%, #1565c0 100%)",
             color: "white",
             boxShadow: "0 8px 25px rgba(25, 118, 210, 0.4)",
@@ -99,11 +99,16 @@ export default function FloatingCartButton() {
         open={isOpen}
         onClose={toggleDrawer}
         sx={{
+          zIndex: 9999,
+          "& .MuiBackdrop-root": {
+            zIndex: 9998,
+          },
           "& .MuiDrawer-paper": {
             width: 420,
             maxWidth: "90vw",
             background: "linear-gradient(180deg, #f8fafc 0%, #ffffff 100%)",
             borderLeft: "1px solid #e2e8f0",
+            zIndex: 9999,
           },
         }}
       >
