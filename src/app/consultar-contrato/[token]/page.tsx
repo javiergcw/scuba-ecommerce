@@ -35,10 +35,10 @@ const ConsultarContratoPage = () => {
     const [requiredFields, setRequiredFields] = useState<ContractField[]>([]);
     // Estado para controlar qué secciones están abiertas
     const [openSections, setOpenSections] = useState<Record<string, boolean>>({
-        'basic': true,
-        'general': true,
+        'basic': false,
+        'general': false,
         'emergency': false,
-        'signature': true
+        'signature': false
     });
 
     useEffect(() => {
