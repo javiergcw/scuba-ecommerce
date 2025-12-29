@@ -38,6 +38,9 @@ export const API_ENDPOINTS = {
   // Contratos - Firmar Formulario por token
   CONTRACT_SIGN: (token: string) => `/api/contracts/${token}/sign`,
   
+  // Contratos - Obtener plantillas de contratos (templates)
+  CONTRACT_TEMPLATES: '/api/contracts/templates',
+  
   // Booking - Capacidad de reserva (a través de API Route para evitar CORS)
   BOOKING_CAPACITY: (companyId: string, date: string) => `/api/booking-capacity?company_id=${companyId}&date=${date}`,
 } as const;

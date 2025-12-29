@@ -8,7 +8,6 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import WaterIcon from "@mui/icons-material/Water";
 import { useCart } from "@/context/CartContext";
-import { useRouter } from "next/navigation";
 import Image from "next/image";
 
 export default function FloatingCartButton() {
@@ -20,15 +19,9 @@ export default function FloatingCartButton() {
   useEffect(() => {
     setMounted(true);
   }, []);
-  const router = useRouter();
 
   const toggleDrawer = () => {
     setIsOpen(!isOpen);
-  };
-
-  const handleCheckout = () => {
-    setIsOpen(false);
-    router.push('/finalizar-compra');
   };
 
   const formatPrice = (price: number) => {
@@ -385,15 +378,14 @@ export default function FloatingCartButton() {
                 boxShadow: "0 -4px 6px rgba(0, 0, 0, 0.05)"
               }}
             >
-              <Box sx={{ mb: 3 }}>
+              <Box>
                 <Box sx={{ 
                   display: "flex", 
                   justifyContent: "space-between", 
                   alignItems: "center",
                   p: 2,
                   background: "linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)",
-                  borderRadius: 0,
-                  mb: 2
+                  borderRadius: 0
                 }}>
                   <Typography variant="h6" sx={{ fontWeight: "600", color: "#1e293b" }}>
                     Total a pagar:
@@ -402,30 +394,6 @@ export default function FloatingCartButton() {
                     {formatPrice(totalPrice)}
                   </Typography>
                 </Box>
-                <Button
-                  variant="contained"
-                  fullWidth
-                  size="large"
-                  onClick={handleCheckout}
-                  sx={{ 
-                    background: "linear-gradient(135deg, #1976d2 0%, #1565c0 100%)",
-                    borderRadius: 0,
-                    py: 1.5,
-                    fontSize: "16px",
-                    fontWeight: "bold",
-                    textTransform: "none",
-                    boxShadow: "0 8px 25px rgba(25, 118, 210, 0.3)",
-                    transition: "all 0.3s ease",
-                    "&:hover": { 
-                      background: "#ffd701",
-                      color: "#000",
-                      transform: "translateY(-2px)",
-                      boxShadow: "0 12px 35px rgba(255, 215, 1, 0.4)",
-                    }
-                  }}
-                >
-                  🚀 Proceder al Pago
-                </Button>
               </Box>
             </Box>
           )}

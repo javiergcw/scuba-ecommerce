@@ -84,5 +84,32 @@ export class ContractService {
             return null;
         }
     }
+
+    /**
+     * Obtener plantillas de contratos (templates)
+     * @returns Promise con las plantillas de contratos
+     */
+    public static async getContractTemplates(): Promise<any | null> {
+        try {
+            const response = await fetch(API_ENDPOINTS.CONTRACT_TEMPLATES, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                cache: 'no-store'
+            });
+
+            if (!response.ok) {
+                console.error('❌ Error al obtener plantillas de contratos:', response.status, response.statusText);
+                return null;
+            }
+
+            const data = await response.json();
+            return data;
+        } catch (error) {
+            console.error('❌ Error al obtener plantillas de contratos:', error);
+            return null;
+        }
+    }
 }
 

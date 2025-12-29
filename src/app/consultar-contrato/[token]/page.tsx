@@ -806,12 +806,12 @@ const ConsultarContratoPage = () => {
                                                 marginBottom: '20px',
                                                 boxShadow: '0 2px 4px rgba(0, 0, 0, 0.05)'
                                             }}>
-                                                <div className="row">
+                                    <div className="row">
                                                     {getFieldsBySection('basic').map((field: ContractField) => {
                                                         if (field.name === 'identity_number' && requiredFields.find((f: ContractField) => f.name === 'identity_type')) {
-                                                            return null;
-                                                        }
-                                                        return renderField(field);
+                                                    return null;
+                                                }
+                                                return renderField(field);
                                                     })}
                                                 </div>
                                             </div>
@@ -864,11 +864,11 @@ const ConsultarContratoPage = () => {
                                                 }}>
                                                     <div className="row">
                                                         {getFieldsBySection('general').map((field: ContractField) => renderField(field))}
-                                                    </div>
+                                                </div>
                                                 </div>
                                             )}
-                                        </div>
-                                    )}
+                                            </div>
+                                        )}
 
                                     {/* Sección: Contacto de Emergencia */}
                                     {getFieldsBySection('emergency').length > 0 && (
@@ -965,22 +965,22 @@ const ConsultarContratoPage = () => {
                                                 marginBottom: '20px',
                                                 boxShadow: '0 2px 4px rgba(0, 0, 0, 0.05)'
                                             }}>
-                                                <div className="col-lg-12 mb-4">
-                                                    <label style={{
-                                                        color: 'var(--thm-black)',
-                                                        fontWeight: '600',
-                                                        marginBottom: '10px',
-                                                        display: 'block'
-                                                    }}>
-                                                        Firma <span style={{ color: '#dc3545' }}>*</span>
-                                                    </label>
-                                                    <SignatureCanvas
-                                                        onSignatureChange={setSignature}
-                                                    />
+                                        <div className="col-lg-12 mb-4">
+                                            <label style={{
+                                                color: 'var(--thm-black)',
+                                                fontWeight: '600',
+                                                marginBottom: '10px',
+                                                display: 'block'
+                                            }}>
+                                                Firma <span style={{ color: '#dc3545' }}>*</span>
+                                            </label>
+                                            <SignatureCanvas
+                                                onSignatureChange={setSignature}
+                                            />
                                                 </div>
                                             </div>
                                         )}
-                                    </div>
+                                        </div>
 
                                     {requiredFields.length === 0 && (
                                         <div className="col-lg-12 mb-3">
@@ -997,19 +997,19 @@ const ConsultarContratoPage = () => {
                                         </div>
                                     )}
 
-                                    <div className="col-lg-12">
-                                        <button
-                                            type="button"
-                                            className="thm-btn"
-                                            onClick={handleSignContract}
-                                            disabled={signing || !isFormValid}
-                                            style={{
-                                                opacity: (signing || !isFormValid) ? 0.6 : 1,
-                                                cursor: (signing || !isFormValid) ? 'not-allowed' : 'pointer'
-                                            }}
-                                        >
+                                        <div className="col-lg-12">
+                                            <button
+                                                type="button"
+                                                className="thm-btn"
+                                                onClick={handleSignContract}
+                                                disabled={signing || !isFormValid}
+                                                style={{
+                                                    opacity: (signing || !isFormValid) ? 0.6 : 1,
+                                                    cursor: (signing || !isFormValid) ? 'not-allowed' : 'pointer'
+                                                }}
+                                            >
                                             <span>{signing ? 'Firmando...' : 'Firmar Formulario'}</span>
-                                        </button>
+                                            </button>
                                     </div>
                                 </div>
                             </div>
