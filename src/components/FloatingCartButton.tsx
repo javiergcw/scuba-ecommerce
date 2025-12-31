@@ -39,7 +39,7 @@ export default function FloatingCartButton() {
             height: 65,
             width: 65,
             position: "fixed",
-            bottom: 24,
+            bottom: 100,
             right: 100,
             zIndex: 10000,
             background: "linear-gradient(135deg, #1976d2 0%, #1565c0 100%)",
