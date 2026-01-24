@@ -11,5 +11,8 @@ export const ZONE_IDS = {
   
   // Zona de testimonios
   ZONA_TESTIMONIOS: 'd5af7c8a-8b3e-4e7d-80fa-d052e9da0c18',
+
+  // Zona de popup
+  ZONA_POPUP: 'a0bb420c-8b44-4321-9b12-4b172e5e9983',
 } as const;
 

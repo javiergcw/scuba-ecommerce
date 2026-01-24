@@ -20,6 +20,7 @@ export default function Home() {
   const [primaryZoneBanners, setPrimaryZoneBanners] = useState<BannerDto[]>([]);
   const [howToDiveBanners, setHowToDiveBanners] = useState<BannerDto[]>([]);
   const [testimonialsBanners, setTestimonialsBanners] = useState<BannerDto[]>([]);
+  const [popupBanners, setPopupBanners] = useState<BannerDto[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -39,6 +40,10 @@ export default function Home() {
       const testimoniosBanners = await GetZonesUseCase.getBannersByZoneId(ZONE_IDS.ZONA_TESTIMONIOS);
       setTestimonialsBanners(testimoniosBanners);
       
+      // Obtener banners de la zona popup desde el nuevo API
+      const popupBannersData = await GetZonesUseCase.getBannersByZoneId(ZONE_IDS.ZONA_POPUP);
+      setPopupBanners(popupBannersData);
+      
       setError(null);
     } catch (err) {
       setError('Error al cargar los banners');
@@ -55,6 +60,9 @@ export default function Home() {
   // Obtener el primer banner de "cómo bucear" para mostrarlo
   const howToDiveBanner = howToDiveBanners.length > 0 ? howToDiveBanners[0] : null;
   
+  // Obtener el primer banner del popup para mostrarlo
+  const popupBanner = popupBanners.length > 0 ? popupBanners[0] : null;
+  
   // Mapear los banners del nuevo DTO al formato que espera FirstTestimonials
   const mappedTestimonials = testimonialsBanners.map(banner => ({
     title: banner.title,
@@ -64,7 +72,7 @@ export default function Home() {
 
   return (
     <div className="w-full max-w-[100vw] overflow-x-hidden">
-      <InfoPopup />
+      <InfoPopup banner={popupBanner} />
       <div className="w-full">
         <SliderOne banners={primaryZoneBanners} />
         <ServiceOne />
