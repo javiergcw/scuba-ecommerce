@@ -106,42 +106,60 @@ const SliderOne: React.FC<SliderOneProps> = ({ banners }) => {
                   backgroundPosition: "center",
                   height: isMobile ? "60vh" : "90vh",
                   display: "flex",
-                  alignItems: "center",
+                  alignItems: "flex-end",
+                  justifyContent: "flex-end",
                 }}
               >
                 <Container>
                   <Box
-                    textAlign="center"
-                    sx={{ width: { xs: "90%", md: "100%" }, mx: "auto" }}
+                    sx={{ 
+                      width: { xs: "90%", md: "100%" },
+                      display: "flex",
+                      flexDirection: "row",
+                      alignItems: "center",
+                      justifyContent: "flex-end",
+                      gap: 3,
+                      pb: { xs: 4, md: 6 },
+                      pr: { xs: 2, md: 4 },
+                      flexWrap: { xs: "wrap", sm: "nowrap" },
+                    }}
                   >
-                    {subtitle && (
-                      <Typography
-                        variant={isMobile ? "subtitle1" : "h6"}
-                        color="white"
-                        mb={2}
-                        sx={{
-                          fontFamily: '"Barlow Condensed", sans-serif',
-                          fontWeight: 600,
-                          textShadow: "1px 1px 2px rgba(0,0,0,0.4)",
-                          mt: { xs: 2, md: 0 },
-                        }}
-                      >
-                        {subtitle}
-                      </Typography>
-                    )}
-
-                    <Typography
-                      variant={isMobile ? "h4" : "h3"}
-                      color="white"
-                      fontWeight={800}
+                    <Box
                       sx={{
-                        fontFamily: '"Barlow Condensed", sans-serif',
-                        textShadow: "2px 2px 4px rgba(0,0,0,0.5)",
-                        mb: { xs: 4, md: 3 } 
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "flex-end",
+                        textAlign: "right",
                       }}
                     >
-                      {banner.title}
-                    </Typography>
+                      {subtitle && (
+                        <Typography
+                          variant={isMobile ? "subtitle1" : "h6"}
+                          color="white"
+                          mb={1}
+                          sx={{
+                            fontFamily: '"Barlow Condensed", sans-serif',
+                            fontWeight: 600,
+                            textShadow: "1px 1px 2px rgba(0,0,0,0.4)",
+                          }}
+                        >
+                          {subtitle}
+                        </Typography>
+                      )}
+
+                      <Typography
+                        variant={isMobile ? "h4" : "h3"}
+                        color="white"
+                        fontWeight={800}
+                        sx={{
+                          fontFamily: '"Barlow Condensed", sans-serif',
+                          textShadow: "2px 2px 4px rgba(0,0,0,0.5)",
+                          mb: 0,
+                        }}
+                      >
+                        {banner.title}
+                      </Typography>
+                    </Box>
 
                     <Link href={linkUrl} passHref>
                       <Button
@@ -158,6 +176,7 @@ const SliderOne: React.FC<SliderOneProps> = ({ banners }) => {
                           lineHeight: 1.2,
                           borderRadius: 0,
                           fontFamily: '"Barlow Condensed", sans-serif',
+                          flexShrink: 0,
                         }}
                         className={isActive(linkUrl)}
                       >
@@ -201,7 +220,7 @@ const SliderOne: React.FC<SliderOneProps> = ({ banners }) => {
 
         <Box className="custom-swiper-pagination" sx={{ display: 'none' }}></Box>
 
-        <Box
+      {/*   <Box
           component="img"
           src="/assets/images/brand/brand-1-3.png"
           alt="Ribbon decoration"
@@ -214,7 +233,7 @@ const SliderOne: React.FC<SliderOneProps> = ({ banners }) => {
             zIndex: 15,
             animation: "spin 10s linear infinite"
           }}
-        />
+        /> */}
 
         <style jsx global>{`
           @keyframes spin {

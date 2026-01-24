@@ -13,6 +13,7 @@ import BrandBubbleSection from "@/components/others/course/BrandBubbleSection";
 import { GetZonesUseCase } from '@/core/use-case/zone/get_zones_use_case';
 import { ZONE_IDS } from '@/core/const/zone_const';
 import { BannerDto } from '@/core/dto/receive/zone/receive_zones_dto';
+import InfoPopup from "@/components/others/InfoPopup";
 
 
 export default function Home() {
@@ -63,6 +64,7 @@ export default function Home() {
 
   return (
     <div className="w-full max-w-[100vw] overflow-x-hidden">
+      <InfoPopup />
       <div className="w-full">
         <SliderOne banners={primaryZoneBanners} />
         <ServiceOne />
