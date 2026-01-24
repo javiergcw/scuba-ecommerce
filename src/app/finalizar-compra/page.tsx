@@ -49,8 +49,8 @@ import { ReceiveCreateSaleDto } from '@/core/dto/receive/order/receive_create_sa
 
 const steps = ['Resumen de Compra', 'Información Personal', 'URL de Pago'];
 
-// Variable para controlar si estamos en producción o desarrollo
-const isProduction = true; // Habilitado para producción
+// Variable para controlar si las compras están habilitadas (false = en construcción)
+export const ENABLE_SHOPPING = false;
 
 export default function CheckoutPage() {
   const { cartItems, totalPrice, clearCart, addToCart } = useCart();
@@ -887,6 +887,79 @@ export default function CheckoutPage() {
         return null;
     }
   };
+
+  // Verificar si las compras están habilitadas
+  if (!ENABLE_SHOPPING) {
+    return (
+      <Box
+        sx={{
+          minHeight: '100vh',
+          py: { md: 10, xs: 2 },
+          position: 'relative',
+          overflow: 'hidden',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          '::before': {
+            content: '""',
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            backgroundImage: 'url(/assets/images/shapes/video-2-bg.png)',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            opacity: 0.5,
+            zIndex: 1,
+          },
+          '::after': {
+            content: '""',
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            background: 'rgba(6, 58, 122, 0.8)',
+            zIndex: 2,
+          },
+        }}
+      >
+        <Box sx={{ maxWidth: 800, mx: 'auto', px: 2, position: 'relative', zIndex: 3, textAlign: 'center' }}>
+          <Typography variant="h2" gutterBottom sx={{ color: '#fff', fontWeight: 700, mb: 3 }}>
+            🚧 En Construcción
+          </Typography>
+          <Typography variant="h5" sx={{ color: 'rgba(255,255,255,0.9)', mb: 2 }}>
+            Estamos trabajando para mejorar tu experiencia de compra
+          </Typography>
+          <Typography variant="body1" sx={{ color: 'rgba(255,255,255,0.8)', mb: 4 }}>
+            Pronto podrás realizar tus compras de manera más fácil y segura. 
+            Mientras tanto, puedes explorar nuestros cursos y contactarnos para más información.
+          </Typography>
+          <Button
+            variant="contained"
+            size="large"
+            onClick={() => router.push('/cursos')}
+            sx={{
+              backgroundColor: '#ffd701',
+              color: '#051b35',
+              fontWeight: 'bold',
+              borderRadius: 0,
+              minWidth: '200px',
+              height: '55px',
+              fontSize: '1.1rem',
+              '&:hover': {
+                backgroundColor: '#3b91e1',
+                color: '#fff'
+              }
+            }}
+          >
+            Explorar Cursos
+          </Button>
+        </Box>
+      </Box>
+    );
+  }
 
   // Evitar problemas de hidratación - no renderizar contenido que depende de cartItems hasta que se monte
   if (!mounted) {

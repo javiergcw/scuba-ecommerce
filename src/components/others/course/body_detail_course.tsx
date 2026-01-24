@@ -6,6 +6,7 @@ import { useCart } from '@/context/CartContext';
 import { useRouter } from 'next/navigation';
 import { Snackbar, Alert } from '@mui/material';
 import { Box, Typography } from "@mui/material";
+import { ENABLE_SHOPPING } from '@/app/finalizar-compra/page';
 interface CourseDetailProps {
     image: string;
     price: number;
@@ -291,18 +292,20 @@ const BodyDetailCourse = ({
                         )}
 
                         <div style={{ display: 'flex', gap: '15px', marginTop: '20px', flexWrap: 'wrap' }}>
-                            <button
-                                className="thm-btn course-details__btn"
-                                onClick={handleAddToCart}
-                                style={{
-                                    backgroundColor: '#1976d2',
-                                    color: 'white',
-                                    border: 'none',
-                                    cursor: 'pointer'
-                                }}
-                            >
-                                Comprar Curso
-                            </button>
+                            {ENABLE_SHOPPING && (
+                                <button
+                                    className="thm-btn course-details__btn"
+                                    onClick={handleAddToCart}
+                                    style={{
+                                        backgroundColor: '#1976d2',
+                                        color: 'white',
+                                        border: 'none',
+                                        cursor: 'pointer'
+                                    }}
+                                >
+                                    Comprar Curso
+                                </button>
+                            )}
 
                             <a href="/contacto" className="thm-btn course-details__btn">
                                 Contactar para más detalles

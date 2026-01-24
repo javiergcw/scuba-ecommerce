@@ -10,6 +10,7 @@ import FloatingWhatsAppButton from "@/components/FloatingWhatsAppButton";
 import FloatingCartButton from "@/components/FloatingCartButton";
 import { CartProvider } from "@/context/CartContext";
 import "@/lib/monolite-config";
+import { ENABLE_SHOPPING } from "@/app/finalizar-compra/page";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -62,7 +63,7 @@ export default function RootLayout({
           </Suspense>
           {children}
           <Footer />
-          <FloatingCartButton />
+          {!ENABLE_SHOPPING && <FloatingCartButton />}
           <FloatingWhatsAppButton />
         </CartProvider>
         
