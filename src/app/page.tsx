@@ -21,6 +21,7 @@ export default function Home() {
   const [howToDiveBanners, setHowToDiveBanners] = useState<BannerDto[]>([]);
   const [testimonialsBanners, setTestimonialsBanners] = useState<BannerDto[]>([]);
   const [popupBanners, setPopupBanners] = useState<BannerDto[]>([]);
+  const [certificacionesBanners, setCertificacionesBanners] = useState<BannerDto[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -43,6 +44,10 @@ export default function Home() {
       // Obtener banners de la zona popup desde el nuevo API
       const popupBannersData = await GetZonesUseCase.getBannersByZoneId(ZONE_IDS.ZONA_POPUP);
       setPopupBanners(popupBannersData);
+      
+      // Obtener banners de la zona "certificaciones home" desde el nuevo API
+      const certificacionesBannersData = await GetZonesUseCase.getBannersByZoneId(ZONE_IDS.ZONA_CERTIFICACIONES_HOME);
+      setCertificacionesBanners(certificacionesBannersData);
       
       setError(null);
     } catch (err) {
@@ -78,7 +83,7 @@ export default function Home() {
         <ServiceOne />
         {/* <FunFact /> */}
         <CoursesFirst />
-        <BrandBubbleSection />
+        <BrandBubbleSection banners={certificacionesBanners} />
         {/* <BrandOne /> */}
         <HowToDive 
           title={howToDiveBanner?.title || "¿Cómo bucear?"}
