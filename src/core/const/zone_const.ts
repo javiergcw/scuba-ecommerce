@@ -14,5 +14,8 @@ export const ZONE_IDS = {
 
   // Zona de popup
   ZONA_POPUP: 'a0bb420c-8b44-4321-9b12-4b172e5e9983',
+
+  // Zona de certificaciones home
+  ZONA_CERTIFICACIONES_HOME: '41215f30-ce68-477a-bae5-4b8bea199fdc',
 } as const;
 
