@@ -50,7 +50,7 @@ import { ReceiveCreateSaleDto } from '@/core/dto/receive/order/receive_create_sa
 const steps = ['Resumen de Compra', 'Información Personal', 'URL de Pago'];
 
 // Variable para controlar si las compras están habilitadas (false = en construcción)
-export const ENABLE_SHOPPING = false;
+export const ENABLE_SHOPPING = true;
 
 export default function CheckoutPage() {
   const { cartItems, totalPrice, clearCart, addToCart } = useCart();

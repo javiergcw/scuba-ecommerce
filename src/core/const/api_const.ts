@@ -41,6 +41,12 @@ export const API_ENDPOINTS = {
   // Contratos - Obtener plantillas de contratos (templates)
   CONTRACT_TEMPLATES: '/api/contracts/templates',
   
+  // Contratos v1 públicos - Por company_name y sku
+  V1_CONTRACTS_BY_COMPANY_SKU: (companyName: string, sku: string) => `/api/v1/contracts?company_name=${encodeURIComponent(companyName)}&sku=${encodeURIComponent(sku)}`,
+  
+  // Contratos v1 públicos - Crear y firmar (body: company_name, sku, fields)
+  V1_CONTRACT_SIGN: '/api/v1/contracts/sign',
+  
   // Booking - Capacidad de reserva (a través de API Route para evitar CORS)
   BOOKING_CAPACITY: (companyId: string, date: string) => `/api/booking-capacity?company_id=${companyId}&date=${date}`,
 } as const;
