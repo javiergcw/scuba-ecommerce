@@ -3,10 +3,13 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
-import { ContractService } from '@/core/service/contract/contract_service';
-import { ContractDto, ContractStatusDto } from '@/core/dto/receive/contract/receive_contract_dto';
+import { PublicContractService } from '@/core/service/contract/public_contract_service';
+import { ContractByProductDto } from '@/core/dto/receive/contract/receive_contract_by_product_dto';
 import { SignatureCanvas } from '@/components/others/contract/SignatureCanvas';
-import { SendSignContractDto } from '@/core/dto/send/contract/send_sign_contract_dto';
+import { SendSignPublicContractDto } from '@/core/dto/send/contract/send_sign_public_contract_dto';
+
+// Company name por defecto
+const DEFAULT_COMPANY_NAME = 'oceanoscuba';
 
 interface ContractField {
     name: string;
@@ -18,11 +21,15 @@ interface ContractField {
 }
 
 const ConsultarContratoPage = () => {
+    console.log('🚀 ConsultarContratoPage - Componente montado');
     const params = useParams();
-    const tokenParam = params?.token;
+    console.log('🚀 ConsultarContratoPage - params:', params);
+    console.log('🚀 ConsultarContratoPage - params keys:', Object.keys(params || {}));
+    const skuParam = params?.sku;
+    console.log('🚀 ConsultarContratoPage - skuParam:', skuParam);
+    console.log('🚀 ConsultarContratoPage - window.location:', typeof window !== 'undefined' ? window.location.href : 'SSR');
 
-    const [contract, setContract] = useState<ContractDto | null>(null);
-    const [contractStatus, setContractStatus] = useState<ContractStatusDto | null>(null);
+    const [contract, setContract] = useState<ContractByProductDto | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [signing, setSigning] = useState(false);
@@ -44,17 +51,23 @@ const ConsultarContratoPage = () => {
 
     useEffect(() => {
         const fetchContract = async () => {
-            let tokenValue: string = '';
-            if (Array.isArray(tokenParam)) {
-                tokenValue = tokenParam[0] || '';
-            } else if (typeof tokenParam === 'string') {
-                tokenValue = tokenParam;
+            console.log('🔍 useEffect ejecutado - skuParam:', skuParam, 'tipo:', typeof skuParam);
+            console.log('🔍 params completo:', params);
+            
+            let skuValue: string = '';
+            if (Array.isArray(skuParam)) {
+                skuValue = skuParam[0] || '';
+            } else if (typeof skuParam === 'string') {
+                skuValue = skuParam;
             } else {
-                tokenValue = String(tokenParam || '');
+                skuValue = String(skuParam || '');
             }
 
-            if (!tokenValue) {
-                setError('Token no proporcionado');
+            console.log('🔍 skuValue extraído:', skuValue);
+
+            if (!skuValue) {
+                console.error('❌ SKU no proporcionado');
+                setError('SKU no proporcionado');
                 setLoading(false);
                 return;
             }
@@ -63,29 +76,21 @@ const ConsultarContratoPage = () => {
                 setLoading(true);
                 setError(null);
 
-                // Obtener el contrato
-                console.log('🔍 Buscando contrato con token:', tokenValue);
-                const contractResponse = await ContractService.getContractByToken(tokenValue);
+                // Obtener el contrato por producto (SKU y company_name)
+                console.log('🔍 Buscando contrato con SKU:', skuValue, 'y company:', DEFAULT_COMPANY_NAME);
+                const contractResponse = await PublicContractService.getContractByProduct(DEFAULT_COMPANY_NAME, skuValue);
 
                 if (contractResponse && contractResponse.success && contractResponse.data) {
-                    console.log('✅ Contrato encontrado:', contractResponse.data.code);
-                    console.log('📋 Datos completos del contrato:', JSON.stringify(contractResponse.data, null, 2));
-                    console.log('📋 Keys del objeto data:', Object.keys(contractResponse.data));
+                    console.log('✅ Contrato encontrado:', contractResponse.data.template_name);
+                    console.log('📋 Company Name:', contractResponse.data.company_name);
+                    console.log('📋 Template Name:', contractResponse.data.template_name);
                     
                     setContract(contractResponse.data);
 
-                    // Extraer campos requeridos del HTML del contrato
-                    // Buscar todas las variables entre % (ejemplo: %email%, %signer_name%)
-                    const htmlContent = contractResponse.data.html_snapshot || '';
-                    const fieldPattern = /%([a-z_]+)%/gi;
-                    const foundFields = new Set<string>();
-                    let match;
+                    // Usar variable_keys del response para generar los campos del formulario
+                    const foundFields = new Set<string>(contractResponse.data.variable_keys || []);
                     
-                    while ((match = fieldPattern.exec(htmlContent)) !== null) {
-                        foundFields.add(match[1]); // match[1] es el nombre del campo sin los %
-                    }
-                    
-                    console.log('📋 Variables encontradas en el HTML del contrato:', Array.from(foundFields));
+                    console.log('📋 Variables encontradas en el contrato:', Array.from(foundFields));
                     
                     // Mapeo completo de todos los campos disponibles
                     const fieldMapping: Record<string, { label: string; type: string; options?: string[]; section?: string }> = {
@@ -222,15 +227,8 @@ const ConsultarContratoPage = () => {
                         initialFields[field.name] = '';
                     });
                     setFormFields(initialFields);
-
-                    // Consultar el status internamente
-                    const statusResponse = await ContractService.getContractStatus(tokenValue);
-                    if (statusResponse && statusResponse.success && statusResponse.data) {
-                        console.log('✅ Status obtenido:', statusResponse.data.status);
-                        setContractStatus(statusResponse.data);
-                    }
                 } else {
-                    console.error('❌ Contrato no encontrado con token:', tokenValue);
+                    console.error('❌ Contrato no encontrado con SKU:', skuValue);
                     setError('Contrato no encontrado');
                 }
             } catch (err) {
@@ -243,13 +241,18 @@ const ConsultarContratoPage = () => {
         };
 
         fetchContract();
-    }, [tokenParam]);
+    }, [skuParam]);
 
     const handleFieldChange = (fieldName: string, value: string) => {
-        setFormFields(prev => ({
-            ...prev,
-            [fieldName]: value
-        }));
+        console.log('🔄 handleFieldChange:', fieldName, '=', value);
+        setFormFields(prev => {
+            const updated = {
+                ...prev,
+                [fieldName]: value
+            };
+            console.log('📝 formFields actualizado:', updated);
+            return updated;
+        });
     };
 
     const toggleSection = (sectionKey: string) => {
@@ -261,7 +264,7 @@ const ConsultarContratoPage = () => {
 
     const getFieldsBySection = (section: string) => {
         return requiredFields.filter((field: ContractField & { section?: string }) => {
-            // Eliminar campos básicos ya que se mapean desde general_info
+            // Eliminar campos básicos duplicados ya que se mapean desde general_info
             if (section === 'basic') {
                 // No mostrar campos básicos ya que se mapean desde general_info
                 return false;
@@ -273,6 +276,11 @@ const ConsultarContratoPage = () => {
     const handleSignContract = async () => {
         if (!signature) {
             setSignError('Por favor, proporciona una firma');
+            return;
+        }
+
+        if (!contract) {
+            setSignError('Contrato no disponible');
             return;
         }
 
@@ -313,14 +321,14 @@ const ConsultarContratoPage = () => {
             return;
         }
 
-        const tokenValue = Array.isArray(tokenParam)
-            ? tokenParam[0] || ''
-            : typeof tokenParam === 'string'
-                ? tokenParam
-                : String(tokenParam || '');
+        const skuValue = Array.isArray(skuParam)
+            ? skuParam[0] || ''
+            : typeof skuParam === 'string'
+                ? skuParam
+                : String(skuParam || '');
 
-        if (!tokenValue) {
-            setSignError('Token no válido');
+        if (!skuValue) {
+            setSignError('SKU no válido');
             return;
         }
 
@@ -354,25 +362,23 @@ const ConsultarContratoPage = () => {
             fields.identity_type = formFields.general_info_document_type || '';
             fields.identity_number = formFields.general_info_document_number || '';
 
-            const signData: SendSignContractDto = {
-                fields: fields as SendSignContractDto['fields']
+            const signData: SendSignPublicContractDto = {
+                company_name: contract.company_name,
+                sku: skuValue,
+                fields: fields
             };
 
             console.log('📤 Enviando datos de firma:', JSON.stringify(signData, null, 2));
             console.log('📋 Campos incluidos:', Object.keys(fields).sort());
 
-            const response = await ContractService.signContract(tokenValue, signData);
+            const response = await PublicContractService.signContract(signData);
 
             if (response && response.success) {
                 setSignSuccess(true);
-                // Recargar el contrato y status
-                const contractResponse = await ContractService.getContractByToken(tokenValue);
+                // Recargar el contrato
+                const contractResponse = await PublicContractService.getContractByProduct(contract.company_name, skuValue);
                 if (contractResponse && contractResponse.success && contractResponse.data) {
                     setContract(contractResponse.data);
-                }
-                const statusResponse = await ContractService.getContractStatus(tokenValue);
-                if (statusResponse && statusResponse.success && statusResponse.data) {
-                    setContractStatus(statusResponse.data);
                 }
                 // Limpiar formulario
                 setSignature('');
@@ -396,6 +402,11 @@ const ConsultarContratoPage = () => {
     const renderField = (field: ContractField) => {
         const fieldValue = formFields[field.name] || '';
         const isRequired = field.required !== false; // Por defecto requerido si no se especifica
+        
+        // Debug: verificar el valor del campo
+        if (field.type === 'select') {
+            console.log(`🔍 Campo ${field.name}: valor en formFields = "${formFields[field.name]}", fieldValue = "${fieldValue}"`);
+        }
 
         // Campo especial para identity_type
         if (field.name === 'identity_type') {
@@ -454,6 +465,19 @@ const ConsultarContratoPage = () => {
         }
 
         if (field.type === 'select' && field.options && field.options.length > 0) {
+            // Normalizar el valor y las opciones para comparación
+            const rawValue = String(fieldValue || '').trim();
+            // Buscar coincidencia exacta (case-sensitive) primero
+            let matchingOption = field.options.find(opt => String(opt).trim() === rawValue);
+            // Si no hay coincidencia exacta, buscar sin distinguir mayúsculas/minúsculas
+            if (!matchingOption) {
+                matchingOption = field.options.find(opt => 
+                    String(opt).trim().toLowerCase() === rawValue.toLowerCase()
+                );
+            }
+            // Usar el valor encontrado o el valor original si existe
+            const currentValue = matchingOption ? String(matchingOption).trim() : rawValue;
+            
             return (
                 <div key={field.name} className="col-lg-6 mb-3">
                     <label style={{
@@ -466,22 +490,38 @@ const ConsultarContratoPage = () => {
                     </label>
                     <select
                         className="form-control"
-                        value={fieldValue}
-                        onChange={(e) => handleFieldChange(field.name, e.target.value)}
+                        value={currentValue}
+                        onChange={(e) => {
+                            const newValue = e.target.value.trim();
+                            handleFieldChange(field.name, newValue);
+                        }}
                         required={isRequired}
                         style={{
                             padding: '15px',
                             borderRadius: '5px',
                             border: '1px solid #e0e0e0',
-                            fontSize: '16px'
+                            fontSize: '16px',
+                            backgroundColor: '#fff',
+                            color: '#000',
+                            width: '100%',
+                            cursor: 'pointer',
+                            outline: 'none'
                         }}
                     >
-                        <option value="">Seleccionar...</option>
-                        {field.options.map((option: string) => (
-                            <option key={option} value={option}>
-                                {option}
-                            </option>
-                        ))}
+                        <option value="" disabled={!!currentValue}>
+                            Seleccionar...
+                        </option>
+                        {field.options.map((option: string) => {
+                            const optionValue = String(option).trim();
+                            return (
+                                <option 
+                                    key={optionValue} 
+                                    value={optionValue}
+                                >
+                                    {optionValue}
+                                </option>
+                            );
+                        })}
                     </select>
                 </div>
             );
@@ -528,6 +568,9 @@ const ConsultarContratoPage = () => {
         );
     };
 
+    // Debug: Mostrar información inmediatamente
+    console.log('🔍 Estado del componente:', { loading, error, hasContract: !!contract, skuParam });
+
     if (loading) {
         return (
             <div className="page-wrapper">
@@ -535,6 +578,7 @@ const ConsultarContratoPage = () => {
                     <div className="page-header__bg" style={{ backgroundImage: "url(/assets/images/background/footer-bg-1-1.jpg)" }}></div>
                     <div className="container">
                         <h2 className="page-header__title">Consultar Formulario</h2>
+                        <p style={{ color: 'white', marginTop: '10px' }}>SKU: {skuParam || 'No proporcionado'}</p>
                     </div>
                 </section>
                 <section className="course-details" style={{ paddingTop: '120px', paddingBottom: '120px' }}>
@@ -552,6 +596,7 @@ const ConsultarContratoPage = () => {
                                     }}
                                 />
                                 <p style={{ fontSize: '18px', color: '#838a93', fontWeight: '500' }}>Cargando contrato...</p>
+                                <p style={{ fontSize: '14px', color: '#999', marginTop: '10px' }}>SKU recibido: {skuParam || 'Ninguno'}</p>
                             </div>
                         </div>
                     </div>
@@ -599,11 +644,10 @@ const ConsultarContratoPage = () => {
         return null;
     }
 
-    const isSigned = contractStatus?.status === 'SIGNED' || contract.status === 'SIGNED';
-    const isCancelled = contractStatus?.status === 'CANCELLED' || contract.status === 'CANCELLED';
-    const isExpired = contractStatus?.expires_at
-        ? new Date(contractStatus.expires_at) < new Date()
-        : false;
+    // Para contratos públicos, no hay status, siempre están pendientes de firma
+    const isSigned = false;
+    const isCancelled = false;
+    const isExpired = false;
 
     // Validar si todos los campos requeridos están completos (excepto la firma)
     const isFormValid = signature && requiredFields.every((field: ContractField) => {
@@ -651,7 +695,6 @@ const ConsultarContratoPage = () => {
                                         }}>
                                             {contract.template_name}
                                         </h3>
-                                     
                                     </div>
                                     <div className="text-end">
                                         {isSigned ? (
@@ -671,22 +714,6 @@ const ConsultarContratoPage = () => {
                                                     <i className="fas fa-check-circle me-2"></i>
                                                     Contrato Firmado
                                                 </div>
-                                                {contract.signed_at && (
-                                                    <div style={{ color: '#28a745', fontSize: '14px' }}>
-                                                        {new Date(contract.signed_at).toLocaleDateString('es-ES', {
-                                                            year: 'numeric',
-                                                            month: 'long',
-                                                            day: 'numeric',
-                                                            hour: '2-digit',
-                                                            minute: '2-digit'
-                                                        })}
-                                                    </div>
-                                                )}
-                                                {contract.signed_by_name && (
-                                                    <div style={{ color: '#28a745', fontSize: '14px' }}>
-                                                        Por: {contract.signed_by_name}
-                                                    </div>
-                                                )}
                                             </div>
                                         ) : isCancelled ? (
                                             <div style={{
@@ -733,7 +760,6 @@ const ConsultarContratoPage = () => {
                             </div>
                         </div>
                     </div>
-
 
                     {/* Sign Form (only if not signed) */}
                     {!isSigned && !isExpired && !isCancelled && (
